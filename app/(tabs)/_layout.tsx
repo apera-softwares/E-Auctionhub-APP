@@ -8,6 +8,7 @@ import {
   Search,
 } from "@tamagui/lucide-icons";
 import { APP_COLOR } from "constants/Colors";
+import { Image } from "react-native";
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -30,7 +31,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "",
+          headerTitle: "",
+          title: "Home",
           tabBarIcon: ({ color }) => <Home color={color as any} />,
           headerRight: () => (
             <SizableText
@@ -47,18 +49,21 @@ export default function TabLayout() {
             </SizableText>
           ),
           headerLeft: () => (
-            <H6
-              style={{
-                color: APP_COLOR.primary,
-                borderRadius: 5,
-                // color: "black",
-                fontWeight: 700,
-                marginLeft: 5,
-              }}
-            >
-              AuctionHub
-              {/* <CircleUser color={"white" as any} /> */}
-            </H6>
+            // <H6
+            //   style={{
+            //     color: APP_COLOR.primary,
+            //     borderRadius: 5,
+
+            //     fontWeight: 700,
+            //     marginLeft: 5,
+            //   }}
+            // >
+            //   AuctionHub
+            // </H6>
+            <Image
+              style={{ height: 20, width: 120, marginLeft: 5 }}
+              source={require("../../assets/images/logo/logo.png")}
+            />
           ),
         }}
       />

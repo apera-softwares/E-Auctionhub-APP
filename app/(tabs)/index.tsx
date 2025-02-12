@@ -1,34 +1,111 @@
 import { APP_COLOR } from "constants/Colors";
-import { H3, Image, SizableText, Text, View, YStack } from "tamagui";
+import {
+  Button,
+  H3,
+  Image,
+  SizableText,
+  Text,
+  View,
+  YStack,
+  XStack,
+} from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
-import { StyleSheet } from "react-native";
-import { useState } from "react";
+import { StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import { Link } from "expo-router";
+import { BACKEND_API } from "constants/api";
 
 export default function TabOneScreen() {
-  const data = [
-    { label: "Item 1", value: "1" },
-    { label: "Item 2", value: "2" },
-    { label: "Item 3", value: "3" },
-    { label: "Item 4", value: "4" },
-    { label: "Item 5", value: "5" },
-    { label: "Item 6", value: "6" },
-    { label: "Item 7", value: "7" },
-    { label: "Item 8", value: "8" },
+  const popularCities = [
+    {
+      label: "Pune",
+      image:
+        "https://mittalbuilders.com/wp-content/uploads/2020/12/Reasons-to-settle-down-in-Pune-1400x700.png",
+    },
+    {
+      label: "Delhi",
+      image:
+        "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/0f/c5/e8/5c.jpg",
+    },
+    {
+      label: "Begaluru",
+      image: "https://i.ytimg.com/vi/BocpjJwBdBs/sddefault.jpg",
+    },
+    {
+      label: "Nagpur",
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRPddJFx9OwOU29hUYyd3eDoIgARnBKwrS4A&s",
+    },
   ];
 
-  const [value, setValue] = useState(null);
+  const [city, setCity] = useState("");
+  const [allCities, setAllCities] = useState([] as any);
+  const [allAssetTypes, setAllAssetTypes] = useState([] as any);
+
+  const [assetType, setAssetType] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          Dropdown label
-        </Text>
-      );
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(`${BACKEND_API}user/cities`);
+      if (response.ok) {
+        const data = await response.json();
+        let allCities: any[] = [
+          {
+            label: "Select City",
+            value: "",
+          },
+        ];
+        data?.cities.forEach((city: any) => {
+          allCities.push({
+            label: city?.name,
+            value: city?.id,
+          });
+        });
+
+        setAllCities(allCities);
+      } else {
+        console.log("error white fetching cities ", response);
+      }
+    } catch (error) {
+      console.error("Error fetching  cities :", error);
     }
-    return null;
   };
+
+  const fetchAssetsType = async () => {
+    try {
+      const response = await fetch(`${BACKEND_API}auction/asset-types`);
+
+      // console.log("assets response : ", response);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("assets data : ", data);
+        let allAssets: any[] = [
+          {
+            label: "Select Asset Type",
+            value: "",
+          },
+        ];
+        data?.assetTypes.forEach((asset: any) => {
+          allAssets.push({
+            label: asset?.name,
+            value: asset?.id,
+          });
+        });
+        setAllAssetTypes(allAssets);
+      } else {
+        console.log("error while fetching assets type", response);
+      }
+    } catch (error) {
+      console.error("Error fetching assets type", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCities();
+    fetchAssetsType();
+  }, []);
 
   return (
     <YStack flex={1} items="center" gap="$2" bg="$background">
@@ -41,66 +118,100 @@ export default function TabOneScreen() {
           width={"100%"}
           height={"100%"}
         />
-        {/* Overlay for text */}
-        <View
-          px="$4"
-          bg="rgba(0,0,0,0.5)"
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            justifyContent: "start",
-            alignItems: "center",
-          }}
-        >
-          <H3 style={{ fontWeight: 700, textAlign: "center", color: "white" }}>
+        <View px="$4" bg="rgba(0,0,0,0.5)" style={styles.overlay}>
+          <H3 style={styles.headerText}>
             Your Trusted Place{" "}
-            <Text style={{ color: APP_COLOR.primary, fontWeight: 700 }}>
+            <Text style={{ color: APP_COLOR.primary }}>
               for Auctioned Assets
             </Text>
           </H3>
           <SizableText size="$5" text="center" color="white">
             Find your next great investment with our exclusive bank auction
-            listings, all at your fingertips.
+            listings.
           </SizableText>
           <View style={styles.container}>
-          <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={data}
-            search
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? "Select item" : "..."}
-            searchPlaceholder="Search..."
-            value={value}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={(item) => {
-              setValue(item.value);
-              setIsFocus(false);
-            }}
-          />
-          
+            <Dropdown
+              style={styles.dropdown}
+              data={allCities}
+              maxHeight={300}
+              search
+              labelField="label"
+              valueField="value"
+              placeholder="Select City"
+              searchPlaceholder="Search City..."
+              value={city}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={(item) => setCity(item.value)}
+            />
+            <Dropdown
+              style={styles.dropdown}
+              data={allAssetTypes}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder="Select Asset Type"
+              value={assetType}
+              onChange={(item) => setAssetType(item.value)}
+            />
+            <Link
+              href={{
+                pathname: "/auctions",
+                params: { cityId: city, assetTypeId: assetType },
+              }}
+              style={styles.button}
+            >
+              Search Auction
+            </Link>
+          </View>
+          {/* <View style={styles.popularSection}>
+            <H3 style={styles.sectionTitle}>POPULAR CITIES</H3>
+            <FlatList
+              data={popularCities}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.label}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.cityCard}>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.cityImage}
+                  />
+                  <Text style={styles.cityLabel}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View> */}
         </View>
-        </View>
-       
       </View>
+
+      {/* Popular Cities Section */}
     </YStack>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerText: {
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "white",
+  },
   container: {
     backgroundColor: "white",
-    padding: 16,
-    width:"100%"
+    padding: 20,
+    width: "90%",
+    borderRadius: 10,
+    marginTop: 30,
+    gap: 15,
   },
   dropdown: {
     height: 50,
@@ -109,30 +220,41 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
   },
-  icon: {
-    marginRight: 5,
+  button: {
+    backgroundColor: APP_COLOR.primary,
+    color: "white",
+    paddingVertical: 12,
+    borderRadius: 8,
+    textAlign: "center",
   },
-  label: {
-    position: "absolute",
+  popularSection: {
+    width: "100%",
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "white",
+  },
+  cityCard: {
+    marginRight: 10,
     backgroundColor: "white",
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
+    borderRadius: 10,
+    overflow: "hidden",
+    elevation: 3,
+  },
+  cityImage: {
+    width: 100,
+    height: 50,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  cityLabel: {
+    textAlign: "center",
+    paddingVertical: 5,
     fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
+    fontWeight: "bold",
   },
 });

@@ -1,7 +1,7 @@
 import "../tamagui-web.css";
 
 import { useEffect } from "react";
-import { StatusBar, useColorScheme } from "react-native";
+import { Image, StatusBar, useColorScheme } from "react-native";
 import {
   DarkTheme,
   DefaultTheme,
@@ -10,7 +10,8 @@ import {
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { Provider } from "./Provider";
-import { useTheme } from "tamagui";
+import { SizableText, useTheme } from "tamagui";
+import { APP_COLOR } from "constants/Colors";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -81,6 +82,38 @@ function RootLayoutNav() {
               backgroundColor: theme.background.val,
             },
           }}
+        />
+        <Stack.Screen
+          name="auctions"
+          options={{
+            title: "",
+            presentation: "modal",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+           
+            headerLeft: () => (
+              // <H6
+              //   style={{
+              //     color: APP_COLOR.primary,
+              //     borderRadius: 5,
+  
+              //     fontWeight: 700,
+              //     marginLeft: 5,
+              //   }}
+              // >
+              //   AuctionHub
+              // </H6>
+              <Image
+                style={{ height: 20, width: 120, marginLeft: 5 }}
+                source={require("../assets/images/logo/logo.png")}
+              />
+            ),
+          }}
+          
         />
       </Stack>
     </ThemeProvider>
