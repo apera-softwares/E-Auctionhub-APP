@@ -1,46 +1,25 @@
 import { APP_COLOR } from "constants/Colors";
-import {
-  Button,
-  H3,
-  Image,
-  SizableText,
-  Text,
-  View,
-  YStack,
-  XStack,
-} from "tamagui";
+import { H3, Image, SizableText, Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
-import { StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ImageBackground,
+  ScrollView,
+} from "react-native";
 import { useEffect, useState } from "react";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
+import PopularCities from "components/PopularCities";
+import Footer from "components/Footer";
 
 export default function TabOneScreen() {
-  const popularCities = [
-    {
-      label: "Pune",
-      image:
-        "https://mittalbuilders.com/wp-content/uploads/2020/12/Reasons-to-settle-down-in-Pune-1400x700.png",
-    },
-    {
-      label: "Delhi",
-      image:
-        "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/0f/c5/e8/5c.jpg",
-    },
-    {
-      label: "Begaluru",
-      image: "https://i.ytimg.com/vi/BocpjJwBdBs/sddefault.jpg",
-    },
-    {
-      label: "Nagpur",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRPddJFx9OwOU29hUYyd3eDoIgARnBKwrS4A&s",
-    },
-  ];
-
   const [city, setCity] = useState("");
   const [allCities, setAllCities] = useState([] as any);
+  const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
+  const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
   const [isFocus, setIsFocus] = useState(false);
@@ -64,6 +43,21 @@ export default function TabOneScreen() {
         });
 
         setAllCities(allCities);
+      } else {
+        console.log("error white fetching cities ", response);
+      }
+    } catch (error) {
+      console.error("Error fetching  cities :", error);
+    }
+  };
+
+  const fetchPopularCities = async () => {
+    try {
+      const response = await fetch(`${BACKEND_API}auction/top-cities`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data, "data city");
+        setTopCities(data);
       } else {
         console.log("error white fetching cities ", response);
       }
@@ -105,101 +99,117 @@ export default function TabOneScreen() {
   useEffect(() => {
     fetchCities();
     fetchAssetsType();
+    fetchPopularCities();
   }, []);
 
   return (
-    <YStack flex={1} items="center" gap="$2" bg="$background">
-      <View position="relative" width="100%">
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/7599735/pexels-photo-7599735.jpeg?auto=compress&cs=tinysrgb&w=600",
-            height: 300,
-          }}
-          width={"100%"}
-          height={"100%"}
-        />
-        <View px="$4" bg="rgba(0,0,0,0.5)" style={styles.overlay}>
-          <H3 style={styles.headerText}>
-            Your Trusted Place{" "}
-            <Text style={{ color: APP_COLOR.primary }}>
-              for Auctioned Assets
-            </Text>
-          </H3>
-          <SizableText size="$5" text="center" color="white">
-            Find your next great investment with our exclusive bank auction
-            listings.
-          </SizableText>
-          <View style={styles.container}>
-            <Dropdown
-              style={styles.dropdown}
-              data={allCities}
-              maxHeight={300}
-              search
-              labelField="label"
-              valueField="value"
-              placeholder="Select City"
-              searchPlaceholder="Search City..."
-              value={city}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
-              onChange={(item) => setCity(item.value)}
-            />
-            <Dropdown
-              style={styles.dropdown}
-              data={allAssetTypes}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Select Asset Type"
-              value={assetType}
-              onChange={(item) => setAssetType(item.value)}
-            />
-            <Link
-              href={{
-                pathname: "/auctions",
-                params: { cityId: city, assetTypeId: assetType },
-              }}
-              style={styles.button}
-            >
-              Search Auction
-            </Link>
-          </View>
-          {/* <View style={styles.popularSection}>
-            <H3 style={styles.sectionTitle}>POPULAR CITIES</H3>
-            <FlatList
-              data={popularCities}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.label}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.cityCard}>
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.cityImage}
-                  />
-                  <Text style={styles.cityLabel}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View> */}
-        </View>
-      </View>
+    <ImageBackground
+      source={require("../../assets/images/home.jpg")}
+      style={styles.backgroundImage}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <YStack flex={1} items="center" gap="$2">
+          <View px="$4" bg="rgba(0,0,0,0.5)" style={styles.overlay}>
+            <View style={styles.topContainer}>
+              <H3 style={styles.headerText}>
+                Your Trusted Place{" "}
+                <Text style={{ color: APP_COLOR.primary }}>
+                  for Auctioned Assets
+                </Text>
+              </H3>
+              <SizableText size="$5" text="center" color="white">
+                Find your next great investment with our exclusive bank auction
+                listings.
+              </SizableText>
+              <View style={styles.container}>
+                <Dropdown
+                  style={styles.dropdown}
+                  data={allCities}
+                  maxHeight={300}
+                  search
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select City"
+                  searchPlaceholder="Search City..."
+                  value={city}
+                  onChange={(item) => setCity(item.value)}
+                />
+                <Dropdown
+                  style={styles.dropdown}
+                  data={allAssetTypes}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select Asset Type"
+                  value={assetType}
+                  onChange={(item) => setAssetType(item.value)}
+                />
+                <Link
+                  href={{
+                    pathname: "/auctions",
+                    params: { cityId: city, assetTypeId: assetType },
+                  }}
+                  style={styles.button}
+                >
+                  Search Auction
+                </Link>
+              </View>
+            </View>
 
-      {/* Popular Cities Section */}
-    </YStack>
+            <PopularCities />
+
+            <View style={styles.popularSection}>
+              <Text style={styles.sectionTitle}>
+                {" "}
+                <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
+                  Top
+                </Text>{" "}
+                Auctions Cities
+              </Text>
+              <FlatList
+                data={topCities}
+                numColumns={2}
+                scrollEnabled={false}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.cityCard}
+                    onPress={() =>
+                      router.push({
+                        pathname: `/auctions`,
+                        params: { cityId: item.id, assetTypeId: "" },
+                      })
+                    }
+                  >
+                    <Text style={styles.auctionCount}>{item.count}+</Text>
+                    <Text style={styles.cityLabel}>{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </View>
+        </YStack>
+        <Footer />
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   overlay: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: 90,
   },
+  topContainer: {},
   headerText: {
     fontWeight: "bold",
     textAlign: "center",
@@ -208,10 +218,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     padding: 20,
-    width: "90%",
+    // width: 310,
     borderRadius: 10,
     marginTop: 30,
     gap: 15,
+    opacity: 0.9,
   },
   dropdown: {
     height: 50,
@@ -228,33 +239,64 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   popularSection: {
-    width: "100%",
-    padding: 20,
+    width: 340,
+    borderRadius: 10,
+    padding: 15,
+    marginTop: 10,
+    opacity: 0.9,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontWeight: "semibold",
     textAlign: "center",
-    color: "white",
+    marginBottom: 5,
+    color: "#fff",
   },
   cityCard: {
-    marginRight: 10,
-    backgroundColor: "white",
-    borderRadius: 10,
-    overflow: "hidden",
+    flex: 1,
+    margin: 8,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 12,
     elevation: 3,
+    paddingVertical: 12,
+    alignItems: "center",
   },
-  cityImage: {
-    width: 100,
-    height: 50,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+  auctionCount: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "green",
   },
   cityLabel: {
-    textAlign: "center",
-    paddingVertical: 5,
     fontSize: 14,
     fontWeight: "bold",
+    color: "#333",
+  },
+  carouselContainer: {
+    // marginTop: 20,
+    alignItems: "center",
+    height: 200,
+  },
+
+  scrollContent: {
+    flexDirection: "row",
+    paddingHorizontal: 6,
+  },
+  cityCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 6,
+  },
+  cityImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  cityName: {
+    marginTop: 5,
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
