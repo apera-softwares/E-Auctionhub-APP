@@ -94,13 +94,13 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-           
+
             headerLeft: () => (
               // <H6
               //   style={{
               //     color: APP_COLOR.primary,
               //     borderRadius: 5,
-  
+
               //     fontWeight: 700,
               //     marginLeft: 5,
               //   }}
@@ -113,9 +113,40 @@ function RootLayoutNav() {
               />
             ),
           }}
-          
+        />
+        <Stack.Screen
+          name="auctionDetails"
+          options={{
+            title: "",
+            presentation: "modal",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+
+            headerLeft: () => (
+              // <H6
+              //   style={{
+              //     color: APP_COLOR.primary,
+              //     borderRadius: 5,
+
+              //     fontWeight: 700,
+              //     marginLeft: 5,
+              //   }}
+              // >
+              //   AuctionHub
+              // </H6>
+              <Image
+                style={{ height: 20, width: 120, marginLeft: 5 }}
+                source={require("../assets/images/logo/logo.png")}
+              />
+            ),
+          }}
         />
       </Stack>
     </ThemeProvider>
   );
 }
+
