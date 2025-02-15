@@ -1,15 +1,15 @@
 import { APP_COLOR } from "constants/Colors";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, Image } from "tamagui";
-import {
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import dayjs from "dayjs";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import LoaderSkelton from "components/LoaderSkelton";
+import RenderFooter from "components/NoAuctionFoundCard";
 
 export default function AuctionScreen() {
   const { cityId, assetTypeId } = useLocalSearchParams() as any;
@@ -19,11 +19,13 @@ export default function AuctionScreen() {
   const [lastPage, setLastPage] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const LIMIT = 10;
+  const router = useRouter();
 
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
     if (loading) return;
     try {
-      if (!isRefreshing) setLoading(true);
+      setLoading(true);
+      // if (!isRefreshing) setLoading(true);
 
       const URL = `${BACKEND_API}auction/search?assetTypeId=${assetTypeId}&cityId=${cityId}&page=${pageNumber}&limit=${LIMIT}`;
       const response = await fetch(URL);
@@ -65,12 +67,8 @@ export default function AuctionScreen() {
   };
 
   const renderFooter = () => {
-    if (loading && auctions.length !== 0) {
-      return (
-        <Text style={{ height: 100, width: 100, color: "red" }}>
-          No more Auction available
-        </Text>
-      );
+    if (!loading) {
+      return <RenderFooter />;
     }
   };
 
@@ -81,19 +79,31 @@ export default function AuctionScreen() {
           source={
             auction.assetType === "Flat"
               ? require("assets/images/assetsTypes/flat.png")
+              : auction.assetType === "House"
+              ? require("assets/images/assetsTypes/house.png")
+              : auction.assetType === "Bungalow"
+              ? require("assets/images/assetsTypes/banglow.jpg")
               : require("assets/images/assetsTypes/land.jpg")
           }
           style={styles.image}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.assetType}>{auction.assetType}</Text>
-          <Text style={styles.text}>📍 {auction.city}</Text>
-          <Text style={styles.text}>🏦 {auction.bank}</Text>
+          <Text style={styles.assetType}>
+            {auction.assetType ? auction.assetType : "Others"}
+          </Text>
+          <Text style={styles.text}>
+            <FontAwesome6 name="location-dot" size={16} color="black" />{" "}
+            {auction.city}
+          </Text>
+          <Text style={styles.text}>
+            <FontAwesome name="bank" size={14} color="black" /> {auction.bank}
+          </Text>
           <Text style={styles.price}>
-            💰 ₹{auction.reservePrice.toLocaleString()}
+            <FontAwesome name="rupee" size={16} />{" "}
+            {auction.reservePrice.toLocaleString()}
           </Text>
           <Text style={styles.date}>
-            🗓 Auction Date:{" "}
+            <Fontisto name="date" size={14} color="black" />{" "}
             <Text style={{ fontWeight: "bold" }}>
               {dayjs(auction.startDate).format("MMM DD, YYYY")}
             </Text>
@@ -106,7 +116,15 @@ export default function AuctionScreen() {
           )}
         </View>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          router.push({
+            pathname: `/auctionDetails`,
+            params: { auctionId: auction.id },
+          })
+        }
+      >
         <Text style={styles.buttonText}>View Auction</Text>
       </TouchableOpacity>
     </View>
@@ -116,19 +134,14 @@ export default function AuctionScreen() {
     <View style={styles.container}>
       <FlatList
         data={auctions}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderItem}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        ListFooterComponent={
-          loading ? (
-            <ActivityIndicator size="large" color={APP_COLOR.primary} />
-          ) : null
-        }
+        ListFooterComponent={loading ? <LoaderSkelton /> : null}
         ListEmptyComponent={renderFooter}
-        // ListFooterComponent={loading && <ActivityIndicator size="large" color={APP_COLOR.primary} />}
       />
     </View>
   );
@@ -140,14 +153,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#fcfeff",
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     padding: 15,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    margin: 5,
   },
   cardContent: {
     flexDirection: "row",
@@ -156,7 +170,9 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
-    borderRadius: 8,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: APP_COLOR.primary,
     marginRight: 15,
   },
   textContainer: {
