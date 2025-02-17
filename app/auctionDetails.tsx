@@ -11,11 +11,14 @@ import { APP_COLOR } from "constants/Colors";
 import { WebView } from "react-native-webview";
 import { useEffect, useState } from "react";
 import { BACKEND_API } from "constants/api";
-import dayjs from "dayjs";
+import { useUser } from "../context/UserContextProvider";
+// import dayjs from "dayjs";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
-  const isPremiumUser = true;
+  const { user } = useUser();
+
+  const isPremiumUser = true
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
 
@@ -107,7 +110,8 @@ const AuctionDetails = () => {
           <Text style={styles.field}>
             <FontAwesome5 name="calendar-alt" size={20} /> Application Date:{" "}
             {/* {auctionDetails.startDate || "NA"} */}
-            {dayjs(auctionDetails.startDate).format("MMM DD, YYYY")}
+            {/* {dayjs(auctionDetails.startDate).format("MMM DD, YYYY")} */}
+            {auctionDetails.startDate}
           </Text>
           <Text style={[styles.field, styles.appliationDeadlineFiled]}>
             <FontAwesome5 name="clock" size={20} color="orange" /> Application

@@ -13,12 +13,16 @@ import { Link, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import PopularCities from "components/PopularCities";
 import Footer from "components/Footer";
+import { useUser } from "../../context/UserContextProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabOneScreen() {
   const [city, setCity] = useState("");
   const [allCities, setAllCities] = useState([] as any);
   const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
+  const { user, setUser } = useUser();
+
   const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
@@ -97,10 +101,39 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
+    getUser();
     fetchCities();
     fetchAssetsType();
     fetchPopularCities();
   }, []);
+
+  const getUser = async () => {
+    const token = await AsyncStorage.getItem("token");
+    try {
+      const URL = `${BACKEND_API}user/get-user`;
+      const response = await fetch(URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (data.statusCode === 200) {
+        setUser((prev: any) => ({
+          ...prev,
+          id: data?.data?.id,
+          name: data?.data?.name,
+          phone: data?.data?.phone,
+          role: data?.data?.role,
+          isSubscribed: data?.data?.subscribed,
+          subscribedPlan: data?.data?.subscribedPlan[0] || null,
+        }));
+      } else {
+      }
+    } catch (error) {
+      console.log("error while getting user", error);
+    }
+  };
 
   return (
     <ImageBackground
