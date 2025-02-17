@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
-  const isPremiumUser = false;
+  const isPremiumUser = true;
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
 
@@ -271,11 +271,7 @@ const AuctionDetails = () => {
             </View>
 
             <View style={styles.detailRow}>
-              <FontAwesome5
-                name="file-pdf"
-                size={20}
-                style={styles.icon}
-              />
+              <FontAwesome5 name="file-pdf" size={20} style={styles.icon} />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Documents:</Text>
                 <Text
@@ -291,24 +287,16 @@ const AuctionDetails = () => {
               </View>
             </View>
 
-            <Text style={styles.premiumField}>
-              {" "}
-              <FontAwesome5 name="file-pdf" size={20} /> Documents:{" "}
-              <Text
-                style={{
-                  textShadowColor: "black",
-                  textShadowOffset: { width: -1, height: 1 },
-                  textShadowRadius: 15,
-                  color: "transparent",
-                }}
-              >
-                Lorem
-              </Text>
-            </Text>
-            <Text style={styles.premiumField}>
-              <FontAwesome5 name="map-marked-alt" size={24} color="black" />{" "}
-              Location on Map :
-            </Text>
+            <View style={styles.detailRow}>
+              <FontAwesome5
+                name="map-marker-alt"
+                size={20}
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.fieldTitle}>Location on Map:</Text>
+              </View>
+            </View>
 
             <TouchableOpacity style={styles.upgradeButton}>
               <FontAwesome5 name="crown" size={18} color="white" />
