@@ -60,7 +60,6 @@ export default function TabOneScreen() {
       const response = await fetch(`${BACKEND_API}auction/top-cities`);
       if (response.ok) {
         const data = await response.json();
-        console.log(data, "data city");
         setTopCities(data);
       } else {
         console.log("error white fetching cities ", response);
@@ -78,7 +77,6 @@ export default function TabOneScreen() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("assets data : ", data);
         let allAssets: any[] = [
           {
             label: "Select Asset Type",
@@ -109,6 +107,8 @@ export default function TabOneScreen() {
 
   const getUser = async () => {
     const token = await AsyncStorage.getItem("token");
+
+    if (!token) return;
     try {
       const URL = `${BACKEND_API}user/get-user`;
       const response = await fetch(URL, {
@@ -118,6 +118,8 @@ export default function TabOneScreen() {
       });
       const data = await response.json();
 
+      console.log(data, "login person token data");
+
       if (data.statusCode === 200) {
         setUser((prev: any) => ({
           ...prev,
@@ -126,6 +128,7 @@ export default function TabOneScreen() {
           phone: data?.data?.phone,
           role: data?.data?.role,
           isSubscribed: data?.data?.subscribed,
+          isLogin: data?.data?.verified,
           subscribedPlan: data?.data?.subscribedPlan[0] || null,
         }));
       } else {

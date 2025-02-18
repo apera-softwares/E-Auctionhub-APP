@@ -9,12 +9,13 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, SplashScreen, Stack, useRouter } from "expo-router";
-import { Provider } from "./Provider";
+// import { Provider } from "./Provider";
 import { SizableText, useTheme } from "tamagui";
 import { APP_COLOR } from "constants/Colors";
 import BackButton from "components/GoBackButton";
 import Toast from "react-native-toast-message";
-import AuthContextProvider from "../context/UserContextProvider";
+import Provider from "./Provider";
+import AuthContextProvider, { useUser } from "../context/UserContextProvider";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,7 +50,9 @@ export default function RootLayout() {
 
   return (
     <Providers>
-      <RootLayoutNav />
+      <AuthContextProvider>
+        <RootLayoutNav />
+      </AuthContextProvider>
     </Providers>
   );
 }
@@ -59,24 +62,25 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 };
 
 function RootLayoutNav() {
+  const { user } = useUser();
+
   const colorScheme = useColorScheme();
   const theme = useTheme();
   return (
-    <AuthContextProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <StatusBar
-          barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <StatusBar
+        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+      />
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
         />
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Toast />
+        {/* <Toast /> */}
 
-          {/* <Stack.Screen
+        {/* <Stack.Screen
           name="modal"
           options={{
             title: "Tamagui + Expo",
@@ -89,91 +93,103 @@ function RootLayoutNav() {
             },
           }}
         /> */}
-          <Stack.Screen
-            name="auctions"
-            options={{
-              title: "Auctions",
-              presentation: "card",
-              animation: "slide_from_right",
-              gestureEnabled: true,
-              gestureDirection: "horizontal",
-              contentStyle: {
-                backgroundColor: theme.background.val,
-              },
+        <Stack.Screen
+          name="auctions"
+          options={{
+            title: "Auctions",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
 
-              headerLeft: () => (
-                // <Image
-                //   style={{ height: 20, width: 120, marginLeft: 5 }}
-                //   source={require("../assets/images/logo/logo.png")}
-                // />
-                <BackButton />
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="auctionDetails"
-            options={{
-              title: "Auction Details",
-              presentation: "card",
-              animation: "slide_from_right",
-              gestureEnabled: true,
-              gestureDirection: "horizontal",
-              contentStyle: {
-                backgroundColor: theme.background.val,
-              },
+            headerLeft: () => (
+              // <Image
+              //   style={{ height: 20, width: 120, marginLeft: 5 }}
+              //   source={require("../assets/images/logo/logo.png")}
+              // />
+              <BackButton />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="auctionDetails"
+          options={{
+            title: "Auction Details",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
 
-              headerLeft: () => (
-                // <Image
-                //   style={{ height: 20, width: 120, marginLeft: 5 }}
-                //   source={require("../assets/images/logo/logo.png")}
-                // />
-                <BackButton />
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="signup"
-            options={{
-              title: "Signup",
-              presentation: "card",
-              animation: "slide_from_right",
-              gestureEnabled: true,
-              gestureDirection: "horizontal",
-              contentStyle: {
-                backgroundColor: theme.background.val,
-              },
-              headerLeft: () => <BackButton />,
-            }}
-          />
-          <Stack.Screen
-            name="login"
-            options={{
-              title: "Login",
-              presentation: "card",
-              animation: "slide_from_right",
-              gestureEnabled: true,
-              gestureDirection: "horizontal",
-              contentStyle: {
-                backgroundColor: theme.background.val,
-              },
-              headerLeft: () => <BackButton />,
-            }}
-          />
-          <Stack.Screen
-            name="verifyOtp"
-            options={{
-              title: "verifyOtp",
-              presentation: "card",
-              animation: "slide_from_right",
-              // gestureEnabled: true,
-              // gestureDirection: "horizontal",
-              contentStyle: {
-                backgroundColor: theme.background.val,
-              },
-            }}
-          />
-        </Stack>
-      </ThemeProvider>
-    </AuthContextProvider>
+            headerLeft: () => (
+              // <Image
+              //   style={{ height: 20, width: 120, marginLeft: 5 }}
+              //   source={require("../assets/images/logo/logo.png")}
+              // />
+              <BackButton />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="signup"
+          options={{
+            title: "Signup",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+            headerLeft: () => <BackButton />,
+          }}
+        />
+        <Stack.Screen
+          name="login"
+          options={{
+            title: "Login",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+            headerLeft: () => <BackButton />,
+          }}
+        />
+        <Stack.Screen
+          name="verifyOtp"
+          options={{
+            title: "verifyOtp",
+            presentation: "card",
+            animation: "slide_from_right",
+            // gestureEnabled: true,
+            // gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="premium"
+          options={{
+            title: "Premium",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+      </Stack>
+    </ThemeProvider>
   );
 }

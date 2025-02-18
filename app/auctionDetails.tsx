@@ -18,6 +18,8 @@ const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
 
+  console.log(user, "user Data")
+
   const isPremiumUser = true
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);

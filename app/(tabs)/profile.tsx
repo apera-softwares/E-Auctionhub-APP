@@ -3,38 +3,47 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ImageBackground,
   ScrollView,
 } from "react-native";
 import { APP_COLOR } from "constants/Colors";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useUser } from "context/UserContextProvider";
 
-const getInitials = (name) => {
+const getInitials = (name: string) => {
   return name
-    .split(" ")
-    .map((n) => n[0])
-    .join(" ");
+    ? name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+    : "";
 };
 
-const ProfileScreen = ({ isLoggedIn = false }) => {
+const ProfileScreen = () => {
+  const { user } = useUser();
+  const isLoggedIn = user?.isLogin;
   const router = useRouter();
-  const username = isLoggedIn ? "Rahul Singh Verma" : null;
-  const initials = username ? getInitials(username) : "";
+
+  const username = isLoggedIn ? user.name : "Guest User";
+  const phoneNumber = isLoggedIn ? user.phone || "N/A" : "";
+  const initials = getInitials(username);
 
   return (
-    // <ImageBackground
-    //   source={require("../../assets/images/home.jpg")}
-    //   style={styles.container}
-    // >
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Profile Section */}
       {isLoggedIn && (
         <View style={styles.profileSection}>
+          {/* Left: Circular Profile Picture */}
           <View style={styles.profileCircle}>
             <Text style={styles.initials}>{initials}</Text>
           </View>
-          <Text style={styles.username}>{username}</Text>
+
+          {/* Right: Name & Phone */}
+          <View style={styles.profileDetails}>
+            <Text style={styles.username}>{username}</Text>
+            <Text style={styles.phoneNumber}>{phoneNumber}</Text>
+          </View>
         </View>
       )}
 
@@ -42,7 +51,7 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
       <View style={styles.menuContainer}>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Navigate to Premium")}
+          onPress={() => router.push("/premium")}
         >
           <MaterialIcons
             name="star"
@@ -92,18 +101,6 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Navigate to Premium")}
-        >
-          <MaterialIcons
-            name="star"
-            size={24}
-            color="#333"
-            style={styles.icon}
-          />
-          <Text style={styles.menuText}>Premium</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
           onPress={() => console.log("Navigate to TermsConditions")}
         >
           <MaterialIcons
@@ -134,11 +131,7 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
           <>
             <TouchableOpacity
               style={styles.authButton}
-              onPress={() =>
-                router.push({
-                  pathname: `/login`,
-                })
-              }
+              onPress={() => router.push("/login")}
             >
               <AntDesign
                 name="login"
@@ -150,11 +143,7 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.authButton}
-              onPress={() =>
-                router.push({
-                  pathname: `/signup`,
-                })
-              }
+              onPress={() => router.push("/signup")}
             >
               <MaterialIcons
                 name="create-new-folder"
@@ -166,7 +155,10 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
             </TouchableOpacity>
           </>
         ) : (
-          <TouchableOpacity style={styles.authButton}>
+          <TouchableOpacity
+            style={styles.authButton}
+            onPress={() => console.log("Logout")}
+          >
             <AntDesign
               name="logout"
               size={20}
@@ -178,49 +170,60 @@ const ProfileScreen = ({ isLoggedIn = false }) => {
         )}
       </View>
     </ScrollView>
-    // </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f5f5f5", // Fallback color for the background
-  },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    backgroundColor: "#f5f5f5",
   },
   profileSection: {
+    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#155E95",
+    width: "100%",
+    padding: 15,
+    borderRadius: 10,
     marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   profileCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "gray",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginRight: 15,
   },
   initials: {
-    color: "white",
-    fontSize: 18,
+    color: "black",
+    fontSize: 24,
     fontWeight: "bold",
   },
+  profileDetails: {
+    flex: 1,
+  },
   username: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 10,
-    color: "black",
+    color: "white",
+  },
+  phoneNumber: {
+    fontSize: 16,
+    color: "white",
+    marginTop: 5,
   },
   menuContainer: {
     width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "#fff",
     borderRadius: 10,
     paddingVertical: 10,
     shadowColor: "#000",
