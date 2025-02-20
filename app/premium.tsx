@@ -11,6 +11,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import RazorpayCheckout from "react-native-razorpay";
 
 const PremiumScreen = () => {
   const [currentPlan, setCurrentPlan] = useState("");
@@ -40,6 +41,85 @@ const PremiumScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePayment = async (amount: string) => {
+    const token = await AsyncStorage.getItem("token");
+    //Order Api: Call POST api with body like (username, id, price etc) to create an Order and use order_id in below options object
+    // const response = await .....
+
+    setIsProcessing(true);
+
+    const orderResponse = await fetch(`${BACKEND_API}subscribe/create-order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount: amount,
+      }),
+    });
+    const orderData = await orderResponse.json();
+
+    console.log(orderData, "order Data");
+
+    let options = {
+      image: "https://i.imgur.com/3g7nmJC.jpg",
+      description: "3 Month Subscription Plan",
+      currency: "INR", //In USD - only card option will exist rest(like wallet, UPI, EMI etc) will hide
+      key: "rzp_live_BpATSjSGBOFGK9",
+      amount: 500,
+      name: "EAuctionsHub",
+      order_id: orderData?.data?.id,
+      prefill: {
+        name: `Dilip`,
+        email: "dilip.884400@gmail.com",
+        contact: user.phone,
+      }, //if prefill is not provided then on razorpay screen it has to be manually entered.
+      theme: { color: "#53a20e" },
+    };
+    RazorpayCheckout.open(options)
+      .then((data) => {
+        const response = {
+          razorpayPaymentId: data.razorpay_payment_id,
+          razorpayOrderId: data.razorpay_order_id,
+          razorpaySignature: data.razorpay_signature,
+          amount: amount,
+        };
+        // const paymentResponse = await fetch(
+        //   `${BACKEND_API}subscribe/add-records`,
+        //   {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       Authorization: `Bearer ${token}`,
+        //     },
+        //     body: JSON.stringify(data),
+        //   }
+        // );
+        // const paymentData = await paymentResponse.json();
+
+        //console.log("RESULT ", paymentData);
+
+        // if (paymentData.status === true) {
+        //   // toast.success("Payment Successful");
+        //   setIsProcessing(false);
+        //   alert(`/payment-success`);
+
+        //   return;
+        //   //
+        // } else {
+        //   alert("Payment Failed");
+        // }
+
+        alert(`/payment-success`);
+      })
+      .catch((error) => {
+        // handle failure
+        console.log(error, "error raor");
+        alert(`Error: ${error}`);
+      });
   };
 
   return (
@@ -87,7 +167,12 @@ const PremiumScreen = () => {
                   all auction details{"\n"}✔ Get location on map
                 </Text>
                 <TouchableOpacity style={styles.buyNowButton}>
-                  <Text style={styles.buyNowText}>Buy Now</Text>
+                  <Text
+                    style={styles.buyNowText}
+                    onPress={() => handlePayment(plan.amount)}
+                  >
+                    Buy Now
+                  </Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             ))}
