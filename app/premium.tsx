@@ -44,83 +44,98 @@ const PremiumScreen = () => {
   };
 
   const handlePayment = async (amount: string) => {
-    const token = await AsyncStorage.getItem("token");
-    //Order Api: Call POST api with body like (username, id, price etc) to create an Order and use order_id in below options object
-    // const response = await .....
-
-    setIsProcessing(true);
-
-    const orderResponse = await fetch(`${BACKEND_API}subscribe/create-order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount: amount,
-      }),
-    });
-    const orderData = await orderResponse.json();
-
-    console.log(orderData, "order Data");
-
-    let options = {
-      image: "https://i.imgur.com/3g7nmJC.jpg",
-      description: "3 Month Subscription Plan",
-      currency: "INR", //In USD - only card option will exist rest(like wallet, UPI, EMI etc) will hide
-      key: "rzp_live_BpATSjSGBOFGK9",
-      amount: 500,
-      name: "EAuctionsHub",
-      order_id: orderData?.data?.id,
-      prefill: {
-        name: `Dilip`,
-        email: "dilip.884400@gmail.com",
-        contact: user.phone,
-      }, //if prefill is not provided then on razorpay screen it has to be manually entered.
-      theme: { color: "#53a20e" },
-    };
-    RazorpayCheckout.open(options)
-      .then((data) => {
-        const response = {
-          razorpayPaymentId: data.razorpay_payment_id,
-          razorpayOrderId: data.razorpay_order_id,
-          razorpaySignature: data.razorpay_signature,
+    try {
+      const token = await AsyncStorage.getItem("token");
+  
+      setIsProcessing(true);
+  
+      // Create an order
+      const orderResponse = await fetch(`${BACKEND_API}subscribe/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
           amount: amount,
-        };
-        // const paymentResponse = await fetch(
-        //   `${BACKEND_API}subscribe/add-records`,
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //     body: JSON.stringify(data),
-        //   }
-        // );
-        // const paymentData = await paymentResponse.json();
-
-        //console.log("RESULT ", paymentData);
-
-        // if (paymentData.status === true) {
-        //   // toast.success("Payment Successful");
-        //   setIsProcessing(false);
-        //   alert(`/payment-success`);
-
-        //   return;
-        //   //
-        // } else {
-        //   alert("Payment Failed");
-        // }
-
-        alert(`/payment-success`);
-      })
-      .catch((error) => {
-        // handle failure
-        console.log(error, "error raor");
-        alert(`Error: ${error}`);
+        }),
       });
+  
+      const orderData = await orderResponse.json();
+      console.log(orderData, "order Data");
+  
+      if (!orderData?.data?.id) {
+        throw new Error("Order creation failed");
+      }
+  
+      let options = {
+        image: "https://i.imgur.com/3g7nmJC.jpg",
+        description: "3 Month Subscription Plan",
+        currency: "INR",
+        key: "rzp_live_BpATSjSGBOFGK9",
+        amount: 500,
+        name: "EAuctionsHub",
+        order_id: orderData.data.id,
+        prefill: {
+          name: `Dilip`,
+          email: "dilip.884400@gmail.com",
+          contact: user.phone,
+        },
+        theme: { color: "#53a20e" },
+      };
+  
+      RazorpayCheckout.open(options)
+        .then(async (data) => {
+          try {
+            const response = {
+              razorpayPaymentId: data.razorpay_payment_id,
+              razorpayOrderId: data.razorpay_order_id,
+              razorpaySignature: data.razorpay_signature,
+              amount: amount,
+            };
+  
+            // Send payment confirmation
+            const paymentResponse = await fetch(
+              `${BACKEND_API}subscribe/add-records`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(response),
+              }
+            );
+  
+            const paymentData = await paymentResponse.json();
+            console.log("RESULT ", paymentData);
+  
+            if (paymentData.status === true) {
+              setIsProcessing(false);
+              alert("Payment Successful");
+              return;
+            } else {
+              throw new Error("Payment failed");
+            }
+          } catch (error) {
+            console.error("Payment processing error:", error);
+            alert("Payment Failed");
+          } finally {
+            setIsProcessing(false);
+          }
+        })
+        .catch((error) => {
+          console.log("Razorpay Error:", error);
+          alert(`Error: ${error.description || error}`);
+          setIsProcessing(false);
+        });
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("An error occurred while processing the payment.");
+      setIsProcessing(false);
+    }
   };
+  
 
   return (
     <View style={styles.container}>
