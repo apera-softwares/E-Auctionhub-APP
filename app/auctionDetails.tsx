@@ -12,21 +12,23 @@ import { WebView } from "react-native-webview";
 import { useEffect, useState } from "react";
 import { BACKEND_API } from "constants/api";
 import { useUser } from "../context/UserContextProvider";
-// import dayjs from "dayjs";
+import UnSubPremiumCard from "components/UnSubPremiumCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { formateDate, onShare } from "constants/staticData";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
 
-  console.log(user, "user Data")
+  console.log(user, "user Data");
 
-  const isPremiumUser = true
+  const isPremiumUser = user.isSubscribed;
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
 
   const getAuctionById = async () => {
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtMmU5czcxMDAwMDExMjFrM3JpcGp6MnMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTczOTYwNzE2NH0.MUYiJIr54ykn1-hKv0G8EfJozYa2kwQMR7HJKLZzrEg";
+    const token = await AsyncStorage.getItem("token");
+
     let headers: any = {};
     try {
       setLoading(true);
@@ -59,12 +61,11 @@ const AuctionDetails = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Auction Details</Text>
         <View style={styles.actionsContainer}>
           <TouchableOpacity>
             <FontAwesome5 name="heart" size={24} color={APP_COLOR.primary} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onShare}>
             <FontAwesome5
               name="share-alt"
               size={24}
@@ -76,6 +77,16 @@ const AuctionDetails = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.fieldContainer}>
+          {/* <View style={styles.detailRow}>
+            <FontAwesome5 name="building" size={20} style={styles.unSubicon} />
+            <View style={styles.textContainer}>
+              <Text style={styles.fieldTitle}>Asset Type: </Text>
+              <Text style={styles.fieldValue}>
+                {auctionDetails.assetType || "N/A"}
+              </Text>
+            </View>
+          </View> */}
+
           <Text style={styles.field}>
             <FontAwesome5 name="building" size={20} /> Asset Type:{" "}
             {auctionDetails.assetType}
@@ -113,13 +124,13 @@ const AuctionDetails = () => {
             <FontAwesome5 name="calendar-alt" size={20} /> Application Date:{" "}
             {/* {auctionDetails.startDate || "NA"} */}
             {/* {dayjs(auctionDetails.startDate).format("MMM DD, YYYY")} */}
-            {auctionDetails.startDate}
+            {formateDate(auctionDetails.startDate)}
           </Text>
           <Text style={[styles.field, styles.appliationDeadlineFiled]}>
             <FontAwesome5 name="clock" size={20} color="orange" /> Application
             Deadline:{" "}
             {auctionDetails.applicationDeadLine
-              ? auctionDetails.applicationDeadLin
+              ? formateDate(auctionDetails.applicationDeadLin)
               : "NA"}
           </Text>
         </View>
@@ -217,98 +228,7 @@ const AuctionDetails = () => {
             </View>
           </View>
         ) : (
-          <View style={styles.lockedContent}>
-            <View style={styles.detailRow}>
-              <FontAwesome5
-                name="map-marker-alt"
-                size={20}
-                style={styles.icon}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Loan Account Number:</Text>
-                <Text
-                  style={{
-                    textShadowColor: "black",
-                    textShadowOffset: { width: -1, height: 1 },
-                    textShadowRadius: 18,
-                    color: "transparent",
-                  }}
-                >
-                  Test123AbcTest222555555
-                </Text>
-              </View>
-            </View>
-            <View style={styles.detailRow}>
-              <FontAwesome5 name="user" size={20} style={styles.icon} />
-              <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Bank Contact Person:</Text>
-                <Text
-                  style={{
-                    textShadowColor: "black",
-                    textShadowOffset: { width: -1, height: 1 },
-                    textShadowRadius: 18,
-                    color: "transparent",
-                  }}
-                >
-                  1234567890
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRow}>
-              <FontAwesome5
-                name="map-marker-alt"
-                size={20}
-                style={styles.icon}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Property Address:</Text>
-                <Text
-                  style={{
-                    textShadowColor: "black",
-                    textShadowOffset: { width: -1, height: 1 },
-                    textShadowRadius: 18,
-                    color: "transparent",
-                  }}
-                >
-                  123, xyz Abc XXXXXXX xxxxxXXXXXX XX
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRow}>
-              <FontAwesome5 name="file-pdf" size={20} style={styles.icon} />
-              <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Documents:</Text>
-                <Text
-                  style={{
-                    textShadowColor: "black",
-                    textShadowOffset: { width: -1, height: 1 },
-                    textShadowRadius: 18,
-                    color: "transparent",
-                  }}
-                >
-                  www.asdsads.sadsda
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRow}>
-              <FontAwesome5
-                name="map-marker-alt"
-                size={20}
-                style={styles.icon}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Location on Map:</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.upgradeButton}>
-              <FontAwesome5 name="crown" size={18} color="white" />
-              <Text style={styles.upgradeText}> Upgrade to Premium</Text>
-            </TouchableOpacity>
-          </View>
+          <UnSubPremiumCard />
         )}
       </View>
     </ScrollView>
@@ -357,38 +277,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: "#d4af37",
   },
-  premiumField: {
-    fontSize: 17,
-    marginVertical: 6,
-    fontWeight: "bold",
-    opacity: 0.6,
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 10,
-    borderColor: "gold",
-  },
-  lockedContent: {
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    padding: 10,
-    justifyContent: "center",
-    borderRadius: 15,
-    textAlign: "left",
-  },
-  upgradeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "gold",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 15,
-  },
-  upgradeText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginLeft: 8,
-  },
+
   // premiumCard: {
   //   backgroundColor: "white",
   //   borderWidth: 1,
@@ -417,6 +306,10 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
     color: "#d4af37",
+  },
+  unSubicon: {
+    marginRight: 10,
+    color: "#007bff",
   },
   textContainer: {
     flex: 1,

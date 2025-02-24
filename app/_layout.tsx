@@ -189,6 +189,20 @@ function RootLayoutNav() {
             },
           }}
         />
+        <Stack.Screen
+          name="paymentSucess"
+          options={{
+            headerShown: false,
+            title: "",
+            presentation: "card",
+            animation: "slide_from_right",
+            // gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

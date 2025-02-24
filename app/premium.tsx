@@ -14,12 +14,14 @@ import {
 import RazorpayCheckout from "react-native-razorpay";
 
 import Constants from "expo-constants";
+import { useRouter } from "expo-router";
 
 const PremiumScreen = () => {
   const [currentPlan, setCurrentPlan] = useState("");
   const [premiumPlans, setPremiumPlans] = useState([] as any);
   const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
+  const router = useRouter();
 
   console.log(user, "user");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -74,7 +76,8 @@ const PremiumScreen = () => {
       }
 
       let options = {
-        image: "https://i.imgur.com/3g7nmJC.jpg",
+        image:
+          "http://209.182.232.11:4044/uploads/auction/media-1740385842172-395417771.png",
         description: " Subscribe and get access to premium features.",
         currency: "INR",
         key: Constants.expoConfig?.extra?.RAZORPAY_KEY,
@@ -117,7 +120,8 @@ const PremiumScreen = () => {
 
             if (paymentData.status === true) {
               setIsProcessing(false);
-              alert("Payment Successful");
+              router.push("/paymentSucess");
+
               return;
             } else {
               throw new Error("Payment failed");
