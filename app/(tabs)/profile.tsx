@@ -9,6 +9,7 @@ import { APP_COLOR } from "constants/Colors";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useUser } from "context/UserContextProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getInitials = (name: string) => {
   return name
@@ -21,13 +22,34 @@ const getInitials = (name: string) => {
 };
 
 const ProfileScreen = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const isLoggedIn = user?.isLogin;
   const router = useRouter();
 
   const username = isLoggedIn ? user.name : "Guest User";
   const phoneNumber = isLoggedIn ? user.phone || "N/A" : "";
   const initials = getInitials(username);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("token");
+    } catch (e) {
+      // remove error
+    }
+
+    setUser({
+      id: "",
+      name: "",
+      phone: "",
+      role: "USER",
+      isLogin: false,
+      isSubscribed: false,
+      subscribedPlan: null,
+    });
+
+    console.log("Done.");
+    router.push("/login");
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -155,10 +177,7 @@ const ProfileScreen = () => {
             </TouchableOpacity>
           </>
         ) : (
-          <TouchableOpacity
-            style={styles.authButton}
-            onPress={() => console.log("Logout")}
-          >
+          <TouchableOpacity style={styles.authButton} onPress={handleLogout}>
             <AntDesign
               name="logout"
               size={20}

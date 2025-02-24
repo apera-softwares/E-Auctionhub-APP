@@ -51,6 +51,8 @@
       "typedRoutes": true
     },
     "extra": {
+      "RAZORPAY_KEY": "rzp_live_BpATSjSGBOFGK9",
+
       "router": {
         "origin": false
       },
