@@ -1,15 +1,25 @@
 import { APP_COLOR } from "constants/Colors";
 import { useEffect, useState } from "react";
 import { View, Text, Image } from "tamagui";
-import { TouchableOpacity, StyleSheet, FlatList } from "react-native";
-import dayjs from "dayjs";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Share,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Fontisto from "@expo/vector-icons/Fontisto";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Fontisto from "@expo/vector-icons/Fontisto";
 import LoaderSkelton from "components/LoaderSkelton";
 import RenderFooter from "components/NoAuctionFoundCard";
+import { formateDate } from "constants/staticData";
+import { APP_LINK } from "constants/constant";
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width / 2 - 18;
 
 export default function AuctionScreen() {
   const { cityId, assetTypeId } = useLocalSearchParams() as any;
@@ -25,12 +35,9 @@ export default function AuctionScreen() {
     if (loading) return;
     try {
       setLoading(true);
-      // if (!isRefreshing) setLoading(true);
-
       const URL = `${BACKEND_API}auction/search?assetTypeId=${assetTypeId}&cityId=${cityId}&page=${pageNumber}&limit=${LIMIT}`;
       const response = await fetch(URL);
       const data = await response.json();
-      console.log(data, "datatat");
 
       if (data?.statusCode === 200) {
         setAuctions((prev) =>
@@ -66,15 +73,29 @@ export default function AuctionScreen() {
     fetchAuctions(1, true);
   };
 
-  const renderFooter = () => {
-    if (!loading) {
-      return <RenderFooter />;
+  const renderFooter = () => (!loading ? <RenderFooter /> : null);
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        title: "App link",
+        message: `Install E-AuctionsHub App to hire manpower in easy way. App Link: ${APP_LINK}`,
+        url: APP_LINK,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+        } else {
+        }
+      } else if (result.action === Share.dismissedAction) {
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const renderItem = ({ item: auction }) => (
     <View style={styles.card}>
-      <View style={styles.cardContent}>
+      <View style={styles.imageContainer}>
         <Image
           source={
             auction.assetType === "Flat"
@@ -86,36 +107,46 @@ export default function AuctionScreen() {
               : require("assets/images/assetsTypes/land.jpg")
           }
           style={styles.image}
+          resizeMode="contain"
         />
-        <View style={styles.textContainer}>
-          <Text style={styles.assetType}>
-            {auction.assetType ? auction.assetType : "Others"}
-          </Text>
-          <Text style={styles.text}>
-            <FontAwesome6 name="location-dot" size={16} color="black" />{" "}
-            {auction.city}
-          </Text>
-          <Text style={styles.text}>
-            <FontAwesome name="bank" size={14} color="black" /> {auction.bank}
-          </Text>
-          <Text style={styles.price}>
-            <FontAwesome name="rupee" size={16} />{" "}
-            {auction.reservePrice.toLocaleString()}
-          </Text>
-          <Text style={styles.date}>
-            <Fontisto name="date" size={14} color="black" />{" "}
-            <Text style={{ fontWeight: "bold" }}>
-              {dayjs(auction.startDate).format("MMM DD, YYYY")}
-            </Text>
-          </Text>
-          {auction.applicationDeadLine && (
-            <Text style={styles.deadline}>
-              ⏳ Deadline Date:{" "}
-              {dayjs(auction.applicationDeadLine).format("MMM DD, YYYY")}
-            </Text>
-          )}
-        </View>
+
+        {/* Favorite Button */}
+        <TouchableOpacity style={styles.favButton}>
+          <FontAwesome name="heart-o" size={18} color="white" />
+        </TouchableOpacity>
+
+        {/* Share Button */}
+        <TouchableOpacity style={styles.shareButton} onPress={onShare}>
+          <FontAwesome name="share-alt" size={18} color="white" />
+        </TouchableOpacity>
       </View>
+
+      <View style={styles.textContainer}>
+        <Text style={styles.assetType}>{auction.assetType || "Others"}</Text>
+        <Text style={styles.text}>
+          <FontAwesome6 name="location-dot" size={14} color="#555" />{" "}
+          {auction.city}
+        </Text>
+        <Text style={styles.text}>
+          <FontAwesome name="bank" size={13} color="#555" /> {auction.bank}
+        </Text>
+        <Text style={styles.price}>
+          <FontAwesome name="rupee" size={14} color="#28a745" />{" "}
+          {auction.reservePrice.toLocaleString()}
+        </Text>
+        <Text style={styles.date}>
+          <Fontisto name="date" size={12} color="#333" />{" "}
+          <Text style={{ fontWeight: "bold" }}>
+            {formateDate(auction.startDate)}
+          </Text>
+        </Text>
+        {auction.applicationDeadLine && (
+          <Text style={styles.deadline}>
+            ⏳ {formateDate(auction.applicationDeadLine)}
+          </Text>
+        )}
+      </View>
+
       <TouchableOpacity
         style={styles.button}
         onPress={() =>
@@ -125,7 +156,7 @@ export default function AuctionScreen() {
           })
         }
       >
-        <Text style={styles.buttonText}>View Auction</Text>
+        <Text style={styles.buttonText}>View</Text>
       </TouchableOpacity>
     </View>
   );
@@ -136,6 +167,8 @@ export default function AuctionScreen() {
         data={auctions}
         keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         refreshing={refreshing}
@@ -151,67 +184,92 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
+  row: {
+    justifyContent: "space-between",
   },
   card: {
-    backgroundColor: "#fcfeff",
-    borderRadius: 10,
-    marginBottom: 10,
-    padding: 15,
+    width: CARD_WIDTH,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 10,
+    margin: 5,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    margin: 5,
-  },
-  cardContent: {
-    flexDirection: "row",
     alignItems: "center",
   },
+  imageContainer: {
+    width: "100%",
+    height: 80, // Reduced height
+    borderRadius: 10,
+    overflow: "hidden",
+    position: "relative",
+  },
   image: {
-    width: 80,
-    height: 80,
+    width: "100%",
+    height: "100%",
+  },
+  favButton: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 6,
     borderRadius: 50,
-    borderWidth: 2,
-    borderColor: APP_COLOR.primary,
-    marginRight: 15,
+  },
+  shareButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 6,
+    borderRadius: 50,
   },
   textContainer: {
-    flex: 1,
+    width: "100%",
+    alignItems: "flex-start",
   },
   assetType: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 5,
+    color: "#333",
+    marginBottom: 4,
   },
   text: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#555",
   },
   price: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#28a745",
     marginVertical: 5,
   },
   date: {
-    fontSize: 14,
-    color: "#333",
-    marginTop: 5,
+    fontSize: 12,
+    color: "#777",
   },
   deadline: {
-    fontSize: 14,
+    fontSize: 12,
     color: "red",
+    fontWeight: "bold",
     marginTop: 5,
   },
   button: {
     marginTop: 10,
     backgroundColor: APP_COLOR.primary,
-    padding: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     borderRadius: 5,
+    width: "100%",
     alignItems: "center",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 14,
   },
 });

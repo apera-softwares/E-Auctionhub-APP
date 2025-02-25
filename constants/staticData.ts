@@ -1,4 +1,7 @@
-import dayjs from "dayjs";
+import { Share } from "react-native";
+import { APP_LINK } from "./constant";
+
+// import dayjs from "dayjs";
 export const popularCitiesList = [
   {
     id: "clxy7z8qt00000clg4x71e8i8",
@@ -42,10 +45,35 @@ export const popularCitiesList = [
   },
 ];
 
+// const getDaysLeft = (auctionDate: string) => {
+//     const today = dayjs();
+//     const auctionDay = dayjs(auctionDate);
+//     const daysLeft = auctionDay.diff(today, "day");
+//     return daysLeft > 0 ? `${daysLeft} days left` : "Auction ended";
+//   };
 
-const getDaysLeft = (auctionDate: string) => {
-    const today = dayjs();
-    const auctionDay = dayjs(auctionDate);
-    const daysLeft = auctionDay.diff(today, "day");
-    return daysLeft > 0 ? `${daysLeft} days left` : "Auction ended";
-  };
+export const formateDate = (dateStr: string) => {
+  if (!dateStr) return "";
+
+  const date = new Date(dateStr);
+
+  return date?.toDateString()?.substring(4);
+};
+
+export const onShare = async () => {
+  try {
+    const result = await Share.share({
+      title: "App link",
+      message: `Install E-AuctionsHub App to hire manpower in easy way. App Link: ${APP_LINK}`,
+      url: APP_LINK,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+      } else {
+      }
+    } else if (result.action === Share.dismissedAction) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
