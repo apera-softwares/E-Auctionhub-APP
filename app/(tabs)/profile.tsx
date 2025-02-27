@@ -101,7 +101,7 @@ const ProfileScreen = () => {
         )}
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Navigate to AboutUs")}
+          onPress={() => router.push("/about")}
         >
           <MaterialIcons
             name="info"
@@ -113,7 +113,7 @@ const ProfileScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Navigate to ContactUs")}
+          onPress={() => router.push("/contact")}
         >
           <MaterialIcons
             name="phone"
