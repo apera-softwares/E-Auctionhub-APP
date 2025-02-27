@@ -1,12 +1,6 @@
-import { Link, Tabs, useRouter } from "expo-router";
-import { Button, H4, H5, H6, SizableText, useTheme } from "tamagui";
-import {
-  Atom,
-  AudioWaveform,
-  CircleUser,
-  Home,
-  Search,
-} from "@tamagui/lucide-icons";
+import { Tabs, useRouter } from "expo-router";
+import { SizableText, useTheme } from "tamagui";
+import { CircleUser, Home, Search } from "@tamagui/lucide-icons";
 import { APP_COLOR } from "constants/Colors";
 import { Image } from "react-native";
 import { useUser } from "context/UserContextProvider";
@@ -48,7 +42,7 @@ export default function TabLayout() {
                 marginRight: 5,
               }}
               onPress={() =>
-                user.isLogin ? router.push("/profile") : router.push("/login")
+                user.isLogin ? router.push("/") : router.push("/login")
               }
             >
               {user.isLogin ? user.name.slice(0, 13) : "Login/Signup"}
