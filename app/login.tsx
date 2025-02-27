@@ -15,9 +15,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
+import { useUser } from "context/UserContextProvider";
 
 const LoginScreen = () => {
   const router = useRouter();
+  const { user } = useUser();
+
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
@@ -26,7 +29,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const getData = async () => {
       const token = await AsyncStorage.getItem("token");
-      if (token) {
+      if (token && user.isLogin) {
         router.push("/");
       }
     };

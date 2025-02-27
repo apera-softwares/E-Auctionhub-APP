@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
+import Footer from "components/Footer";
 
 export default function search() {
   const [city, setCity] = useState("");
@@ -78,101 +79,107 @@ export default function search() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <YStack flex={1} items="center" gap="$3">
-        <H3 style={styles.headerText}>
-          Advanced <Text style={{ color: APP_COLOR.primary }}>Search</Text>
-        </H3>
-        <SizableText size="$5" text="center" color="black">
-          Find auction listings with more filter options.
-        </SizableText>
-        <Toast />
+    <View style={{ height: "100%" }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <YStack flex={1} items="center" gap="$3">
+          <H3 style={styles.headerText}>
+            Advanced <Text style={{ color: APP_COLOR.primary }}>Search</Text>
+          </H3>
+          <SizableText size="$5" text="center" color="black">
+            Find auction listings with more filter options.
+          </SizableText>
+          <Toast />
 
-        <Dropdown
-          style={styles.dropdown}
-          data={allBanks}
-          labelField="label"
-          valueField="value"
-          placeholder="Select Bank"
-          value={bank}
-          onChange={(item) => setBank(item.value)}
-        />
-
-        <Dropdown
-          style={styles.dropdown}
-          data={allCities}
-          labelField="label"
-          valueField="value"
-          placeholder="Select City"
-          search
-          searchPlaceholder="Search City..."
-          value={city}
-          onChange={(item) => setCity(item.value)}
-        />
-
-        <Dropdown
-          style={styles.dropdown}
-          data={allAssetTypes}
-          labelField="label"
-          valueField="value"
-          placeholder="Select Asset Type"
-          value={assetType}
-          onChange={(item) => setAssetType(item.value)}
-        />
-
-        <View style={styles.priceContainer}>
-          <TextInput
-            style={[styles.input, styles.priceInput]}
-            placeholder="Min Price"
-            keyboardType="numeric"
-            value={minPrice}
-            onChangeText={setMinPrice}
+          <Dropdown
+            style={styles.dropdown}
+            data={allBanks}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Bank"
+            value={bank}
+            onChange={(item) => setBank(item.value)}
           />
-          <TextInput
-            style={[styles.input, styles.priceInput]}
-            placeholder="Max Price"
-            keyboardType="numeric"
-            value={maxPrice}
-            onChangeText={setMaxPrice}
-          />
-        </View>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            onPress={clearFilters}
-            style={styles.clearButton}
-            fontSize={16}
-            fontWeight={700}
-          >
-            Clear
-          </Button>
-          <Button
-            onPress={() =>
-              city || assetType || bank || minPrice || maxPrice
-                ? router.push({
-                    pathname: `/auctions`,
-                    params: {
-                      bankId: bank,
-                      cityId: city,
-                      assetTypeId: assetType,
-                      minPrice,
-                      maxPrice,
-                    },
-                  })
-                : Toast.show({
-                    type: "error",
-                    text1: "Please select atleat one filed",
-                  })
-            }
-            fontSize={16}
-            fontWeight={700}
-            style={styles.searchButton}
-          >
-            Search
-          </Button>
-        </View>
-      </YStack>
-    </ScrollView>
+          <Dropdown
+            style={styles.dropdown}
+            data={allCities}
+            labelField="label"
+            valueField="value"
+            placeholder="Select City"
+            search
+            searchPlaceholder="Search City..."
+            value={city}
+            onChange={(item) => setCity(item.value)}
+          />
+
+          <Dropdown
+            style={styles.dropdown}
+            data={allAssetTypes}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Asset Type"
+            value={assetType}
+            onChange={(item) => setAssetType(item.value)}
+          />
+
+          <View style={styles.priceContainer}>
+            <TextInput
+              style={[styles.input, styles.priceInput]}
+              placeholder="Min Price"
+              keyboardType="numeric"
+              value={minPrice}
+              onChangeText={setMinPrice}
+            />
+            <TextInput
+              style={[styles.input, styles.priceInput]}
+              placeholder="Max Price"
+              keyboardType="numeric"
+              value={maxPrice}
+              onChangeText={setMaxPrice}
+            />
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <Button
+              onPress={clearFilters}
+              style={styles.clearButton}
+              fontSize={16}
+              fontWeight={700}
+            >
+              Clear
+            </Button>
+            <Button
+              onPress={() =>
+                city || assetType || bank || minPrice || maxPrice
+                  ? router.push({
+                      pathname: `/auctions`,
+                      params: {
+                        bankId: bank,
+                        cityId: city,
+                        assetTypeId: assetType,
+                        minPrice,
+                        maxPrice,
+                      },
+                    })
+                  : Toast.show({
+                      type: "error",
+                      text1: "Please select atleat one filed",
+                    })
+              }
+              fontSize={16}
+              fontWeight={700}
+              style={styles.searchButton}
+            >
+              Search
+            </Button>
+          </View>
+        </YStack>
+      </ScrollView>
+      <View style={styles.footer}>
+        {" "}
+        <Footer />
+      </View>
+    </View>
   );
 }
 
@@ -255,4 +262,5 @@ const styles = StyleSheet.create({
   priceInput: {
     flex: 1,
   },
+  footer: {},
 });
