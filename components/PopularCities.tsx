@@ -36,7 +36,9 @@ const PopularCities = () => {
                 pathname: `/auctions`,
                 params: {
                   cityId: city.id,
+                  cityName: city.name,
                   assetTypeId: "",
+                  assetTypeName: "",
                   bankId: "",
                   minPrice: "",
                   maxPrice: "",

@@ -1,5 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import React from "react";
+import { Text, ScrollView, StyleSheet } from "react-native";
 
 const PrivacyAndPolicy = () => {
   return (

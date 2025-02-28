@@ -8,10 +8,18 @@ import RenderFooter from "components/NoAuctionFoundCard";
 import { sortList } from "constants/staticData";
 import { AntDesign } from "@expo/vector-icons";
 import { AuctionCard } from "components/AuctionCard";
+import { APP_COLOR } from "constants/Colors";
 
 export default function AuctionScreen() {
-  const { cityId, assetTypeId, bankId, minPrice, maxPrice } =
-    useLocalSearchParams() as any;
+  const {
+    cityId,
+    assetTypeId,
+    bankId,
+    minPrice,
+    maxPrice,
+    assetTypeName,
+    cityName,
+  } = useLocalSearchParams() as any;
   const [loading, setLoading] = useState(false);
   const [auctions, setAuctions] = useState([]);
   const [page, setPage] = useState(1);
@@ -21,6 +29,8 @@ export default function AuctionScreen() {
   const [totalAuction, setTotalAuction] = useState(0);
   const [sort, setSort] = useState("search");
   const [isModalVisible, setModalVisible] = useState(false);
+  console.log(cityName, assetTypeName, "we data");
+
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
     if (loading) return;
     try {
@@ -72,9 +82,18 @@ export default function AuctionScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.totalAuctions}>
-          Total Auctions Found:{" "}
-          <Text style={{ color: "#007bff" }}>{totalAuction}</Text>
+          <Text style={{ color: APP_COLOR.primary, fontSize: 18 }}>
+            {totalAuction}
+          </Text>{" "}
+          {cityName && assetTypeName
+            ? `Auctions ${assetTypeName} found in ${cityName}`
+            : cityName
+            ? `Auctions found in ${cityName}`
+            : assetTypeName
+            ? `Auctions found in ${assetTypeName}`
+            : "Total Auction found"}
         </Text>
+
         <TouchableOpacity
           style={styles.dropdown}
           onPress={() => setModalVisible(true)}
@@ -164,6 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
+    width: "75%",
   },
   dropdown: {
     flexDirection: "row",
@@ -173,7 +193,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     backgroundColor: "#fff",
-    width: 120,
+    width: 100,
     justifyContent: "space-between",
   },
   modalOverlay: {

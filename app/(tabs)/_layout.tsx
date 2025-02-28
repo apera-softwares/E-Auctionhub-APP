@@ -76,7 +76,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           headerTitle: "",
-          title: "Profile",
+          title: "Account",
 
           headerLeft: () => (
             <Image

@@ -1,8 +1,8 @@
 import { APP_COLOR } from "constants/Colors";
-import { Button, H3, SizableText, Text, View, YStack } from "tamagui";
+import { Button, H3, Label, SizableText, Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
 import { StyleSheet, ScrollView, TextInput } from "react-native";
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
@@ -10,8 +10,10 @@ import Footer from "components/Footer";
 
 export default function search() {
   const [city, setCity] = useState("");
+  const [cityName, setCityName] = useState("");
   const [bank, setBank] = useState("");
   const [assetType, setAssetType] = useState("");
+  const [assetTypeName, setAssetTypeName] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [allCities, setAllCities] = useState([]);
@@ -74,13 +76,15 @@ export default function search() {
     setCity("");
     setBank("");
     setAssetType("");
+    setAssetTypeName("");
+    setCityName("");
     setMinPrice("");
     setMaxPrice("");
   };
 
   return (
-    <View style={{ height: "100%" }}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={{ height: "100%" }}>
+      <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
           <H3 style={styles.headerText}>
             Advanced <Text style={{ color: APP_COLOR.primary }}>Search</Text>
@@ -109,7 +113,10 @@ export default function search() {
             search
             searchPlaceholder="Search City..."
             value={city}
-            onChange={(item) => setCity(item.value)}
+            onChange={(item) => {
+              setCity(item.value);
+              setCityName(item.label);
+            }}
           />
 
           <Dropdown
@@ -119,7 +126,10 @@ export default function search() {
             valueField="value"
             placeholder="Select Asset Type"
             value={assetType}
-            onChange={(item) => setAssetType(item.value)}
+            onChange={(item) => {
+              setAssetType(item.value);
+              setAssetTypeName(item.label);
+            }}
           />
 
           <View style={styles.priceContainer}>
@@ -156,7 +166,9 @@ export default function search() {
                       params: {
                         bankId: bank,
                         cityId: city,
+                        cityName: cityName,
                         assetTypeId: assetType,
+                        assetTypeName: assetTypeName,
                         minPrice,
                         maxPrice,
                       },
@@ -174,12 +186,11 @@ export default function search() {
             </Button>
           </View>
         </YStack>
-      </ScrollView>
-      <View style={styles.footer}>
-        {" "}
+      </View>
+      <View>
         <Footer />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -262,5 +273,4 @@ const styles = StyleSheet.create({
   priceInput: {
     flex: 1,
   },
-  footer: {},
 });

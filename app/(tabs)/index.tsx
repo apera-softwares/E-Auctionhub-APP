@@ -18,7 +18,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 
 export default function TabOneScreen() {
-  const [city, setCity] = useState("");
   const [allCities, setAllCities] = useState([] as any);
   const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
@@ -27,6 +26,9 @@ export default function TabOneScreen() {
   const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
+  const [assetTypeName, setAssetTypeName] = useState("");
+  const [city, setCity] = useState("");
+  const [cityName, setCityName] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
   const fetchCities = async () => {
@@ -145,7 +147,10 @@ export default function TabOneScreen() {
                   placeholder="Select City"
                   searchPlaceholder="Search City..."
                   value={city}
-                  onChange={(item) => setCity(item.value)}
+                  onChange={(item) => {
+                    setCity(item.value);
+                    setCityName(item.label);
+                  }}
                 />
                 <Dropdown
                   style={styles.dropdown}
@@ -154,7 +159,10 @@ export default function TabOneScreen() {
                   valueField="value"
                   placeholder="Select Asset Type"
                   value={assetType}
-                  onChange={(item) => setAssetType(item.value)}
+                  onChange={(item) => {
+                    setAssetType(item.value);
+                    setAssetTypeName(item.label);
+                  }}
                 />
                 <Button
                   onPress={() =>
@@ -163,7 +171,9 @@ export default function TabOneScreen() {
                           pathname: `/auctions`,
                           params: {
                             cityId: city,
+                            cityName: cityName,
                             assetTypeId: assetType,
+                            assetTypeName: assetTypeName,
                             bankId: "",
                             minPrice: "",
                             maxPrice: "",
@@ -206,6 +216,8 @@ export default function TabOneScreen() {
                         pathname: `/auctions`,
                         params: {
                           cityId: item.id,
+                          assetTypeName: "",
+                          cityName: item.name,
                           assetTypeId: "",
                           bankId: "",
                           minPrice: "",
