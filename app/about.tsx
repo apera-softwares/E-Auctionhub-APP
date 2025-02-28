@@ -119,13 +119,13 @@ const About = () => {
           })}
         </View>
       </View>
-      <Footer />
+      {/* <Footer /> */}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f5f7fa", padding: 20 },
+  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
   heading: {
     fontSize: 26,
     fontWeight: "bold",
