@@ -11,7 +11,9 @@ import {
   MaterialIcons,
   AntDesign,
   MaterialCommunityIcons,
+  FontAwesome,
 } from "@expo/vector-icons";
+
 import { useRouter } from "expo-router";
 import { useUser } from "context/UserContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -89,20 +91,21 @@ const ProfileScreen = () => {
             />
             <Text style={styles.menuText}>Premium</Text>
           </TouchableOpacity>
-          {/* {isLoggedIn && (
+          {isLoggedIn && (
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => console.log("Navigate to ChangePassword")}
             >
-              <MaterialIcons
-                name="lock"
+              <FontAwesome
+                name="heart"
                 size={24}
                 color="#333"
                 style={styles.icon}
               />
-              <Text style={styles.menuText}>Change Password</Text>
+
+              <Text style={styles.menuText}>Favorite Auctions</Text>
             </TouchableOpacity>
-          )} */}
+          )}
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => router.push("/about")}

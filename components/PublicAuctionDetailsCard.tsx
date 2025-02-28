@@ -30,7 +30,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
 }) => {
   return (
     <View style={styles.card}>
-      {/* Favorite & Share Buttons */}
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.iconButton}>
           <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
@@ -40,16 +39,19 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Asset Type & Price */}
       <View style={styles.topInfo}>
-        <Text style={styles.assetType}>{assetType}</Text>
+        <Text style={styles.assetType}>
+          {assetType}{" "}
+          <Text style={{ fontWeight: "500", fontSize: 14, color: "#444" }}>
+            {city}
+          </Text>
+        </Text>
         <View style={styles.priceContainer}>
           <FontAwesome5 name="rupee-sign" size={16} color="white" />
           <Text style={styles.reservePrice}>{reservePrice}</Text>
         </View>
       </View>
 
-      {/* Auction Details */}
       <View style={styles.fieldContainer}>
         <DetailField
           icon="ruler-combined"
@@ -70,14 +72,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           text={`Deadline: ${
             applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
           }`}
-          //   color=""
         />
       </View>
     </View>
   );
 };
 
-// Custom Component for Auction Details
 const DetailField = ({ icon, text, color = "#333" }) => (
   <View style={styles.detailRow}>
     <FontAwesome5 name={icon} size={18} color={"#41644A"} />
@@ -116,10 +116,12 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   assetType: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#222",
+    lineHeight: 30, // Ensures good spacing
   },
+
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
