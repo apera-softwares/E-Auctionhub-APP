@@ -43,12 +43,12 @@ const PremiumSkeleton = () => {
 
 const styles = StyleSheet.create({
   cardSkeleton: {
-    backgroundColor: "#ddd",
+    backgroundColor: "#dedede",
     borderRadius: 10,
     padding: 20,
     alignItems: "center",
-    width: 290,
-    height: 380,
+    width: 335,
+    height: 360,
     marginBottom: 15,
   },
   skeletonText: {

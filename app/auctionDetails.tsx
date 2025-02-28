@@ -15,6 +15,7 @@ import { useUser } from "../context/UserContextProvider";
 import UnSubPremiumCard from "components/UnSubPremiumCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { formateDate, onShare } from "constants/staticData";
+import PublicAuctionDetailsCard from "components/PublicAuctionDetailsCard";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
@@ -60,81 +61,18 @@ const AuctionDetails = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity>
-            <FontAwesome5 name="heart" size={24} color={APP_COLOR.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onShare}>
-            <FontAwesome5
-              name="share-alt"
-              size={24}
-              color={APP_COLOR.primary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FontAwesome5 name="copy" size={24} color={APP_COLOR.primary} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.fieldContainer}>
-          {/* <View style={styles.detailRow}>
-            <FontAwesome5 name="building" size={20} style={styles.unSubicon} />
-            <View style={styles.textContainer}>
-              <Text style={styles.fieldTitle}>Asset Type: </Text>
-              <Text style={styles.fieldValue}>
-                {auctionDetails.assetType || "N/A"}
-              </Text>
-            </View>
-          </View> */}
-
-          <Text style={styles.field}>
-            <FontAwesome5 name="building" size={20} /> Asset Type:{" "}
-            {auctionDetails.assetType}
-          </Text>
-          <Text style={styles.field}>
-            <FontAwesome5 name="ruler-combined" size={20} /> Area (in square
-            feet) : {auctionDetails.areaSqFt}
-          </Text>
-
-          <Text style={[styles.field, styles.reservePricefiled]}>
-            <FontAwesome5 name="tags" size={20} /> Reserve Price:{" "}
-            {auctionDetails.reservePrice}
-          </Text>
-          <Text style={styles.field}>
-            <FontAwesome5 name="coins" size={20} /> Earnest Money Deposit:{" "}
-            {auctionDetails.emd}
-          </Text>
-          <Text style={styles.field}>
-            <FontAwesome5 name="university" size={20} /> Bank Name:{" "}
-            {auctionDetails.bank}
-          </Text>
-
-          <Text style={styles.field}>
-            <FontAwesome5 name="map-marker-alt" size={20} /> Locality:{" "}
-            {auctionDetails.locality}
-          </Text>
-          <Text style={styles.field}>
-            <FontAwesome5 name="city" size={20} /> City: {auctionDetails.city}
-          </Text>
-          <Text style={styles.field}>
-            <FontAwesome5 name="flag" size={20} /> State: {auctionDetails.state}
-          </Text>
-
-          <Text style={styles.field}>
-            <FontAwesome5 name="calendar-alt" size={20} /> Application Date:{" "}
-            {/* {auctionDetails.startDate || "NA"} */}
-            {/* {dayjs(auctionDetails.startDate).format("MMM DD, YYYY")} */}
-            {formateDate(auctionDetails.startDate)}
-          </Text>
-          <Text style={[styles.field, styles.appliationDeadlineFiled]}>
-            <FontAwesome5 name="clock" size={20} color="orange" /> Application
-            Deadline:{" "}
-            {auctionDetails.applicationDeadLine
-              ? formateDate(auctionDetails.applicationDeadLin)
-              : "NA"}
-          </Text>
-        </View>
-      </View>
+      <PublicAuctionDetailsCard
+        assetType={auctionDetails.assetType}
+        areaSqFt={auctionDetails.areaSqFt}
+        reservePrice={auctionDetails.reservePrice}
+        emd={auctionDetails.emd}
+        bank={auctionDetails.bank}
+        city={auctionDetails.city}
+        state={auctionDetails.state}
+        locality={auctionDetails.locality}
+        startDate={auctionDetails.startDate}
+        applicationDeadLine={auctionDetails.applicationDeadLine}
+      />
 
       <View style={[styles.card, styles.premiumCard]}>
         <Text style={styles.premiumTitle}>Premium Details</Text>
@@ -185,6 +123,29 @@ const AuctionDetails = () => {
             </View>
 
             <View style={styles.detailRow}>
+              <FontAwesome5
+                name="map-marker-alt"
+                size={20}
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.fieldTitle}>Auction URL</Text>
+                <Text style={styles.fieldValue}>
+                  {auctionDetails.auctionUrl ? (
+                    <Link
+                      href={auctionDetails?.auctionUrl}
+                      style={{ color: "blue" }}
+                    >
+                      Link
+                    </Link>
+                  ) : (
+                    "NA"
+                  )}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.detailRow}>
               <FontAwesome5 name="file-pdf" size={20} style={styles.icon} />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Documents Link</Text>
@@ -199,7 +160,6 @@ const AuctionDetails = () => {
                 )}
               </View>
             </View>
-
             <View style={styles.detailRow}>
               <FontAwesome5
                 name="map-marked-alt"
@@ -208,24 +168,28 @@ const AuctionDetails = () => {
               />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Map</Text>
+                <Text style={styles.fieldValue}>
+                  {!auctionDetails.latitude && "NA"}
+                </Text>
               </View>
             </View>
-
-            <View
-              style={{
-                height: 250,
-                shadowColor: "black",
-                shadowOffset: { width: -1, height: 1 },
-                shadowRadius: 18,
-              }}
-            >
-              <WebView
-                originWhitelist={["*"]}
-                source={{
-                  html: `<iframe src="${googleMapsEmbedUrl}" style="border:0;" allowFullScreen height="100%" width="100%" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>`,
+            {auctionDetails.latitude && (
+              <View
+                style={{
+                  height: 250,
+                  shadowColor: "black",
+                  shadowOffset: { width: -1, height: 1 },
+                  shadowRadius: 18,
                 }}
-              />
-            </View>
+              >
+                <WebView
+                  originWhitelist={["*"]}
+                  source={{
+                    html: `<iframe src="${googleMapsEmbedUrl}" style="border:0;" allowFullScreen height="100%" width="100%" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>`,
+                  }}
+                />
+              </View>
+            )}
           </View>
         ) : (
           <UnSubPremiumCard />
@@ -249,16 +213,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6,
   },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 15 },
-  actionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  fieldContainer: { marginBottom: 10 },
-  field: { fontSize: 18, marginVertical: 6, fontWeight: "bold", opacity: 0.6 },
-  reservePricefiled: { color: "green" },
-  appliationDeadlineFiled: { color: "orange" },
+
   premiumCard: {
     position: "relative",
     backgroundColor: "white",
@@ -278,26 +233,6 @@ const styles = StyleSheet.create({
     color: "#d4af37",
   },
 
-  // premiumCard: {
-  //   backgroundColor: "white",
-  //   borderWidth: 1,
-  //   borderColor: "gold",
-  //   padding: 20,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 4 },
-  //   shadowOpacity: 0.1,
-  //   shadowRadius: 6,
-  //   elevation: 3,
-  //   borderRadius: 10,
-  //   marginBottom: 10,
-  // },
-  // premiumTitle: {
-  //   fontSize: 24,
-  //   fontWeight: "bold",
-  //   marginBottom: 15,
-  //   color: "#d4af37",
-  //   textAlign: "center",
-  // },
   detailRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -306,10 +241,6 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
     color: "#d4af37",
-  },
-  unSubicon: {
-    marginRight: 10,
-    color: "#007bff",
   },
   textContainer: {
     flex: 1,

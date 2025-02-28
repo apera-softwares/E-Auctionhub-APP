@@ -203,6 +203,58 @@ function RootLayoutNav() {
             },
           }}
         />
+        <Stack.Screen
+          name="termsAndConditions"
+          options={{
+            title: "Terms & Conditions",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="privacyAndPolicy"
+          options={{
+            title: "Privacy & Policy",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="about"
+          options={{
+            title: "About",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="contact"
+          options={{
+            title: "Contact Us",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

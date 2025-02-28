@@ -82,6 +82,9 @@ const PremiumScreen = () => {
         currency: "INR",
         key: Constants.expoConfig?.extra?.RAZORPAY_KEY,
         amount: Number(amount),
+        external: {
+          wallets: ["paytm"],
+        },
         name: "EAuctionsHub",
         order_id: orderData.data.id,
         prefill: {
@@ -95,6 +98,7 @@ const PremiumScreen = () => {
 
       RazorpayCheckout.open(options)
         .then(async (data) => {
+          console.log(data, "checkout data ");
           try {
             const response = {
               razorpayPaymentId: data.razorpay_payment_id,
@@ -135,12 +139,12 @@ const PremiumScreen = () => {
         })
         .catch((error) => {
           console.log("Razorpay Error:", error);
-          alert(`Error: ${error.description || error}`);
+          // alert(`Error: ${error.description || error}`);
           setIsProcessing(false);
         });
     } catch (error) {
       console.error("Payment Error:", error);
-      alert("An error occurred while processing the payment.");
+      // alert("An error occurred while processing the payment.");
       setIsProcessing(false);
     }
   };
@@ -192,7 +196,11 @@ const PremiumScreen = () => {
                 <TouchableOpacity style={styles.buyNowButton}>
                   <Text
                     style={styles.buyNowText}
-                    onPress={() => handlePayment(plan.amount)}
+                    onPress={() =>
+                      user.isLogin
+                        ? handlePayment(plan.amount)
+                        : router.push("/login")
+                    }
                   >
                     Buy Now
                   </Text>
@@ -209,12 +217,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "#f5f5f5",
-    padding: 20,
+    padding: 10,
   },
   heading: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   cardsContainer: {
     width: "100%",
@@ -226,7 +234,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    width: "90%",
+    width: "100%",
     marginBottom: 15,
     elevation: 5,
     shadowColor: "#000",

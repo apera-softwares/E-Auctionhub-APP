@@ -5,19 +5,20 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Alert,
   TouchableOpacity,
   Keyboard,
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
+import { useUser } from "context/UserContextProvider";
 
 const LoginScreen = () => {
   const router = useRouter();
+  const { user } = useUser();
+
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
@@ -26,7 +27,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const getData = async () => {
       const token = await AsyncStorage.getItem("token");
-      if (token) {
+      if (token && user.isLogin) {
         router.push("/");
       }
     };
@@ -42,12 +43,11 @@ const LoginScreen = () => {
   };
 
   const handlePhoneChange = (text) => {
-    // Allow only 10 digits and close the keyboard after reaching 10 digits
     if (text.length <= 10) {
       handleInputChange("phone", text);
     }
     if (text.length === 10) {
-      Keyboard.dismiss(); // Close the keyboard after 10 digits
+      Keyboard.dismiss();
     }
   };
 
@@ -55,23 +55,29 @@ const LoginScreen = () => {
     const { phone, password } = formData;
 
     if (!phone || !password) {
-      Alert.alert("Validation Error", "All fields are required.");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "All fields are required.",
+      });
       return false;
     }
 
     if (phone.length !== 10) {
-      Alert.alert(
-        "Validation Error",
-        "Please enter a valid 10-digit phone number."
-      );
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter a valid 10-digit phone number.",
+      });
       return false;
     }
 
     if (password.length < 6) {
-      Alert.alert(
-        "Validation Error",
-        "Password must be at least 6 characters."
-      );
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Password must be at least 6 characters.",
+      });
       return false;
     }
 
@@ -82,9 +88,6 @@ const LoginScreen = () => {
     if (!validateForm()) return;
 
     try {
-      // Show loading state if needed
-      // setLoading(true);
-
       const payload = {
         phone: `+91${formData.phone}`,
         password: formData.password,
@@ -111,58 +114,70 @@ const LoginScreen = () => {
       } else {
         Toast.show({ type: "error", text1: data.message });
       }
-    } catch (error: any) {
+    } catch (error) {
       Toast.show({
         type: "error",
         text1: "An error occurred",
         text2: error.message,
       });
-    } finally {
-      // setLoading(false); // Hide loading state
     }
   };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Login</Text>
-      <Toast />
+      <View style={styles.card}>
+        <Text style={styles.header}>Login</Text>
+        <Toast />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Phone</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your phone number"
-          keyboardType="number-pad"
-          value={formData.phone}
-          onChangeText={handlePhoneChange}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phone</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your phone number"
+            keyboardType="number-pad"
+            value={formData.phone}
+            onChangeText={handlePhoneChange}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          secureTextEntry
-          value={formData.password}
-          onChangeText={(text) => handleInputChange("password", text)}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your password"
+            secureTextEntry
+            value={formData.password}
+            onChangeText={(text) => handleInputChange("password", text)}
+          />
+        </View>
 
-      <TouchableOpacity onPress={handleLogin} style={styles.authButton}>
-        <Text style={styles.authButtonText}>Login</Text>
-      </TouchableOpacity>
-
-      <View style={styles.signupContainer}>
-        <Text style={styles.signupText}>Don't have an account?</Text>
-        <TouchableOpacity onPress={() => router.push("/signup")}>
-          <Text style={styles.signupLink}>Signup</Text>
+        <TouchableOpacity onPress={handleLogin} style={styles.authButton}>
+          <Text style={styles.authButtonText}>Login</Text>
         </TouchableOpacity>
+
+        <View style={styles.signupContainer}>
+          <Text style={styles.signupText}>Don't have an account?</Text>
+          <TouchableOpacity onPress={() => router.push("/signup")}>
+            <Text style={styles.signupLink}>Signup</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
   container: {
     flexGrow: 1,
     justifyContent: "center",
@@ -185,12 +200,13 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   input: {
-    height: 45,
+    height: 50,
     borderColor: "#ccc",
-    borderWidth: 1,
-    paddingLeft: 10,
+    backgroundColor: "#f2f4f5",
+    // borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: 10,
+    marginBottom: 1,
   },
   authButton: {
     backgroundColor: APP_COLOR.primary,

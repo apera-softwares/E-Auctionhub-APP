@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
@@ -86,9 +85,31 @@ const UnSubPremiumCard = () => {
       </View>
 
       <View style={styles.detailRow}>
+        <FontAwesome5 name="link" size={20} style={styles.icon} />
+        <View style={styles.textContainer}>
+          <Text style={styles.fieldTitle}>Auction URL:</Text>
+          <Text
+            style={{
+              textShadowColor: "black",
+              textShadowOffset: { width: -1, height: 1 },
+              textShadowRadius: 18,
+              color: "transparent",
+            }}
+          >
+            www.asdsads.com
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.detailRow}>
         <FontAwesome5 name="map-marker-alt" size={20} style={styles.icon} />
         <View style={styles.textContainer}>
-          <Text style={styles.fieldTitle}>Location on Map:</Text>
+          <Text style={styles.fieldTitle}>
+            Map Location:{" "}
+            <Text style={{ color: "gray", fontSize: 12 }}>
+              {"("}if provided by bank{")"}
+            </Text>
+          </Text>
         </View>
       </View>
 

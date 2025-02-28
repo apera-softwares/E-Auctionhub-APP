@@ -128,6 +128,7 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.card}>
       <Text style={styles.header}>Create Account</Text>
       <Toast />
 
@@ -194,6 +195,7 @@ const SignupScreen = ({ navigation }) => {
           <Text style={styles.loginLink}>Login</Text>
         </TouchableOpacity>
       </View>
+      </View>
     </ScrollView>
   );
 };
@@ -203,6 +205,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 20,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   header: {
     fontSize: 28,
@@ -221,12 +234,13 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: "#ccc",
-    borderWidth: 1,
-    paddingLeft: 10,
+    backgroundColor: "#f2f4f5",
+    // borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: 10,
+    marginBottom: 1,
   },
   checkboxContainer: {
     flexDirection: "row",
