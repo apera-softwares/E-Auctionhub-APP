@@ -16,6 +16,8 @@ import Footer from "components/Footer";
 import { useUser } from "../../context/UserContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
+import { LinearGradient } from "expo-linear-gradient";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function TabOneScreen() {
   const [allCities, setAllCities] = useState([] as any);
@@ -117,13 +119,19 @@ export default function TabOneScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/home.jpg")}
-      style={styles.backgroundImage}
+    // <ImageBackground
+    //   source={require("../../assets/images/home.jpg")}
+    //   style={styles.backgroundImage}
+    // >
+
+    <LinearGradient
+      // colors={["#000000", "#434343"]}
+      colors={["#4b6cb7", "#182848"]}
+      style={styles.gradientBackground}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <YStack flex={1} items="center" gap="$2">
-          <View px="$4" bg="rgba(0,0,0,0.5)" style={styles.overlay}>
+          <View px="$4" style={styles.overlay}>
             <View style={styles.topContainer}>
               <H3 style={styles.headerText}>
                 Your Trusted Place{" "}
@@ -136,6 +144,7 @@ export default function TabOneScreen() {
                 listings.
               </SizableText>
               <Toast />
+
               <View style={styles.container}>
                 <Dropdown
                   style={styles.dropdown}
@@ -197,20 +206,19 @@ export default function TabOneScreen() {
 
             <View style={styles.popularSection}>
               <Text style={styles.sectionTitle}>
-                {" "}
+                Top{" "} Auctions{" "} 
                 <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
-                  Top
-                </Text>{" "}
-                Auctions Cities
+                Cities
+                </Text>
               </Text>
               <FlatList
                 data={topCities}
-                numColumns={2}
                 scrollEnabled={false}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={styles.cityCard}
+                    activeOpacity={0.7}
+                    style={styles.cityRow}
                     onPress={() =>
                       router.push({
                         pathname: `/auctions`,
@@ -226,8 +234,11 @@ export default function TabOneScreen() {
                       })
                     }
                   >
-                    <Text style={styles.auctionCount}>{item.count}+</Text>
-                    <Text style={styles.cityLabel}>{item.name}</Text>
+                    <Text style={styles.cityName}>
+                      <AntDesign name="doubleright" size={24} color="#FFD700" />{" "}
+                      {item.name} -{" "}
+                      <Text style={styles.auctionCount}>{item.count}</Text>
+                    </Text>
                   </TouchableOpacity>
                 )}
               />
@@ -236,17 +247,22 @@ export default function TabOneScreen() {
         </YStack>
         <Footer />
       </ScrollView>
-    </ImageBackground>
+    </LinearGradient>
+    // </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
   backgroundImage: {
     flex: 1,
     resizeMode: "cover",
   },
   scrollContainer: {
     flexGrow: 1,
+    // backgroundColor:"rgba(0,0,0,0.5)"
   },
   overlay: {
     flex: 1,
@@ -281,7 +297,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   popularSection: {
-    width: 340,
+    width: 260,
     borderRadius: 10,
     padding: 15,
     marginTop: 10,
@@ -289,30 +305,36 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "semibold",
+    fontWeight: "bold",
     textAlign: "center",
     marginBottom: 5,
-    color: "#fff",
+    color: "white",
+    borderBottomColor: "gold",
+    borderBottomWidth: 2,
+    marginHorizontal: 20,
   },
-  cityCard: {
-    flex: 1,
-    margin: 8,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    elevation: 3,
-    paddingVertical: 12,
+  cityRow: {
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomWidth: 0.2,
+    borderBottomColor: "rgba(255, 215, 0, 0.4)", // Faint golden border
   },
+
+  cityName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FFFFFF", // White city name
+  },
+
   auctionCount: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "green",
+    color: "#FFD700", // Gold auction count
   },
-  cityLabel: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-  },
+
   carouselContainer: {
     // marginTop: 20,
     alignItems: "center",
@@ -334,11 +356,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 2,
     borderColor: "white",
-  },
-  cityName: {
-    marginTop: 5,
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 14,
   },
 });
