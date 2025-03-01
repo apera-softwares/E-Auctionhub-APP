@@ -1,5 +1,5 @@
 import { APP_COLOR } from "constants/Colors";
-import { H3, Image, SizableText, Text, View, YStack } from "tamagui";
+import { Button, H3, SizableText, Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
 import {
   StyleSheet,
@@ -15,9 +15,9 @@ import PopularCities from "components/PopularCities";
 import Footer from "components/Footer";
 import { useUser } from "../../context/UserContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 export default function TabOneScreen() {
-  const [city, setCity] = useState("");
   const [allCities, setAllCities] = useState([] as any);
   const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
@@ -26,6 +26,9 @@ export default function TabOneScreen() {
   const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
+  const [assetTypeName, setAssetTypeName] = useState("");
+  const [city, setCity] = useState("");
+  const [cityName, setCityName] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
   const fetchCities = async () => {
@@ -33,25 +36,12 @@ export default function TabOneScreen() {
       const response = await fetch(`${BACKEND_API}user/cities`);
       if (response.ok) {
         const data = await response.json();
-        let allCities: any[] = [
-          {
-            label: "Select City",
-            value: "",
-          },
-        ];
-        data?.cities.forEach((city: any) => {
-          allCities.push({
-            label: city?.name,
-            value: city?.id,
-          });
-        });
-
-        setAllCities(allCities);
-      } else {
-        console.log("error white fetching cities ", response);
+        setAllCities(
+          data.cities.map((city) => ({ label: city.name, value: city.id }))
+        );
       }
     } catch (error) {
-      console.error("Error fetching  cities :", error);
+      console.error("Error fetching cities:", error);
     }
   };
 
@@ -72,29 +62,17 @@ export default function TabOneScreen() {
   const fetchAssetsType = async () => {
     try {
       const response = await fetch(`${BACKEND_API}auction/asset-types`);
-
-      // console.log("assets response : ", response);
-
       if (response.ok) {
         const data = await response.json();
-        let allAssets: any[] = [
-          {
-            label: "Select Asset Type",
-            value: "",
-          },
-        ];
-        data?.assetTypes.forEach((asset: any) => {
-          allAssets.push({
-            label: asset?.name,
-            value: asset?.id,
-          });
-        });
-        setAllAssetTypes(allAssets);
-      } else {
-        console.log("error while fetching assets type", response);
+        setAllAssetTypes(
+          data.assetTypes.map((asset) => ({
+            label: asset.name,
+            value: asset.id,
+          }))
+        );
       }
     } catch (error) {
-      console.error("Error fetching assets type", error);
+      console.error("Error fetching asset types:", error);
     }
   };
 
@@ -157,6 +135,7 @@ export default function TabOneScreen() {
                 Find your next great investment with our exclusive bank auction
                 listings.
               </SizableText>
+              <Toast />
               <View style={styles.container}>
                 <Dropdown
                   style={styles.dropdown}
@@ -168,27 +147,49 @@ export default function TabOneScreen() {
                   placeholder="Select City"
                   searchPlaceholder="Search City..."
                   value={city}
-                  onChange={(item) => setCity(item.value)}
+                  onChange={(item) => {
+                    setCity(item.value);
+                    setCityName(item.label);
+                  }}
                 />
                 <Dropdown
                   style={styles.dropdown}
                   data={allAssetTypes}
-                  maxHeight={300}
                   labelField="label"
                   valueField="value"
                   placeholder="Select Asset Type"
                   value={assetType}
-                  onChange={(item) => setAssetType(item.value)}
-                />
-                <Link
-                  href={{
-                    pathname: "/auctions",
-                    params: { cityId: city, assetTypeId: assetType },
+                  onChange={(item) => {
+                    setAssetType(item.value);
+                    setAssetTypeName(item.label);
                   }}
+                />
+                <Button
+                  onPress={() =>
+                    city || assetType
+                      ? router.push({
+                          pathname: `/auctions`,
+                          params: {
+                            cityId: city,
+                            cityName: cityName,
+                            assetTypeId: assetType,
+                            assetTypeName: assetTypeName,
+                            bankId: "",
+                            minPrice: "",
+                            maxPrice: "",
+                          },
+                        })
+                      : Toast.show({
+                          type: "error",
+                          text1: "Select City or Asset Type",
+                        })
+                  }
+                  fontSize={16}
+                  fontWeight={700}
                   style={styles.button}
                 >
                   Search Auction
-                </Link>
+                </Button>
               </View>
             </View>
 
@@ -213,7 +214,15 @@ export default function TabOneScreen() {
                     onPress={() =>
                       router.push({
                         pathname: `/auctions`,
-                        params: { cityId: item.id, assetTypeId: "" },
+                        params: {
+                          cityId: item.id,
+                          assetTypeName: "",
+                          cityName: item.name,
+                          assetTypeId: "",
+                          bankId: "",
+                          minPrice: "",
+                          maxPrice: "",
+                        },
                       })
                     }
                   >
@@ -270,9 +279,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: APP_COLOR.primary,
     color: "white",
-    paddingVertical: 12,
-    borderRadius: 8,
-    textAlign: "center",
   },
   popularSection: {
     width: 340,
