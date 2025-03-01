@@ -25,12 +25,16 @@ export const AuctionCard = ({ data: auction }) => {
         <Image
           source={
             auction.assetType === "Flat"
-              ? require("assets/images/assetsTypes/flat.png")
+              ? require("assets/images/assetsTypes/apartment.png")
               : auction.assetType === "House"
-              ? require("assets/images/assetsTypes/house.png")
+              ? require("assets/images/assetsTypes/home.png")
               : auction.assetType === "Bungalow"
-              ? require("assets/images/assetsTypes/banglow.jpg")
-              : require("assets/images/assetsTypes/land.jpg")
+              ? require("assets/images/assetsTypes/bungalow.png")
+              : auction.assetType === "Shop"
+              ? require("assets/images/assetsTypes/shop.png")
+              : auction.assetType === "Office"
+              ? require("assets/images/assetsTypes/office.png")
+              : require("assets/images/assetsTypes/land2.png")
           }
           style={styles.image}
           resizeMode="contain"
@@ -54,7 +58,7 @@ export const AuctionCard = ({ data: auction }) => {
           {auction.city}
         </Text>
         <Text style={styles.text}>
-          <FontAwesome name="bank" size={13} color="#555" /> {auction.bank}
+          <FontAwesome name="bank" size={13} color="#555" /> {auction.bank.slice(0,15)}{"..."}
         </Text>
         <Text style={styles.price}>
           <FontAwesome name="rupee" size={14} color="#28a745" />{" "}
@@ -100,6 +104,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     alignItems: "center",
+
   },
   imageContainer: {
     width: "100%",
@@ -169,6 +174,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "100%",
     alignItems: "center",
+    position:"relative",
   },
   buttonText: {
     color: "#fff",
