@@ -22,6 +22,7 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: theme.background.val,
           borderBottomColor: theme.borderColor.val,
+          // height:50,
         },
         headerTintColor: theme.color.val,
       }}
@@ -31,6 +32,7 @@ export default function TabLayout() {
         options={{
           headerTitle: "",
           title: "Home",
+          headerShown:false,
           tabBarIcon: ({ color }) => <Home color={color as any} />,
           headerRight: () => (
             <SizableText

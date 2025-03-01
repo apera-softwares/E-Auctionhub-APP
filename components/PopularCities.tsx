@@ -59,15 +59,18 @@ const styles = StyleSheet.create({
   carouselContainer: {
     marginTop: 15,
     alignItems: "center",
-    height: 150,
+    height: 170,
     opacity: 0.9,
   },
   PopularCityTitle: {
     fontSize: 20,
-    fontWeight: "semibold",
+    fontWeight: "bold",
     textAlign: "center",
     marginTop: 20,
     color: "#fff",
+    borderBottomColor: "gold",
+    borderBottomWidth: 2,
+    paddingHorizontal: 10,
   },
   scrollContent: {
     flexDirection: "row",
