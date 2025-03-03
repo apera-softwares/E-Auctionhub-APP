@@ -94,8 +94,8 @@ const ProfileScreen = () => {
           {isLoggedIn && (
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => console.log("Navigate to ChangePassword")}
-            >
+              onPress={() => router.push("/favourite")}
+              >
               <FontAwesome
                 name="heart"
                 size={24}

@@ -22,7 +22,6 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: theme.background.val,
           borderBottomColor: theme.borderColor.val,
-          // height:50,
         },
         headerTintColor: theme.color.val,
       }}
@@ -32,7 +31,7 @@ export default function TabLayout() {
         options={{
           headerTitle: "",
           title: "Home",
-          headerShown:false,
+          headerShown: false,
           tabBarIcon: ({ color }) => <Home color={color as any} />,
           headerRight: () => (
             <SizableText
@@ -62,15 +61,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          headerTitle: "",
+          headerTitle: "Advance Search",
           title: "Advance Search",
 
-          headerLeft: () => (
-            <Image
-              style={{ height: 20, width: 120, marginLeft: 5 }}
-              source={require("../../assets/images/logo/logo.png")}
-            />
-          ),
+          // headerLeft: () => (
+          //   <Image
+          //     style={{ height: 20, width: 120, marginLeft: 5 }}
+          //     source={require("../../assets/images/logo/logo.png")}
+          //   />
+          // ),
           tabBarIcon: ({ color }) => <Search color={color as any} />,
         }}
       />

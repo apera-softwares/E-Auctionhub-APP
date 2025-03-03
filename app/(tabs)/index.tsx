@@ -206,9 +206,9 @@ export default function TabOneScreen() {
 
             <View style={styles.popularSection}>
               <Text style={styles.sectionTitle}>
-                Top{" "} Auctions{" "} 
+                Top Auctions{" "}
                 <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
-                Cities
+                  Cities
                 </Text>
               </Text>
               <FlatList

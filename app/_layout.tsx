@@ -69,7 +69,8 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DefaultTheme : DefaultTheme}>
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        barStyle={colorScheme === "dark" ? "light-content" : "light-content"}
+        translucent
       />
       <Stack>
         <Stack.Screen
@@ -246,6 +247,19 @@ function RootLayoutNav() {
           name="contact"
           options={{
             title: "Contact Us",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="favourite"
+          options={{
+            title: "Favourite Auctions",
             presentation: "card",
             animation: "slide_from_right",
             gestureEnabled: true,

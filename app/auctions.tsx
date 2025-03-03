@@ -9,6 +9,7 @@ import { sortList } from "constants/staticData";
 import { AntDesign } from "@expo/vector-icons";
 import { AuctionCard } from "components/AuctionCard";
 import { APP_COLOR } from "constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AuctionScreen() {
   const {
@@ -29,14 +30,23 @@ export default function AuctionScreen() {
   const [totalAuction, setTotalAuction] = useState(0);
   const [sort, setSort] = useState("search");
   const [isModalVisible, setModalVisible] = useState(false);
-  console.log(cityName, assetTypeName, "we data");
 
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
+    const token = await AsyncStorage.getItem("token");
+    console.log(token, "token, token");
     if (loading) return;
+
+    let headers: any = {};
     try {
       setLoading(true);
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
       const URL = `${BACKEND_API}auction/${sort}?assetTypeId=${assetTypeId}&bankId=${bankId}&cityId=${cityId}&minResPrice=${minPrice}&maxResPrice=${maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
-      const response = await fetch(URL);
+      const response = await fetch(URL, {
+        headers,
+      });
+
       const data = await response.json();
 
       console.log(data, "auction data");
@@ -162,7 +172,7 @@ export default function AuctionScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 10,
     flex: 1,
     backgroundColor: "#f8f9fa",
   },
@@ -175,7 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
-    paddingVertical: 14,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     backgroundColor: "#fff",
-    width: 100,
+    width: 90,
     justifyContent: "space-between",
   },
   modalOverlay: {

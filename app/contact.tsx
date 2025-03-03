@@ -160,7 +160,7 @@ const ContactUs = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: "#f9f9f9", height: "150%" },
+  container: { padding: 20, backgroundColor: "#fff", height: "150%" },
   card: {
     backgroundColor: "#fff",
     padding: 20,

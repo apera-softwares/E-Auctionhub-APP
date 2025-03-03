@@ -60,12 +60,12 @@ export const formateDate = (dateStr: string) => {
   return date?.toDateString()?.substring(4);
 };
 
-export const onShare = async () => {
+export const onShare = async (id) => {
   try {
     const result = await Share.share({
-      title: "App link",
-      message: `Install E-AuctionsHub App to hire manpower in easy way. App Link: ${APP_LINK}`,
-      url: APP_LINK,
+      title: "Auction Link",
+      message: `Find this auction on E-Auctionshub.com. Link: https://eauctionshub.com/auction/${id}`,
+      url: `https://eauctionshub.com/auction/${id}`,
     });
     if (result.action === Share.sharedAction) {
       if (result.activityType) {

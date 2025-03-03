@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
@@ -15,23 +16,19 @@ import { formateDate, onShare } from "constants/staticData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_API } from "constants/api";
 import { useEffect, useState } from "react";
-import { useUser } from "context/UserContextProvider";
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 18;
 
-export const AuctionCard = ({ data: auction }) => {
+export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
+  console.log(auctionData, "auctionData");
   const router = useRouter();
-  const [fav, setFav] = useState<boolean>(auction.favourite);
-  const { user } = useUser();
+  const [fav, setFav] = useState<boolean>(true);
 
   useEffect(() => {
-    setFav(auction.favourite);
-  }, [auction.favourite]);
+    setFav(auctionData.auctionData.favourite);
+  }, [auctionData.auctionData.favourite]);
 
   const addTofav = async () => {
-    if (!user.isLogin) {
-      return router.push("/login");
-    }
     const token = await AsyncStorage.getItem("token");
     console.log(token, "token");
     try {
@@ -42,12 +39,13 @@ export const AuctionCard = ({ data: auction }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          auctionId: auction.id,
+          auctionId: auctionData.auctionId,
         }),
       });
 
       const data = await response.json();
       setFav(data.statusCode == 200 ? false : true);
+      fetchAuction();
     } catch (error) {
       console.log(error, "add to fav error");
     }
@@ -58,15 +56,15 @@ export const AuctionCard = ({ data: auction }) => {
       <View style={styles.imageContainer}>
         <Image
           source={
-            auction.assetType === "Flat"
+            auctionData.auctionData.assetType === "Flat"
               ? require("assets/images/assetsTypes/apartment.png")
-              : auction.assetType === "House"
+              : auctionData.auctionData.assetType === "House"
               ? require("assets/images/assetsTypes/home.png")
-              : auction.assetType === "Bungalow"
+              : auctionData.auctionData.assetType === "Bungalow"
               ? require("assets/images/assetsTypes/bungalow.png")
-              : auction.assetType === "Shop"
+              : auctionData.auctionData.assetType === "Shop"
               ? require("assets/images/assetsTypes/shop.png")
-              : auction.assetType === "Office"
+              : auctionData.auctionData.assetType === "Office"
               ? require("assets/images/assetsTypes/office.png")
               : require("assets/images/assetsTypes/land.png")
           }
@@ -76,46 +74,41 @@ export const AuctionCard = ({ data: auction }) => {
 
         {/* Favorite Button */}
         <TouchableOpacity style={styles.favButton} onPress={addTofav}>
-          {fav ? (
-            <FontAwesome name="heart" size={18} color="red" />
-          ) : (
-            <FontAwesome name="heart-o" size={18} color="white" />
-          )}
+          <AntDesign name="delete" size={18} color="black" />
         </TouchableOpacity>
 
         {/* Share Button */}
-        <TouchableOpacity
-          style={styles.shareButton}
-          onPress={() => onShare(auction.id)}
-        >
+        <TouchableOpacity style={styles.shareButton} onPress={()=>onShare(auctionData.auctionId)}>
           <FontAwesome name="share-alt" size={18} color="white" />
         </TouchableOpacity>
       </View>
 
       <View style={styles.textContainer}>
-        <Text style={styles.assetType}>{auction.assetType || "Others"}</Text>
+        <Text style={styles.assetType}>
+          {auctionData.auctionData.assetType || "Others"}
+        </Text>
         <Text style={styles.text}>
           <FontAwesome6 name="location-dot" size={14} color="#555" />{" "}
-          {auction.city}
+          {auctionData.auctionData.city}
         </Text>
         <Text style={styles.text}>
           <FontAwesome name="bank" size={13} color="#555" />{" "}
-          {auction.bank.slice(0, 18)}
+          {auctionData.auctionData.bank.slice(0, 15)}
           {"..."}
         </Text>
         <Text style={styles.price}>
           <FontAwesome name="rupee" size={14} color="#28a745" />{" "}
-          {auction?.reservePrice?.toLocaleString()}
+          {auctionData.auctionData?.reservePrice?.toLocaleString()}
         </Text>
         <Text style={styles.date}>
           <Fontisto name="date" size={12} color="#333" />{" "}
           <Text style={{ fontWeight: "bold" }}>
-            {formateDate(auction.startDate)}
+            {formateDate(auctionData.auctionData.startDate)}
           </Text>
         </Text>
-        {auction.applicationDeadLine && (
+        {auctionData.auctionData.applicationDeadLine && (
           <Text style={styles.deadline}>
-            ⏳ {formateDate(auction.applicationDeadLine)}
+            ⏳ {formateDate(auctionData.auctionData.applicationDeadLine)}
           </Text>
         )}
       </View>
@@ -125,7 +118,7 @@ export const AuctionCard = ({ data: auction }) => {
         onPress={() =>
           router.push({
             pathname: `/auctionDetails`,
-            params: { auctionId: auction.id },
+            params: { auctionId: auctionData.auctionId },
           })
         }
       >
