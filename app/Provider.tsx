@@ -13,7 +13,7 @@ export default function Provider({
   return (
     <TamaguiProvider
       config={config}
-      defaultTheme={colorScheme === "dark" ? "light" : "light"}
+      // defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}
       {...rest}
     >
       <ToastProvider

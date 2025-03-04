@@ -67,11 +67,12 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DefaultTheme : DefaultTheme}>
+    <>
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "light-content"}
-        translucent
+        backgroundColor={colorScheme === "light" ? "#fff" : "#000"}
+        barStyle={colorScheme === "light" ? "dark-content" : "light-content"}
       />
+
       <Stack>
         <Stack.Screen
           name="(tabs)"
@@ -270,6 +271,6 @@ function RootLayoutNav() {
           }}
         />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 }

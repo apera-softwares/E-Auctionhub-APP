@@ -32,7 +32,7 @@ export default function TabLayout() {
           headerTitle: "",
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color }) => <Home color={color as any} />,
+          tabBarIcon: ({ color }) => <Home color={color as any} size={20} />,
           headerRight: () => (
             <SizableText
               style={{
@@ -47,7 +47,6 @@ export default function TabLayout() {
               }
             >
               {user.isLogin ? user.name.slice(0, 13) : "Login/Signup"}
-              {/* <CircleUser color={"white" as any} /> */}
             </SizableText>
           ),
           headerLeft: () => (
@@ -63,14 +62,8 @@ export default function TabLayout() {
         options={{
           headerTitle: "Advance Search",
           title: "Advance Search",
-
-          // headerLeft: () => (
-          //   <Image
-          //     style={{ height: 20, width: 120, marginLeft: 5 }}
-          //     source={require("../../assets/images/logo/logo.png")}
-          //   />
-          // ),
-          tabBarIcon: ({ color }) => <Search color={color as any} />,
+          // headerShown:false,
+          tabBarIcon: ({ color }) => <Search color={color as any} size={20} />,
         }}
       />
       <Tabs.Screen
@@ -81,11 +74,13 @@ export default function TabLayout() {
 
           headerLeft: () => (
             <Image
-              style={{ height: 20, width: 120, marginLeft: 5 }}
+              style={{ height: 20, width: 120, marginLeft: 10 }}
               source={require("../../assets/images/logo/logo.png")}
             />
           ),
-          tabBarIcon: ({ color }) => <CircleUser color={color as any} />,
+          tabBarIcon: ({ color }) => (
+            <CircleUser color={color as any} size={20} />
+          ),
         }}
       />
     </Tabs>

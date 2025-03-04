@@ -1,5 +1,5 @@
 {
-  "name": "e-auctionhub",
+  "name": "e-auctionshub",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "packageManager": "yarn@4.5.0",
@@ -16,6 +16,24 @@
   },
   "jest": {
     "preset": "jest-expo"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "@tamagui/config",
+          "@tamagui/lucide-icons",
+          "@tamagui/toast",
+          "denodeify",
+          "dotenv",
+          "metro",
+          "react-native-element-dropdown",
+          "tamagui",
+          "react-native-razorpay"
+        ],
+        "listUnknownPackages": false
+      }
+    }
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -62,7 +80,6 @@
     "@tamagui/cli": "^1.124.8",
     "@tamagui/metro-plugin": "^1.124.8",
     "@types/react": "~18.3.12",
-    "@types/react-native": "^0.73.0",
     "@types/react-native-razorpay": "^2.2.6",
     "typescript": "^5.5.2"
   }

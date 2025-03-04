@@ -81,18 +81,18 @@ export const onShare = async (id) => {
 export const sortList = [
   {
     label: "Price: Low to High",
-    value: "search",
+    value: "orderBy=price&order=asc",
   },
   {
     label: "Price: High to Low",
-    value: "desc/reserve-price",
+    value: "orderBy=price&order=desc",
   },
   {
     label: "Auction date (asc)",
-    value: "search",
+    value: "orderBy=date&order=asc",
   },
   {
     label: "Auction date (des)",
-    value: "desc/start-date",
+    value: "orderBy=date&order=desc",
   },
 ];

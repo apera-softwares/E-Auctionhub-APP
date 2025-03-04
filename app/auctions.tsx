@@ -28,12 +28,12 @@ export default function AuctionScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const LIMIT = 10;
   const [totalAuction, setTotalAuction] = useState(0);
-  const [sort, setSort] = useState("search");
+  const [sort, setSort] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
 
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
     const token = await AsyncStorage.getItem("token");
-    console.log(token, "token, token");
+    console.log(token, "token");
     if (loading) return;
 
     let headers: any = {};
@@ -42,7 +42,7 @@ export default function AuctionScreen() {
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-      const URL = `${BACKEND_API}auction/${sort}?assetTypeId=${assetTypeId}&bankId=${bankId}&cityId=${cityId}&minResPrice=${minPrice}&maxResPrice=${maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
+      const URL = `${BACKEND_API}auction/search?${sort}&assetTypeId=${assetTypeId}&bankId=${bankId}&cityId=${cityId}&minResPrice=${minPrice}&maxResPrice=${maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
       const response = await fetch(URL, {
         headers,
       });

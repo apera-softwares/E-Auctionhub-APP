@@ -83,7 +83,9 @@ export default function search() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ height: "100%", backgroundColor: "#fff"}}>
+    <ScrollView
+      contentContainerStyle={{ height: "100%", backgroundColor: "#fff" }}
+    >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
           {/* <H3 style={styles.headerText}>
@@ -92,7 +94,6 @@ export default function search() {
           <SizableText size="$5" text="center" color="black">
             Find auction listings with more filter options.
           </SizableText>
-          <Toast />
 
           <Dropdown
             style={styles.dropdown}
@@ -103,7 +104,7 @@ export default function search() {
             value={bank}
             onChange={(item) => setBank(item.value)}
           />
-
+          <Toast />
           <Dropdown
             style={styles.dropdown}
             data={allCities}

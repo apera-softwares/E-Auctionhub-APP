@@ -100,7 +100,7 @@ export const AuctionCard = ({ data: auction }) => {
         </Text>
         <Text style={styles.text}>
           <FontAwesome name="bank" size={13} color="#555" />{" "}
-          {auction.bank.slice(0, 18)}
+          {auction.bank.slice(0, 16)}
           {"..."}
         </Text>
         <Text style={styles.price}>

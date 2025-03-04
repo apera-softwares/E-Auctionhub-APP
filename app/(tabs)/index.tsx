@@ -143,7 +143,6 @@ export default function TabOneScreen() {
                 Find your next great investment with our exclusive bank auction
                 listings.
               </SizableText>
-              <Toast />
 
               <View style={styles.container}>
                 <Dropdown
@@ -199,6 +198,7 @@ export default function TabOneScreen() {
                 >
                   Search Auction
                 </Button>
+                {/* <Toast /> */}
               </View>
             </View>
 

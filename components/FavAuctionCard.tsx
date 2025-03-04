@@ -93,7 +93,7 @@ export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
         </Text>
         <Text style={styles.text}>
           <FontAwesome name="bank" size={13} color="#555" />{" "}
-          {auctionData.auctionData.bank.slice(0, 15)}
+          {auctionData.auctionData.bank.slice(0, 16)}
           {"..."}
         </Text>
         <Text style={styles.price}>
