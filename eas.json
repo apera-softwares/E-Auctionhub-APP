@@ -15,7 +15,13 @@
       "autoIncrement": true
     }
   },
-  "submit": {
-    "production": {}
+ "submit": {
+    "production": {
+      "ios": {
+        "appleId": "tnikam21@gmail.com",
+        "ascAppId": "6742784366",
+        "appleTeamId": "2Y8CR38G76"
+      }
+    }
   }
 }
