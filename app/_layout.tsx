@@ -80,21 +80,7 @@ function RootLayoutNav() {
             headerShown: false,
           }}
         />
-        {/* <Toast /> */}
 
-        {/* <Stack.Screen
-          name="modal"
-          options={{
-            title: "Tamagui + Expo",
-            presentation: "fullScreenModal",
-            animation: "slide_from_right",
-            gestureEnabled: true,
-            gestureDirection: "horizontal",
-            contentStyle: {
-              backgroundColor: theme.background.val,
-            },
-          }}
-        /> */}
         <Stack.Screen
           name="auctions"
           options={{
@@ -107,13 +93,7 @@ function RootLayoutNav() {
               backgroundColor: theme.background.val,
             },
 
-            headerLeft: () => (
-              // <Image
-              //   style={{ height: 20, width: 120, marginLeft: 5 }}
-              //   source={require("../assets/images/logo/logo.png")}
-              // />
-              <BackButton />
-            ),
+            headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen

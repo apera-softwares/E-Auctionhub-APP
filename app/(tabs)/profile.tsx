@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
 import { APP_COLOR } from "constants/Colors";
 
@@ -64,6 +65,7 @@ const ProfileScreen = () => {
   return (
     <ScrollView contentContainerStyle={{ height: "100%" }}>
       <View style={styles.scrollContainer}>
+        {/* <Image style={{height:100, width:100}}  source={require("../../assets/images/logo/Aucti__1_-removebg-preview.png")}/> */}
         {isLoggedIn && (
           <View style={styles.profileSection}>
             <View style={styles.profileCircle}>
