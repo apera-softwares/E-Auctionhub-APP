@@ -41,7 +41,7 @@ const AuctionDetails = () => {
         headers,
       });
       const data = await response.json();
-      console.log(data);
+      console.log(data,"auction details");
 
       if (data.statusCode === 200) {
         setAuctionDetails(data?.data);
@@ -62,16 +62,18 @@ const AuctionDetails = () => {
   return (
     <ScrollView style={styles.container}>
       <PublicAuctionDetailsCard
-        assetType={auctionDetails.assetType}
-        areaSqFt={auctionDetails.areaSqFt}
-        reservePrice={auctionDetails.reservePrice}
-        emd={auctionDetails.emd}
-        bank={auctionDetails.bank}
-        city={auctionDetails.city}
-        state={auctionDetails.state}
-        locality={auctionDetails.locality}
-        startDate={auctionDetails.startDate}
-        applicationDeadLine={auctionDetails.applicationDeadLine}
+      auctionId={auctionDetails?.id}
+        assetType={auctionDetails?.assetType}
+        areaSqFt={auctionDetails?.areaSqFt}
+        reservePrice={auctionDetails?.reservePrice}
+        emd={auctionDetails?.emd}
+        bank={auctionDetails?.bank}
+        city={auctionDetails?.city}
+        state={auctionDetails?.state}
+        locality={auctionDetails?.locality}
+        startDate={auctionDetails?.startDate}
+        applicationDeadLine={auctionDetails?.applicationDeadLine}
+        isFav={auctionDetails?.favourite}
       />
 
       <View style={[styles.card, styles.premiumCard]}>
@@ -130,14 +132,19 @@ const AuctionDetails = () => {
               />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Auction URL</Text>
-                <Text style={styles.fieldValue}>
+                <Text
+                  style={{
+                    backgroundColor: "#d4af37",
+                    color: "white",
+                    padding: 3,
+                    width: 90,
+                    textAlign: "center",
+                    borderRadius: 10,
+                    marginBottom: 3,
+                  }}
+                >
                   {auctionDetails.auctionUrl ? (
-                    <Link
-                      href={auctionDetails?.auctionUrl}
-                      style={{ color: "blue" }}
-                    >
-                      Link
-                    </Link>
+                    <Link href={auctionDetails?.auctionUrl}>View Link</Link>
                   ) : (
                     "NA"
                   )}
@@ -151,8 +158,20 @@ const AuctionDetails = () => {
                 <Text style={styles.fieldTitle}>Documents Link</Text>
                 {auctionDetails?.documentLink?.length > 0 ? (
                   auctionDetails?.documentLink.map((el, index) => (
-                    <Link key={index} href={el} style={{ color: "blue" }}>
-                      {el}
+                    <Link
+                      key={index}
+                      href={el}
+                      style={{
+                        backgroundColor: "#d4af37",
+                        color: "white",
+                        width: 90,
+                        padding: 3,
+                        textAlign: "center",
+                        borderRadius: 10,
+                        marginBottom: 3,
+                      }}
+                    >
+                      View Link
                     </Link>
                   ))
                 ) : (

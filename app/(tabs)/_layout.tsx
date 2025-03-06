@@ -2,7 +2,7 @@ import { Tabs, useRouter } from "expo-router";
 import { SizableText, useTheme } from "tamagui";
 import { CircleUser, Home, Search } from "@tamagui/lucide-icons";
 import { APP_COLOR } from "constants/Colors";
-import { Image } from "react-native";
+import { Image, Text } from "react-native";
 import { useUser } from "context/UserContextProvider";
 
 export default function TabLayout() {
@@ -31,7 +31,8 @@ export default function TabLayout() {
         options={{
           headerTitle: "",
           title: "Home",
-          tabBarIcon: ({ color }) => <Home color={color as any} />,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <Home color={color as any} size={20} />,
           headerRight: () => (
             <SizableText
               style={{
@@ -46,12 +47,11 @@ export default function TabLayout() {
               }
             >
               {user.isLogin ? user.name.slice(0, 13) : "Login/Signup"}
-              {/* <CircleUser color={"white" as any} /> */}
             </SizableText>
           ),
           headerLeft: () => (
             <Image
-              style={{ height: 20, width: 120, marginLeft: 5 }}
+              style={{ height: 40, width: 50, marginLeft: 5 }}
               source={require("../../assets/images/logo/logo.png")}
             />
           ),
@@ -60,16 +60,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          headerTitle: "",
+          headerTitle: "Advance Search",
           title: "Advance Search",
-
-          headerLeft: () => (
-            <Image
-              style={{ height: 20, width: 120, marginLeft: 5 }}
-              source={require("../../assets/images/logo/logo.png")}
-            />
-          ),
-          tabBarIcon: ({ color }) => <Search color={color as any} />,
+          // headerShown:false,
+          tabBarIcon: ({ color }) => <Search color={color as any} size={20} />,
         }}
       />
       <Tabs.Screen
@@ -77,14 +71,27 @@ export default function TabLayout() {
         options={{
           headerTitle: "",
           title: "Account",
-
+          // headerShown: false,
           headerLeft: () => (
-            <Image
-              style={{ height: 20, width: 120, marginLeft: 5 }}
-              source={require("../../assets/images/logo/logo.png")}
-            />
+            <>
+              <Image
+                style={{ height: 45, width: 45, marginLeft: 8 }}
+                source={require("../../assets/images/logo/logo.png")}
+              />
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: APP_COLOR.primary,
+                }}
+              >
+               E-AuctionsHub
+              </Text>
+            </>
           ),
-          tabBarIcon: ({ color }) => <CircleUser color={color as any} />,
+          tabBarIcon: ({ color }) => (
+            <CircleUser color={color as any} size={20} />
+          ),
         }}
       />
     </Tabs>
