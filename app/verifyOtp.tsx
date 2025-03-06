@@ -12,11 +12,9 @@ import {
 import Toast from "react-native-toast-message";
 
 const VerifyOtp = () => {
-  const { phone } = useLocalSearchParams() as any;
+  const { phone, from } = useLocalSearchParams() as any;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  console.log(phone, "phone");
 
   const [otp, setOtp] = useState("");
 
@@ -47,9 +45,16 @@ const VerifyOtp = () => {
 
       if (data.statusCode === 200) {
         Toast.show({ type: "success", text1: "OTP Verified Succesfully" });
-        router.push({
-          pathname: `/login`,
-        });
+        if (from == "login" || from == "profile") {
+          router.push({
+            pathname: `/changePassword`,
+            params: { from: from, phone: phone },
+          });
+        } else {
+          router.push({
+            pathname: `/login`,
+          });
+        }
       } else if (data.statusCode === 400) {
         Toast.show({ type: "success", text1: data.message });
       } else if (data.statusCode === 404) {

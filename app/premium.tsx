@@ -16,9 +16,9 @@ import RazorpayCheckout from "react-native-razorpay";
 
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
+import { formateDate } from "constants/staticData";
 
 const PremiumScreen = () => {
-  const [currentPlan, setCurrentPlan] = useState("");
   const [premiumPlans, setPremiumPlans] = useState([] as any);
   const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
@@ -164,7 +164,8 @@ const PremiumScreen = () => {
                 key={plan.id}
                 style={[
                   styles.card,
-                  currentPlan === plan.id && styles.activeCard,
+                  user.subscribedPlan?.subscribedPlanId === plan.id &&
+                    styles.activeCard,
                 ]}
                 onPress={() => console.log(`Subscribed to ${plan.title}`)}
               >
@@ -194,6 +195,14 @@ const PremiumScreen = () => {
                 user?.subscribedPlan?.subscribedPlanId === plan.id ? (
                   <TouchableOpacity style={styles.currentPlanButton}>
                     <Text style={styles.buyNowText}>Current Plan</Text>
+                    <Text
+                      style={[
+                        styles.buyNowText,
+                        { fontSize: 12, color: "#FF9966" },
+                      ]}
+                    >
+                      Expiry Date: {formateDate(user.subscribedPlan.expiredAt)}
+                    </Text>
                   </TouchableOpacity>
                 ) : (
                   !user?.isSubscribed && (
