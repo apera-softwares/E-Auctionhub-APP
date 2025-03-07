@@ -77,18 +77,18 @@ export const AuctionCard = ({ data: auction }) => {
         {/* Favorite Button */}
         <TouchableOpacity style={styles.favButton} onPress={addTofav}>
           {fav ? (
-            <FontAwesome name="heart" size={18} color="red" />
+            <FontAwesome name="heart" size={15} color="red" />
           ) : (
-            <FontAwesome name="heart-o" size={18} color="white" />
+            <FontAwesome name="heart-o" size={15} color="white" />
           )}
         </TouchableOpacity>
 
         {/* Share Button */}
         <TouchableOpacity
           style={styles.shareButton}
-          onPress={() => onShare(auction.id)}
+          onPress={() => onShare({id:auction?.id, assetType:auction?.assetType,city:auction?.city})}
         >
-          <FontAwesome name="share-alt" size={18} color="white" />
+          <FontAwesome name="share-alt" size={15} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -168,6 +168,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 6,
     borderRadius: 50,
+    height: 28,
+    width: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
   shareButton: {
     position: "absolute",
@@ -176,6 +180,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 6,
     borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 28,
+    width: 28,
   },
   textContainer: {
     width: "100%",

@@ -78,7 +78,16 @@ export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
         </TouchableOpacity>
 
         {/* Share Button */}
-        <TouchableOpacity style={styles.shareButton} onPress={()=>onShare(auctionData.auctionId)}>
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={() =>
+            onShare({
+              id: auctionData.auctionId,
+              assetType: auctionData.assetType,
+              city: auctionData.city,
+            })
+          }
+        >
           <FontAwesome name="share-alt" size={18} color="white" />
         </TouchableOpacity>
       </View>
