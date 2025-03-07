@@ -33,7 +33,7 @@ export default function search() {
       if (response.ok) {
         const data = await response.json();
         setAllCities(
-          data.cities.map((city) => ({ label: city.name, value: city.id }))
+          data.cities.map((city) => ({ label: city?.name, value: city?.id }))
         );
       }
     } catch (error) {
@@ -47,7 +47,7 @@ export default function search() {
       if (response.ok) {
         const data = await response.json();
         setAllBanks(
-          data.banks.map((bank) => ({ label: bank.name, value: bank.id }))
+          data.banks.map((bank) => ({ label: bank?.name, value: bank?.id }))
         );
       }
     } catch (error) {
@@ -62,8 +62,8 @@ export default function search() {
         const data = await response.json();
         setAllAssetTypes(
           data.assetTypes.map((asset) => ({
-            label: asset.name,
-            value: asset.id,
+            label: asset?.name,
+            value: asset?.id,
           }))
         );
       }
@@ -102,7 +102,7 @@ export default function search() {
             valueField="value"
             placeholder="Select Bank"
             value={bank}
-            onChange={(item) => setBank(item.value)}
+            onChange={(item) => setBank(item?.value)}
           />
           <Toast />
           <Dropdown
@@ -115,8 +115,8 @@ export default function search() {
             searchPlaceholder="Search City..."
             value={city}
             onChange={(item) => {
-              setCity(item.value);
-              setCityName(item.label);
+              setCity(item?.value);
+              setCityName(item?.label);
             }}
           />
 
@@ -128,8 +128,8 @@ export default function search() {
             placeholder="Select Asset Type"
             value={assetType}
             onChange={(item) => {
-              setAssetType(item.value);
-              setAssetTypeName(item.label);
+              setAssetType(item?.value);
+              setAssetTypeName(item?.label);
             }}
           />
 

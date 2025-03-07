@@ -43,10 +43,12 @@ export default function TabLayout() {
                 marginRight: 5,
               }}
               onPress={() =>
-                user.isLogin ? router.push("/") : router.push("/login")
+                user?.isLogin ? router.push("/") : router.push("/login")
               }
             >
-              {user.isLogin ? user.name.slice(0, 13) : "Login/Signup"}
+              {user?.isLogin
+                ? user?.name.slice(0, 13) || "Guest User"
+                : "Login/Signup"}
             </SizableText>
           ),
           headerLeft: () => (

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ImageBackground,
   ScrollView,
 } from "react-native";
 import { useEffect, useState } from "react";
@@ -39,7 +38,7 @@ export default function TabOneScreen() {
       if (response.ok) {
         const data = await response.json();
         setAllCities(
-          data.cities.map((city) => ({ label: city.name, value: city.id }))
+          data.cities.map((city) => ({ label: city?.name, value: city?.id }))
         );
       }
     } catch (error) {
@@ -68,8 +67,8 @@ export default function TabOneScreen() {
         const data = await response.json();
         setAllAssetTypes(
           data.assetTypes.map((asset) => ({
-            label: asset.name,
-            value: asset.id,
+            label: asset?.name,
+            value: asset?.id,
           }))
         );
       }
@@ -97,9 +96,6 @@ export default function TabOneScreen() {
         },
       });
       const data = await response.json();
-
-      console.log(data, "login person token data");
-
       if (data.statusCode === 200) {
         setUser((prev: any) => ({
           ...prev,
@@ -133,12 +129,14 @@ export default function TabOneScreen() {
         <YStack flex={1} items="center" gap="$2">
           <View px="$4" style={styles.overlay}>
             <View style={styles.topContainer}>
+              
               <H3 style={styles.headerText}>
                 Your Trusted Place{" "}
                 <Text style={{ color: APP_COLOR.primary }}>
                   for Auctioned Assets
                 </Text>
               </H3>
+
               <SizableText size="$5" text="center" color="white">
                 Find your next great investment with our exclusive bank auction
                 listings.
@@ -156,10 +154,11 @@ export default function TabOneScreen() {
                   searchPlaceholder="Search City..."
                   value={city}
                   onChange={(item) => {
-                    setCity(item.value);
-                    setCityName(item.label);
+                    setCity(item?.value);
+                    setCityName(item?.label);
                   }}
                 />
+
                 <Dropdown
                   style={styles.dropdown}
                   data={allAssetTypes}
@@ -168,10 +167,11 @@ export default function TabOneScreen() {
                   placeholder="Select Asset Type"
                   value={assetType}
                   onChange={(item) => {
-                    setAssetType(item.value);
-                    setAssetTypeName(item.label);
+                    setAssetType(item?.value);
+                    setAssetTypeName(item?.label);
                   }}
                 />
+
                 <Button
                   onPress={() =>
                     city || assetType
@@ -214,7 +214,7 @@ export default function TabOneScreen() {
               <FlatList
                 data={topCities}
                 scrollEnabled={false}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item?.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     activeOpacity={0.7}
@@ -223,9 +223,9 @@ export default function TabOneScreen() {
                       router.push({
                         pathname: `/auctions`,
                         params: {
-                          cityId: item.id,
+                          cityId: item?.id,
                           assetTypeName: "",
-                          cityName: item.name,
+                          cityName: item?.name,
                           assetTypeId: "",
                           bankId: "",
                           minPrice: "",
@@ -237,7 +237,7 @@ export default function TabOneScreen() {
                     <Text style={styles.cityName}>
                       <AntDesign name="doubleright" size={24} color="#FFD700" />{" "}
                       {item.name} -{" "}
-                      <Text style={styles.auctionCount}>{item.count}</Text>
+                      <Text style={styles.auctionCount}>{item?.count}</Text>
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -248,7 +248,6 @@ export default function TabOneScreen() {
         <Footer />
       </ScrollView>
     </LinearGradient>
-    // </ImageBackground>
   );
 }
 

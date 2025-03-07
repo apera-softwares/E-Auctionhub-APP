@@ -8,7 +8,7 @@ const UnSubPremiumCard = () => {
   const router = useRouter();
 
   const handleUpgradePremium = () => {
-    if (user.isLogin) {
+    if (user?.isLogin) {
       router.push("/premium");
     } else {
       router.push("/login");

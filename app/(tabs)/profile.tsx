@@ -64,7 +64,7 @@ const ProfileScreen = () => {
             <View style={styles.profileDetails}>
               <View style={styles.usernameContainer}>
                 <Text style={styles.username}>{username}</Text>
-                {user.isSubscribed && (
+                {user?.isSubscribed && (
                   <Text style={styles.premiumIcon}>
                     <MaterialCommunityIcons
                       name="crown-circle"

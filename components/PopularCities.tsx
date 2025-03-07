@@ -35,8 +35,8 @@ const PopularCities = () => {
               router.push({
                 pathname: `/auctions`,
                 params: {
-                  cityId: city.id,
-                  cityName: city.name,
+                  cityId: city?.id,
+                  cityName: city?.name,
                   assetTypeId: "",
                   assetTypeName: "",
                   bankId: "",
@@ -46,8 +46,8 @@ const PopularCities = () => {
               })
             }
           >
-            <Image source={city.image} style={styles.cityImage} />
-            <Text style={styles.cityName}>{city.name}</Text>
+            <Image source={city?.image} style={styles.cityImage} />
+            <Text style={styles.cityName}>{city?.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
