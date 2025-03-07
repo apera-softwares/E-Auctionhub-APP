@@ -75,7 +75,7 @@ export default function TabLayout() {
           headerLeft: () => (
             <>
               <Image
-                style={{ height: 45, width: 45, marginLeft: 8 }}
+                style={{ height: 40, width: 40, marginLeft: 8 }}
                 source={require("../../assets/images/logo/logo.png")}
               />
               <Text
@@ -85,7 +85,7 @@ export default function TabLayout() {
                   color: APP_COLOR.primary,
                 }}
               >
-               E-AuctionsHub
+                E-AuctionsHub
               </Text>
             </>
           ),

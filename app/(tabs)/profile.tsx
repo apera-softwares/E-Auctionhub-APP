@@ -29,8 +29,6 @@ const ProfileScreen = () => {
   const isLoggedIn = user?.isLogin;
   const router = useRouter();
 
-  console.log(user,"user")
-
   const username = isLoggedIn ? user.name : "Guest User";
   const phoneNumber = isLoggedIn ? user.phone || "N/A" : "";
   const initials = getInitials(username);
@@ -52,8 +50,6 @@ const ProfileScreen = () => {
     } catch (e) {
       console.log(e, "error");
     }
-
-    console.log("Done.");
   };
 
   return (
@@ -68,7 +64,15 @@ const ProfileScreen = () => {
             <View style={styles.profileDetails}>
               <View style={styles.usernameContainer}>
                 <Text style={styles.username}>{username}</Text>
-                {user.isSubscribed && <Text style={styles.premiumIcon}>⭐</Text>}
+                {user.isSubscribed && (
+                  <Text style={styles.premiumIcon}>
+                    <MaterialCommunityIcons
+                      name="crown-circle"
+                      size={24}
+                      color="gold"
+                    />
+                  </Text>
+                )}
               </View>
               <Text style={styles.phoneNumber}>{phoneNumber}</Text>
             </View>
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
   premiumIcon: {
     marginLeft: 5,
     fontSize: 16,
-    color: "gold", // or use a checkmark: "green" for ✔️
+    color: "gold",
   },
   profileSection: {
     flexDirection: "row",
