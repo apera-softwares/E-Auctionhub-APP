@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import { APP_COLOR } from "constants/Colors";
-
+import { Platform } from "react-native";
 import { AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 import { useRouter } from "expo-router";
@@ -97,14 +97,16 @@ const ProfileScreen = () => {
 
         {/* Menu Options */}
         <View style={styles.menuContainer}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push("/premium")}
-          >
-            <Feather name="star" size={22} color={APP_COLOR.primary} />
+          {Platform.OS !== "ios" && (
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/premium")}
+            >
+              <Feather name="star" size={22} color={APP_COLOR.primary} />
 
-            <Text style={styles.menuText}>Premium</Text>
-          </TouchableOpacity>
+              <Text style={styles.menuText}>Premium</Text>
+            </TouchableOpacity>
+          )}
           {isLoggedIn && (
             <TouchableOpacity
               style={styles.menuItem}
