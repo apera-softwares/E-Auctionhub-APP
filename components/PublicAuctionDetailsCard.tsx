@@ -46,8 +46,8 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
   }, [isFav]);
 
   const addTofav = async () => {
-    if(!user.isLogin){
-      return router.push("/login")
+    if (!user.isLogin) {
+      return router.push("/login");
     }
     const token = await AsyncStorage.getItem("token");
     console.log(token, "token");
@@ -80,7 +80,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
             <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
           )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={()=>onShare(auctionId)}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() =>
+            onShare({ id: auctionId, assetType: assetType, city: city })
+          }
+        >
           <FontAwesome5 name="share-alt" size={22} color={APP_COLOR.primary} />
         </TouchableOpacity>
       </View>
