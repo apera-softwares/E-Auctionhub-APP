@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
@@ -23,7 +24,8 @@ export default function TabOneScreen() {
   const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
   const { user, setUser } = useUser();
-
+  const [lastSearch, setLastSearch] = useState([] as any);
+  const lastSearches = ["Flast in Nagpur", "House in Mumbai"];
   const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
@@ -31,6 +33,54 @@ export default function TabOneScreen() {
   const [city, setCity] = useState("");
   const [cityName, setCityName] = useState("");
   const [isFocus, setIsFocus] = useState(false);
+
+  const handleSearch = async () => {
+    if (!city && !assetType) {
+      Toast.show({
+        type: "error",
+        text1: "Select City or Asset Type",
+      });
+      return;
+    }
+
+    const newSearch = { assetTypeName, cityName };
+
+    try {
+      const storedSearches = await AsyncStorage.getItem("lastSearches");
+      let lastSearches = storedSearches ? JSON.parse(storedSearches) : [];
+
+      lastSearches = [newSearch, ...lastSearches.slice(0, 1)];
+
+      setLastSearch(lastSearches);
+
+      await AsyncStorage.setItem("lastSearches", JSON.stringify(lastSearches));
+    } catch (error) {
+      console.error("Error saving last search:", error);
+    }
+
+    router.push({
+      pathname: "/auctions",
+      params: {
+        cityId: city,
+        cityName: cityName,
+        assetTypeId: assetType,
+        assetTypeName: assetTypeName,
+        bankId: "",
+        minPrice: "",
+        maxPrice: "",
+      },
+    });
+  };
+
+  useEffect(() => {
+    const fetchLastSearches = async () => {
+      const storedSearches = await AsyncStorage.getItem("lastSearches");
+      if (storedSearches) {
+        setLastSearch(JSON.parse(storedSearches));
+      }
+    };
+    fetchLastSearches();
+  }, []);
 
   const fetchCities = async () => {
     try {
@@ -115,13 +165,7 @@ export default function TabOneScreen() {
   };
 
   return (
-    // <ImageBackground
-    //   source={require("../../assets/images/home.jpg")}
-    //   style={styles.backgroundImage}
-    // >
-
     <LinearGradient
-      // colors={["#000000", "#434343"]}
       colors={["#4b6cb7", "#182848"]}
       style={styles.gradientBackground}
     >
@@ -129,7 +173,6 @@ export default function TabOneScreen() {
         <YStack flex={1} items="center" gap="$2">
           <View px="$4" style={styles.overlay}>
             <View style={styles.topContainer}>
-              
               <H3 style={styles.headerText}>
                 Your Trusted Place{" "}
                 <Text style={{ color: APP_COLOR.primary }}>
@@ -173,31 +216,50 @@ export default function TabOneScreen() {
                 />
 
                 <Button
-                  onPress={() =>
-                    city || assetType
-                      ? router.push({
-                          pathname: `/auctions`,
-                          params: {
-                            cityId: city,
-                            cityName: cityName,
-                            assetTypeId: assetType,
-                            assetTypeName: assetTypeName,
-                            bankId: "",
-                            minPrice: "",
-                            maxPrice: "",
-                          },
-                        })
-                      : Toast.show({
-                          type: "error",
-                          text1: "Select City or Asset Type",
-                        })
-                  }
+                  onPress={handleSearch}
                   fontSize={16}
                   fontWeight={700}
                   style={styles.button}
                 >
                   Search Auction
                 </Button>
+                {lastSearch.length > 0 && (
+                  <View style={{ padding: 10 }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "bold",
+                        marginBottom: 8,
+                      }}
+                    >
+                      Last Searches
+                    </Text>
+                    <View
+                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                    >
+                      {lastSearch.map((search, index) => (
+                        <Pressable
+                          key={index}
+                          style={{
+                            backgroundColor: "#f0f0f0",
+                            paddingVertical: 6,
+                            paddingHorizontal: 12,
+                            borderRadius: 20,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 6,
+                            borderWidth: 1,
+                            borderColor: "#d1d1d1",
+                          }}
+                        >
+                          <Text style={{ fontSize: 14, color: "#333" }}>
+                            #{search?.assetTypeName} in {search?.cityName}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                )}
                 {/* <Toast /> */}
               </View>
             </View>
@@ -261,7 +323,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    // backgroundColor:"rgba(0,0,0,0.5)"
   },
   overlay: {
     flex: 1,
@@ -319,23 +380,22 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderBottomWidth: 0.2,
-    borderBottomColor: "rgba(255, 215, 0, 0.4)", // Faint golden border
+    borderBottomColor: "rgba(255, 215, 0, 0.4)",
   },
 
   cityName: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#FFFFFF", // White city name
+    color: "#FFFFFF",
   },
 
   auctionCount: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#FFD700", // Gold auction count
+    color: "#FFD700",
   },
 
   carouselContainer: {
-    // marginTop: 20,
     alignItems: "center",
     height: 200,
   },

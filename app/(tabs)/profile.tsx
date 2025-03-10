@@ -8,7 +8,6 @@ import {
 import { APP_COLOR } from "constants/Colors";
 import { Platform } from "react-native";
 import { AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
-
 import { useRouter } from "expo-router";
 import { useUser } from "context/UserContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";

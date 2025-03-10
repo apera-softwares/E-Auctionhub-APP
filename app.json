@@ -5,7 +5,7 @@
     "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
-    "scheme": "myapp",
+    "scheme": "EAuctionsHub",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
