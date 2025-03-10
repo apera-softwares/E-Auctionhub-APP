@@ -93,7 +93,7 @@ function RootLayoutNav() {
               backgroundColor: theme.background.val,
             },
 
-            headerLeft: () => <BackButton />,
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -107,14 +107,6 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-
-            headerLeft: () => (
-              // <Image
-              //   style={{ height: 20, width: 120, marginLeft: 5 }}
-              //   source={require("../assets/images/logo/logo.png")}
-              // />
-              <BackButton />
-            ),
           }}
         />
         <Stack.Screen
@@ -128,7 +120,7 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-            headerLeft: () => <BackButton />,
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -142,7 +134,7 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-            headerLeft: () => <BackButton />,
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
