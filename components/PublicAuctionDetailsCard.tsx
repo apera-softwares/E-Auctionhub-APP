@@ -1,7 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { formateDate, onShare } from "constants/staticData";
 import { APP_COLOR } from "constants/Colors";
+import { BACKEND_API } from "constants/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { useUser } from "context/UserContextProvider";
+import { useRouter } from "expo-router";
 
 interface PublicAuctionDetailsCardProps {
   assetType: string;
@@ -14,6 +19,8 @@ interface PublicAuctionDetailsCardProps {
   state: string;
   startDate: string;
   applicationDeadLine: string;
+  auctionId: string;
+  isFav: boolean;
 }
 
 const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
@@ -27,14 +34,53 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
   state,
   startDate,
   applicationDeadLine,
+  auctionId,
+  isFav,
 }) => {
+  const [fav, setFav] = useState<boolean>(isFav);
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    setFav(isFav);
+  }, [isFav]);
+
+  const addTofav = async () => {
+    if(!user.isLogin){
+      return router.push("/login")
+    }
+    const token = await AsyncStorage.getItem("token");
+    console.log(token, "token");
+    try {
+      const response = await fetch(`${BACKEND_API}auction/favourite/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          auctionId: auctionId,
+        }),
+      });
+
+      const data = await response.json();
+      setFav(data.statusCode == 200 ? false : true);
+    } catch (error) {
+      console.log(error, "add to fav error");
+    }
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
+        <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+          {fav ? (
+            <FontAwesome name="heart" size={22} color="red" />
+          ) : (
+            <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={onShare}>
+        <TouchableOpacity style={styles.iconButton} onPress={()=>onShare(auctionId)}>
           <FontAwesome5 name="share-alt" size={22} color={APP_COLOR.primary} />
         </TouchableOpacity>
       </View>
@@ -55,21 +101,25 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
       <View style={styles.fieldContainer}>
         <DetailField
           icon="ruler-combined"
-          text={`Area: ${areaSqFt || ""} sqft`}
+          title="Area: "
+          text={`${areaSqFt || ""} sqft`}
         />
-        <DetailField icon="coins" text={`EMD: ₹ ${emd}`} />
-        <DetailField icon="university" text={`Bank: ${bank}`} />
+        <DetailField icon="coins" title="EMD: " text={`₹ ${emd}`} />
+        <DetailField icon="university" title="Bank: " text={`${bank}`} />
         <DetailField
           icon="map-marker-alt"
+          title="Location: "
           text={`${locality || ""}${locality ? "," : ""} ${city}, ${state}`}
         />
         <DetailField
           icon="calendar-alt"
-          text={`Start Date: ${formateDate(startDate)}`}
+          title="Start Date: "
+          text={`${formateDate(startDate)}`}
         />
         <DetailField
           icon="clock"
-          text={`Deadline: ${
+          title="Deadline: "
+          text={`${
             applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
           }`}
         />
@@ -78,10 +128,13 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
   );
 };
 
-const DetailField = ({ icon, text, color = "#333" }) => (
+const DetailField = ({ icon, text, title, color = "#333" }) => (
   <View style={styles.detailRow}>
     <FontAwesome5 name={icon} size={18} color={"#41644A"} />
-    <Text style={[styles.field, { color }]}>{text}</Text>
+    <Text style={[styles.field, { color }]}>
+      {title}
+      <Text style={{ fontWeight: "semibold" }}>{text}</Text>
+    </Text>
   </View>
 );
 
@@ -119,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "bold",
     color: "#222",
-    lineHeight: 30, // Ensures good spacing
+    lineHeight: 30,
   },
 
   priceContainer: {

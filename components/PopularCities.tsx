@@ -35,8 +35,8 @@ const PopularCities = () => {
               router.push({
                 pathname: `/auctions`,
                 params: {
-                  cityId: city.id,
-                  cityName: city.name,
+                  cityId: city?.id,
+                  cityName: city?.name,
                   assetTypeId: "",
                   assetTypeName: "",
                   bankId: "",
@@ -46,8 +46,8 @@ const PopularCities = () => {
               })
             }
           >
-            <Image source={city.image} style={styles.cityImage} />
-            <Text style={styles.cityName}>{city.name}</Text>
+            <Image source={city?.image} style={styles.cityImage} />
+            <Text style={styles.cityName}>{city?.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -59,15 +59,18 @@ const styles = StyleSheet.create({
   carouselContainer: {
     marginTop: 15,
     alignItems: "center",
-    height: 150,
+    height: 170,
     opacity: 0.9,
   },
   PopularCityTitle: {
     fontSize: 20,
-    fontWeight: "semibold",
+    fontWeight: "bold",
     textAlign: "center",
     marginTop: 20,
     color: "#fff",
+    borderBottomColor: "gold",
+    borderBottomWidth: 2,
+    paddingHorizontal: 10,
   },
   scrollContent: {
     flexDirection: "row",

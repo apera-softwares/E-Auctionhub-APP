@@ -2,8 +2,8 @@ import { APP_COLOR } from "constants/Colors";
 import { Button, H3, Label, SizableText, Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
 import { StyleSheet, ScrollView, TextInput } from "react-native";
-import { lazy, useEffect, useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import Footer from "components/Footer";
@@ -33,7 +33,7 @@ export default function search() {
       if (response.ok) {
         const data = await response.json();
         setAllCities(
-          data.cities.map((city) => ({ label: city.name, value: city.id }))
+          data.cities.map((city) => ({ label: city?.name, value: city?.id }))
         );
       }
     } catch (error) {
@@ -47,7 +47,7 @@ export default function search() {
       if (response.ok) {
         const data = await response.json();
         setAllBanks(
-          data.banks.map((bank) => ({ label: bank.name, value: bank.id }))
+          data.banks.map((bank) => ({ label: bank?.name, value: bank?.id }))
         );
       }
     } catch (error) {
@@ -62,8 +62,8 @@ export default function search() {
         const data = await response.json();
         setAllAssetTypes(
           data.assetTypes.map((asset) => ({
-            label: asset.name,
-            value: asset.id,
+            label: asset?.name,
+            value: asset?.id,
           }))
         );
       }
@@ -83,16 +83,17 @@ export default function search() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ height: "100%" }}>
+    <ScrollView
+      contentContainerStyle={{ height: "100%", backgroundColor: "#fff" }}
+    >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
-          <H3 style={styles.headerText}>
+          {/* <H3 style={styles.headerText}>
             Advanced <Text style={{ color: APP_COLOR.primary }}>Search</Text>
-          </H3>
+          </H3> */}
           <SizableText size="$5" text="center" color="black">
             Find auction listings with more filter options.
           </SizableText>
-          <Toast />
 
           <Dropdown
             style={styles.dropdown}
@@ -101,9 +102,9 @@ export default function search() {
             valueField="value"
             placeholder="Select Bank"
             value={bank}
-            onChange={(item) => setBank(item.value)}
+            onChange={(item) => setBank(item?.value)}
           />
-
+          <Toast />
           <Dropdown
             style={styles.dropdown}
             data={allCities}
@@ -114,8 +115,8 @@ export default function search() {
             searchPlaceholder="Search City..."
             value={city}
             onChange={(item) => {
-              setCity(item.value);
-              setCityName(item.label);
+              setCity(item?.value);
+              setCityName(item?.label);
             }}
           />
 
@@ -127,8 +128,8 @@ export default function search() {
             placeholder="Select Asset Type"
             value={assetType}
             onChange={(item) => {
-              setAssetType(item.value);
-              setAssetTypeName(item.label);
+              setAssetType(item?.value);
+              setAssetTypeName(item?.label);
             }}
           />
 

@@ -1,15 +1,26 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+} from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
+import { Platform } from "react-native";
 
 const UnSubPremiumCard = () => {
   const { user } = useUser();
   const router = useRouter();
 
   const handleUpgradePremium = () => {
-    if (user.isLogin) {
-      router.push("/premium");
+    if (user?.isLogin) {
+      if (Platform.OS !== "ios") {
+        router.push("/premium");
+      } else {
+        Linking.openURL("https://eauctionshub.com/premium");
+      }
     } else {
       router.push("/login");
     }

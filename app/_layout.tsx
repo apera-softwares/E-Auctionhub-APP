@@ -67,10 +67,12 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <>
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colorScheme === "light" ? "#fff" : "#000"}
+        barStyle={colorScheme === "light" ? "dark-content" : "light-content"}
       />
+
       <Stack>
         <Stack.Screen
           name="(tabs)"
@@ -78,21 +80,7 @@ function RootLayoutNav() {
             headerShown: false,
           }}
         />
-        {/* <Toast /> */}
 
-        {/* <Stack.Screen
-          name="modal"
-          options={{
-            title: "Tamagui + Expo",
-            presentation: "fullScreenModal",
-            animation: "slide_from_right",
-            gestureEnabled: true,
-            gestureDirection: "horizontal",
-            contentStyle: {
-              backgroundColor: theme.background.val,
-            },
-          }}
-        /> */}
         <Stack.Screen
           name="auctions"
           options={{
@@ -105,13 +93,7 @@ function RootLayoutNav() {
               backgroundColor: theme.background.val,
             },
 
-            headerLeft: () => (
-              // <Image
-              //   style={{ height: 20, width: 120, marginLeft: 5 }}
-              //   source={require("../assets/images/logo/logo.png")}
-              // />
-              <BackButton />
-            ),
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -125,14 +107,6 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-
-            headerLeft: () => (
-              // <Image
-              //   style={{ height: 20, width: 120, marginLeft: 5 }}
-              //   source={require("../assets/images/logo/logo.png")}
-              // />
-              <BackButton />
-            ),
           }}
         />
         <Stack.Screen
@@ -146,7 +120,7 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-            headerLeft: () => <BackButton />,
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -160,7 +134,7 @@ function RootLayoutNav() {
             contentStyle: {
               backgroundColor: theme.background.val,
             },
-            headerLeft: () => <BackButton />,
+            // headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -255,7 +229,59 @@ function RootLayoutNav() {
             },
           }}
         />
+        <Stack.Screen
+          name="favourite"
+          options={{
+            title: "Favourite Auctions",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="deleteAccount"
+          options={{
+            title: "Delete Account",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="resetPassword"
+          options={{
+            title: "Reset Password",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="chnagePassword"
+          options={{
+            title: "Change Password",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 }

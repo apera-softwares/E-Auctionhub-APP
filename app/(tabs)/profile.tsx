@@ -6,19 +6,13 @@ import {
   ScrollView,
 } from "react-native";
 import { APP_COLOR } from "constants/Colors";
-
-import {
-  MaterialIcons,
-  AntDesign,
-  MaterialCommunityIcons,
-  FontAwesome,
-} from "@expo/vector-icons";
+import { Platform } from "react-native";
+import { AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 import { useRouter } from "expo-router";
 import { useUser } from "context/UserContextProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import Footer from "components/Footer";
 
 const getInitials = (name: string) => {
   return name
@@ -54,16 +48,13 @@ const ProfileScreen = () => {
       });
       router.push("/login");
     } catch (e) {
-      // remove error
       console.log(e, "error");
     }
-
-    console.log("Done.");
   };
 
   return (
-    <ScrollView contentContainerStyle={{ height: "100%" }}>
-      <View style={styles.scrollContainer}>
+    <ScrollView>
+      <View style={[styles.scrollContainer, !isLoggedIn && { marginTop: 55 }]}>
         {isLoggedIn && (
           <View style={styles.profileSection}>
             <View style={styles.profileCircle}>
@@ -71,37 +62,57 @@ const ProfileScreen = () => {
             </View>
 
             <View style={styles.profileDetails}>
-              <Text style={styles.username}>{username}</Text>
+              <View style={styles.usernameContainer}>
+                <Text style={styles.username}>{username}</Text>
+                {user?.isSubscribed && (
+                  <Text style={styles.premiumIcon}>
+                    <MaterialCommunityIcons
+                      name="crown-circle"
+                      size={24}
+                      color="gold"
+                    />
+                  </Text>
+                )}
+              </View>
               <Text style={styles.phoneNumber}>{phoneNumber}</Text>
             </View>
           </View>
         )}
 
+        {!isLoggedIn && (
+          <Text
+            style={{
+              marginBottom: 12,
+              fontSize: 22,
+              fontWeight: "bold",
+              textAlign: "center",
+              color: APP_COLOR.primary,
+              letterSpacing: 0.5,
+              textTransform: "capitalize",
+            }}
+          >
+            Create Account to Access More Features!
+          </Text>
+        )}
+
         {/* Menu Options */}
         <View style={styles.menuContainer}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push("/premium")}
-          >
-            <MaterialIcons
-              name="star"
-              size={24}
-              color="#333"
-              style={styles.icon}
-            />
-            <Text style={styles.menuText}>Premium</Text>
-          </TouchableOpacity>
+          {Platform.OS !== "ios" && (
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/premium")}
+            >
+              <Feather name="star" size={22} color={APP_COLOR.primary} />
+
+              <Text style={styles.menuText}>Premium</Text>
+            </TouchableOpacity>
+          )}
           {isLoggedIn && (
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => console.log("Navigate to ChangePassword")}
+              onPress={() => router.push("/favourite")}
             >
-              <FontAwesome
-                name="heart"
-                size={24}
-                color="#333"
-                style={styles.icon}
-              />
+              <Feather name="heart" size={22} color={"red"} />
 
               <Text style={styles.menuText}>Favorite Auctions</Text>
             </TouchableOpacity>
@@ -110,53 +121,46 @@ const ProfileScreen = () => {
             style={styles.menuItem}
             onPress={() => router.push("/about")}
           >
-            <MaterialIcons
-              name="info"
-              size={24}
-              color="#333"
-              style={styles.icon}
-            />
+            <Feather name="info" size={22} color={APP_COLOR.primary} />
+
             <Text style={styles.menuText}>About</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => router.push("/contact")}
           >
-            <MaterialIcons
-              name="phone"
-              size={24}
-              color="#333"
-              style={styles.icon}
-            />
+            <Feather name="phone" size={22} color={APP_COLOR.primary} />
+
             <Text style={styles.menuText}>Contact</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => router.push("/termsAndConditions")}
           >
-            <MaterialIcons
-              name="description"
-              size={24}
-              color="#333"
-              style={styles.icon}
-            />
-            <Text style={styles.menuText}>Terms and Conditions</Text>
+            <Feather name="file" size={22} color={APP_COLOR.primary} />
+
+            <Text style={styles.menuText}>Terms & Conditions</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => router.push("/privacyAndPolicy")}
           >
-            <MaterialIcons
-              name="shield"
-              size={24}
-              color="#333"
-              style={styles.icon}
-            />
-            <Text style={styles.menuText}>Privacy Policy</Text>
+            <Feather name="shield" size={22} color={APP_COLOR.primary} />
+
+            <Text style={styles.menuText}>Privacy & Policy</Text>
           </TouchableOpacity>
+          {isLoggedIn && (
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/setting")}
+            >
+              <Feather name="settings" size={22} color={APP_COLOR.primary} />
+
+              <Text style={styles.menuText}>Settings</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* Auth Buttons */}
         <View style={styles.authButtonsContainer}>
           {!isLoggedIn ? (
             <>
@@ -198,9 +202,6 @@ const ProfileScreen = () => {
           )}
         </View>
       </View>
-      <View style={{ position: "relative", bottom: 0, end: 0, width: "100%" }}>
-        <Footer />
-      </View>
     </ScrollView>
   );
 };
@@ -210,14 +211,23 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
+  },
+  usernameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  premiumIcon: {
+    marginLeft: 5,
+    fontSize: 16,
+    color: "gold",
   },
   profileSection: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#155E95",
     width: "100%",
-    padding: 15,
+    padding: 20,
     borderRadius: 10,
     marginBottom: 20,
     shadowColor: "#000",
@@ -255,28 +265,27 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   menuItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 5,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   icon: {
     marginRight: 10,
   },
   menuText: {
     fontSize: 16,
+    marginLeft: 15,
+    fontWeight: "500",
     color: "#333",
   },
   authButtonsContainer: {
@@ -296,7 +305,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    marginTop: 10,
+    marginHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
   },

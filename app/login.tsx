@@ -155,6 +155,18 @@ const LoginScreen = () => {
           <Text style={styles.authButtonText}>Login</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: `/resetPassword`,
+              params: { from: "login" },
+            })
+          }
+          style={styles.forgotPasswordContainer}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
         <View style={styles.signupContainer}>
           <Text style={styles.signupText}>Don't have an account?</Text>
           <TouchableOpacity onPress={() => router.push("/signup")}>
@@ -240,6 +252,16 @@ const styles = StyleSheet.create({
     color: APP_COLOR.primary,
     fontWeight: "bold",
     marginTop: 5,
+  },
+  forgotPasswordContainer: {
+    marginTop: 12,
+    alignItems: "center",
+  },
+
+  forgotPasswordText: {
+    fontSize: 14,
+    color: APP_COLOR.primary,
+    fontWeight: "600",
   },
 });
 

@@ -60,12 +60,12 @@ export const formateDate = (dateStr: string) => {
   return date?.toDateString()?.substring(4);
 };
 
-export const onShare = async () => {
+export const onShare = async ({ id, assetType, city }) => {
   try {
     const result = await Share.share({
-      title: "App link",
-      message: `Install E-AuctionsHub App to hire manpower in easy way. App Link: ${APP_LINK}`,
-      url: APP_LINK,
+      title: "Auction Link",
+      message: `Find this auction on E-Auctionshub.com. Link: https://eauctionshub.com/auction/${id}/${assetType}-in-${city}`,
+      url: `https://eauctionshub.com/auction/${id}/${assetType}-in-${city}`,
     });
     if (result.action === Share.sharedAction) {
       if (result.activityType) {
@@ -81,18 +81,18 @@ export const onShare = async () => {
 export const sortList = [
   {
     label: "Price: Low to High",
-    value: "search",
+    value: "orderBy=price&order=asc",
   },
   {
     label: "Price: High to Low",
-    value: "desc/reserve-price",
+    value: "orderBy=price&order=desc",
   },
   {
     label: "Auction date (asc)",
-    value: "search",
+    value: "orderBy=date&order=asc",
   },
   {
     label: "Auction date (des)",
-    value: "desc/start-date",
+    value: "orderBy=date&order=desc",
   },
 ];

@@ -1,31 +1,24 @@
-import {
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, ScrollView, Text, StyleSheet } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { APP_COLOR } from "constants/Colors";
 import { WebView } from "react-native-webview";
 import { useEffect, useState } from "react";
 import { BACKEND_API } from "constants/api";
 import { useUser } from "../context/UserContextProvider";
 import UnSubPremiumCard from "components/UnSubPremiumCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { formateDate, onShare } from "constants/staticData";
 import PublicAuctionDetailsCard from "components/PublicAuctionDetailsCard";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
 
-  console.log(user, "user Data");
+  console.log(user, "user data");
 
   const isPremiumUser = user.isSubscribed;
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
+  const [auctionLink, setAUctionLink] = useState([] as any);
 
   const getAuctionById = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -41,10 +34,12 @@ const AuctionDetails = () => {
         headers,
       });
       const data = await response.json();
-      console.log(data);
+      console.log(data.data, "auction details");
 
       if (data.statusCode === 200) {
         setAuctionDetails(data?.data);
+        console.log(data.data?.documentLink, "document link");
+        setAUctionLink(data.data?.documentLink);
       }
     } catch (error) {
       console.log("error while fetching searched by id  auctions", error);
@@ -53,7 +48,7 @@ const AuctionDetails = () => {
     }
   };
 
-  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails.latitude},${auctionDetails.longitude}&hl=es&z=14&amp;output=embed`;
+  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
 
   useEffect(() => {
     getAuctionById();
@@ -62,16 +57,18 @@ const AuctionDetails = () => {
   return (
     <ScrollView style={styles.container}>
       <PublicAuctionDetailsCard
-        assetType={auctionDetails.assetType}
-        areaSqFt={auctionDetails.areaSqFt}
-        reservePrice={auctionDetails.reservePrice}
-        emd={auctionDetails.emd}
-        bank={auctionDetails.bank}
-        city={auctionDetails.city}
-        state={auctionDetails.state}
-        locality={auctionDetails.locality}
-        startDate={auctionDetails.startDate}
-        applicationDeadLine={auctionDetails.applicationDeadLine}
+        auctionId={auctionDetails?.id}
+        assetType={auctionDetails?.assetType}
+        areaSqFt={auctionDetails?.areaSqFt}
+        reservePrice={auctionDetails?.reservePrice}
+        emd={auctionDetails?.emd}
+        bank={auctionDetails?.bank}
+        city={auctionDetails?.city}
+        state={auctionDetails?.state}
+        locality={auctionDetails?.locality}
+        startDate={auctionDetails?.startDate}
+        applicationDeadLine={auctionDetails?.applicationDeadLine}
+        isFav={auctionDetails?.favourite}
       />
 
       <View style={[styles.card, styles.premiumCard]}>
@@ -83,7 +80,7 @@ const AuctionDetails = () => {
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Loan Account Number</Text>
                 <Text style={styles.fieldValue}>
-                  {auctionDetails.loanAccountNumber}
+                  {auctionDetails?.loanAccountNumber}
                 </Text>
               </View>
             </View>
@@ -117,7 +114,7 @@ const AuctionDetails = () => {
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Property Address</Text>
                 <Text style={styles.fieldValue}>
-                  {auctionDetails.propertyAddress || "N/A"}
+                  {auctionDetails?.propertyAddress || "N/A"}
                 </Text>
               </View>
             </View>
@@ -130,14 +127,19 @@ const AuctionDetails = () => {
               />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Auction URL</Text>
-                <Text style={styles.fieldValue}>
-                  {auctionDetails.auctionUrl ? (
-                    <Link
-                      href={auctionDetails?.auctionUrl}
-                      style={{ color: "blue" }}
-                    >
-                      Link
-                    </Link>
+                <Text
+                  style={{
+                    backgroundColor: "#d4af37",
+                    color: "white",
+                    padding: 3,
+                    width: 90,
+                    textAlign: "center",
+                    borderRadius: 10,
+                    marginBottom: 3,
+                  }}
+                >
+                  {auctionDetails?.auctionUrl ? (
+                    <Link href={auctionDetails?.auctionUrl}>View Link</Link>
                   ) : (
                     "NA"
                   )}
@@ -149,10 +151,24 @@ const AuctionDetails = () => {
               <FontAwesome5 name="file-pdf" size={20} style={styles.icon} />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Documents Link</Text>
-                {auctionDetails?.documentLink?.length > 0 ? (
-                  auctionDetails?.documentLink.map((el, index) => (
-                    <Link key={index} href={el} style={{ color: "blue" }}>
-                      {el}
+                {auctionLink.length &&
+                user.isSubscribed &&
+                auctionLink !== "Subscribe to view details" ? (
+                  auctionLink?.map((el, index) => (
+                    <Link
+                      key={index}
+                      href={el}
+                      style={{
+                        backgroundColor: "#d4af37",
+                        color: "white",
+                        width: 90,
+                        padding: 3,
+                        textAlign: "center",
+                        borderRadius: 10,
+                        marginBottom: 3,
+                      }}
+                    >
+                      View Link
                     </Link>
                   ))
                 ) : (
@@ -169,11 +185,11 @@ const AuctionDetails = () => {
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Map</Text>
                 <Text style={styles.fieldValue}>
-                  {!auctionDetails.latitude && "NA"}
+                  {!auctionDetails?.latitude && "NA"}
                 </Text>
               </View>
             </View>
-            {auctionDetails.latitude && (
+            {auctionDetails?.latitude && (
               <View
                 style={{
                   height: 250,

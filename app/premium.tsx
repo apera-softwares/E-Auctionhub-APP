@@ -3,27 +3,27 @@ import PremiumSkeleton from "components/Loaders/PremiumSkeleton";
 import { BACKEND_API } from "constants/api";
 import { APP_COLOR } from "constants/Colors";
 import { useUser } from "context/UserContextProvider";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import RazorpayCheckout from "react-native-razorpay";
 
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
+import { formateDate } from "constants/staticData";
 
 const PremiumScreen = () => {
-  const [currentPlan, setCurrentPlan] = useState("");
   const [premiumPlans, setPremiumPlans] = useState([] as any);
   const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
   const router = useRouter();
 
-  console.log(user, "user");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   useEffect(() => {
@@ -36,8 +36,6 @@ const PremiumScreen = () => {
 
       const response = await fetch(`${BACKEND_API}subscribe/plans`);
       const data = await response.json();
-
-      console.log(data, "data prmium");
 
       setPremiumPlans(data?.data);
     } catch (error) {
@@ -53,7 +51,6 @@ const PremiumScreen = () => {
 
       setIsProcessing(true);
 
-      // Create an order
       const orderResponse = await fetch(
         `${BACKEND_API}subscribe/create-order`,
         {
@@ -151,9 +148,9 @@ const PremiumScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>
+      {/* <Text style={styles.heading}>
         {currentPlan ? "Current Plan" : "Choose a Plan"}
-      </Text>
+      </Text> */}
       <ScrollView
         contentContainerStyle={styles.cardsContainer}
         showsVerticalScrollIndicator={false}
@@ -167,7 +164,8 @@ const PremiumScreen = () => {
                 key={plan.id}
                 style={[
                   styles.card,
-                  currentPlan === plan.id && styles.activeCard,
+                  user.subscribedPlan?.subscribedPlanId === plan.id &&
+                    styles.activeCard,
                 ]}
                 onPress={() => console.log(`Subscribed to ${plan.title}`)}
               >
@@ -193,18 +191,37 @@ const PremiumScreen = () => {
                   Access to auction notice{"\n"}✔ Daily email alert{"\n"}✔ View
                   all auction details{"\n"}✔ Get location on map
                 </Text>
-                <TouchableOpacity style={styles.buyNowButton}>
-                  <Text
-                    style={styles.buyNowText}
-                    onPress={() =>
-                      user.isLogin
-                        ? handlePayment(plan.amount)
-                        : router.push("/login")
-                    }
-                  >
-                    Buy Now
-                  </Text>
-                </TouchableOpacity>
+                {user?.isSubscribed &&
+                user?.subscribedPlan?.subscribedPlanId === plan.id ? (
+                  <TouchableOpacity style={styles.currentPlanButton}>
+                    <Text style={styles.buyNowText}>Current Plan</Text>
+                    <Text
+                      style={[
+                        styles.buyNowText,
+                        { fontSize: 12, color: "#FF9966" },
+                      ]}
+                    >
+                      Expiry Date: {formateDate(user.subscribedPlan.expiredAt)}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  !user?.isSubscribed && (
+                    <TouchableOpacity
+                      style={styles.buyNowButton}
+                      onPress={() =>
+                        user.isLogin
+                          ? handlePayment(plan.amount)
+                          : router.push("/login")
+                      }
+                    >
+                      {isProcessing ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <Text style={styles.buyNowText}>Buy Now</Text>
+                      )}
+                    </TouchableOpacity>
+                  )
+                )}
               </TouchableOpacity>
             ))}
       </ScrollView>
@@ -212,12 +229,14 @@ const PremiumScreen = () => {
   );
 };
 
+// user?.isSubscribed &&
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     backgroundColor: "#f5f5f5",
-    padding: 10,
+    // padding: 10,
   },
   heading: {
     fontSize: 22,
@@ -228,6 +247,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     paddingBottom: 20,
+    padding: 20,
   },
   card: {
     backgroundColor: "white",
@@ -280,14 +300,25 @@ const styles = StyleSheet.create({
     height: 125,
   },
   buyNowButton: {
-    backgroundColor: APP_COLOR.primary,
+    backgroundColor: "gold",
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 5,
+    width: 200,
+    textAlign: "center",
+  },
+  currentPlanButton: {
+    backgroundColor: "green",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    width: 200,
+    textAlign: "center",
   },
   buyNowText: {
     color: "white",
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
