@@ -37,6 +37,7 @@ const PopularCities = () => {
                 params: {
                   cityId: city?.id,
                   cityName: city?.name,
+                  localityName:"",
                   assetTypeId: "",
                   assetTypeName: "",
                   bankId: "",

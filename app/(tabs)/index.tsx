@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import PopularCities from "components/PopularCities";
 import Footer from "components/Footer";
@@ -23,9 +23,8 @@ export default function TabOneScreen() {
   const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
   const { user, setUser } = useUser();
-
+  const { auctionId } = useLocalSearchParams() as any;
   const router = useRouter();
-
   const [assetType, setAssetType] = useState("");
   const [assetTypeName, setAssetTypeName] = useState("");
   const [city, setCity] = useState("");
@@ -82,6 +81,12 @@ export default function TabOneScreen() {
     fetchCities();
     fetchAssetsType();
     fetchPopularCities();
+    if (auctionId) {
+      router.push({
+        pathname: `/auctionDetails`,
+        params: { auctionId: auctionId },
+      })
+    }
   }, []);
 
   const getUser = async () => {
@@ -129,7 +134,7 @@ export default function TabOneScreen() {
         <YStack flex={1} items="center" gap="$2">
           <View px="$4" style={styles.overlay}>
             <View style={styles.topContainer}>
-              
+
               <H3 style={styles.headerText}>
                 Your Trusted Place{" "}
                 <Text style={{ color: APP_COLOR.primary }}>
@@ -176,21 +181,22 @@ export default function TabOneScreen() {
                   onPress={() =>
                     city || assetType
                       ? router.push({
-                          pathname: `/auctions`,
-                          params: {
-                            cityId: city,
-                            cityName: cityName,
-                            assetTypeId: assetType,
-                            assetTypeName: assetTypeName,
-                            bankId: "",
-                            minPrice: "",
-                            maxPrice: "",
-                          },
-                        })
+                        pathname: `/auctions`,
+                        params: {
+                          cityId: city,
+                          cityName: cityName,
+                          localityName: "",
+                          assetTypeId: assetType,
+                          assetTypeName: assetTypeName,
+                          bankId: "",
+                          minPrice: "",
+                          maxPrice: "",
+                        },
+                      })
                       : Toast.show({
-                          type: "error",
-                          text1: "Select City or Asset Type",
-                        })
+                        type: "error",
+                        text1: "Select City or Asset Type",
+                      })
                   }
                   fontSize={16}
                   fontWeight={700}
@@ -226,6 +232,7 @@ export default function TabOneScreen() {
                           cityId: item?.id,
                           assetTypeName: "",
                           cityName: item?.name,
+                          localityName: "",
                           assetTypeId: "",
                           bankId: "",
                           minPrice: "",

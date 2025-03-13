@@ -10,19 +10,31 @@ import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
 import { Platform } from "react-native";
 
-const UnSubPremiumCard = () => {
+const UnSubPremiumCard = ({ auctionId }) => {
   const { user } = useUser();
   const router = useRouter();
 
   const handleUpgradePremium = () => {
     if (user?.isLogin) {
       if (Platform.OS !== "ios") {
-        router.push("/premium");
+        router.push({
+          pathname: `/premium`,
+          params: {
+            auctionId: auctionId,
+
+          },
+        })
       } else {
         Linking.openURL("https://eauctionshub.com/premium");
       }
     } else {
-      router.push("/login");
+      router.push({
+        pathname: `/login`,
+        params: {
+          auctionId: auctionId,
+
+        },
+      })
     }
   };
 
