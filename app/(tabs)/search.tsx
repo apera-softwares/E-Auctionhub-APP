@@ -134,7 +134,7 @@ export default function search() {
               setCityName(item?.label);
             }}
           />
-            <TextInput
+          <TextInput
             style={[styles.input]}
             placeholder="Locality"
             keyboardType="default"
@@ -142,7 +142,7 @@ export default function search() {
             onChangeText={setLocality}
           />
 
-        
+
           <View style={styles.priceContainer}>
             <TextInput
               style={[styles.input, styles.priceInput]}

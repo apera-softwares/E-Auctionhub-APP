@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useUser } from "context/UserContextProvider";
@@ -18,6 +18,7 @@ import { useUser } from "context/UserContextProvider";
 const LoginScreen = () => {
   const router = useRouter();
   const { user } = useUser();
+  const { auctionId } = useLocalSearchParams() as any;
 
   const [formData, setFormData] = useState({
     phone: "",
@@ -33,7 +34,7 @@ const LoginScreen = () => {
     };
 
     getData();
-  });
+  }, []);
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -109,8 +110,14 @@ const LoginScreen = () => {
         Toast.show({ type: "success", text1: "Login Successful" });
         await AsyncStorage.setItem("token", data.token);
         await AsyncStorage.setItem("role", data.role);
-
-        router.push("/");
+        if (auctionId) {
+          router.push({
+            pathname: `/`,
+            params: { auctionId: auctionId },
+          })
+        } else {
+          router.push("/");
+        }
       } else {
         Toast.show({ type: "error", text1: data.message });
       }
