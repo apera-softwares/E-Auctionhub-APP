@@ -13,15 +13,13 @@ const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
   const [expandedAddress, setExpandedAddress] = useState(false);
-  console.log(user, "user data");
-
+  const [freeTrail, setFreeTrail] = useState(false)
   const isPremiumUser = user.isSubscribed;
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
 
   const getAuctionById = async () => {
-
     const token = await AsyncStorage.getItem("token");
 
     let headers: any = {};
@@ -38,6 +36,7 @@ const AuctionDetails = () => {
       console.log(data.data, "auction details");
 
       if (data.statusCode === 200) {
+        setFreeTrail(data?.data.freeTrail)
         setAuctionDetails(data?.data);
         console.log(data.data?.documentLink, "document link");
         setAUctionLink(data.data?.documentLink);
@@ -48,6 +47,7 @@ const AuctionDetails = () => {
       setLoading(false);
     }
   };
+
 
   const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
 
@@ -76,7 +76,7 @@ const AuctionDetails = () => {
 
       <View style={[styles.card, styles.premiumCard]}>
         <Text style={styles.premiumTitle}>Premium Details</Text>
-        {isPremiumUser ? (
+        {(isPremiumUser || freeTrail) ? (
           <View>
             <View style={styles.detailRow}>
               <FontAwesome5 name="file-alt" size={20} style={styles.icon} />

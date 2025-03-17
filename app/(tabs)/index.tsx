@@ -241,44 +241,51 @@ export default function TabOneScreen() {
                     >
                       Last Searches
                     </Text>
-                    <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 4 }}
-                    >
-                      {lastSearch.map((search, index) => (
-                        <Pressable
-                          key={index}
-                          style={{
-                            backgroundColor: "#f0f0f0",
-                            paddingVertical: 6,
-                            paddingHorizontal: 12,
-                            borderRadius: 20,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 6,
-                            borderWidth: 1,
-                            borderColor: "#d1d1d1",
-                          }}
-                          onPress={() =>
-                            router.push({
-                              pathname: `/auctions`,
-                              params: {
-                                cityId: search?.city,
-                                assetTypeName: search?.assetTypeName,
-                                cityName: search.cityName,
-                                localityName: "",
-                                assetTypeId: search?.assetType,
-                                bankId: "",
-                                minPrice: "",
-                                maxPrice: "",
-                              },
-                            })}
+                    <View style={{ maxWidth: "100%", overflow: "hidden" }}>
+                      <View style={{ flexDirection: "row" }}>
+                        <ScrollView
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          contentContainerStyle={{ flexDirection: "row", gap: 4 }}
                         >
-                          <Text style={{ fontSize: 14, color: "#333" }}>
-                            #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
-                          </Text>
-                        </Pressable>
-                      ))}
+                          {lastSearch.map((search, index) => (
+                            <Pressable
+                              key={index}
+                              style={{
+                                backgroundColor: "#f0f0f0",
+                                paddingVertical: 6,
+                                paddingHorizontal: 12,
+                                borderRadius: 20,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 6,
+                                borderWidth: 1,
+                                borderColor: "#d1d1d1",
+                              }}
+                              onPress={() =>
+                                router.push({
+                                  pathname: `/auctions`,
+                                  params: {
+                                    cityId: search?.city,
+                                    assetTypeName: search?.assetTypeName,
+                                    cityName: search.cityName,
+                                    localityName: "",
+                                    assetTypeId: search?.assetType,
+                                    bankId: "",
+                                    minPrice: "",
+                                    maxPrice: "",
+                                  },
+                                })}
+                            >
+                              <Text style={{ fontSize: 14, color: "#333" }}>
+                                #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
+                              </Text>
+                            </Pressable>
+                          ))}
+                        </ScrollView>
+                      </View>
                     </View>
+
                   </View>
                 )}
                 {/* <Toast /> */}
@@ -360,7 +367,9 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: "white",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 15,
     // width: 310,
     borderRadius: 10,
     marginTop: 30,

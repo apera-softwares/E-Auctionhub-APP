@@ -53,6 +53,24 @@ export const AuctionCard = ({ data: auction }) => {
     }
   };
 
+  const incrementAuctionViewCount = async () => {
+    const token = await AsyncStorage.getItem("token");
+    let headers: any = {};
+    try {
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      const URL = `${BACKEND_API}auction/view/${auction.id}`;
+      const response = await fetch(URL, {
+        method: "POST",
+        headers,
+      });
+      console.log(response, "increment count");
+    } catch (error) {
+      console.log("error while updating auction view count", error);
+    }
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
@@ -61,14 +79,14 @@ export const AuctionCard = ({ data: auction }) => {
             auction.assetType === "Flat"
               ? require("assets/images/assetsTypes/apartment.png")
               : auction.assetType === "House"
-              ? require("assets/images/assetsTypes/home.png")
-              : auction.assetType === "Bungalow"
-              ? require("assets/images/assetsTypes/bungalow.png")
-              : auction.assetType === "Shop"
-              ? require("assets/images/assetsTypes/shop.png")
-              : auction.assetType === "Office"
-              ? require("assets/images/assetsTypes/office.png")
-              : require("assets/images/assetsTypes/land.png")
+                ? require("assets/images/assetsTypes/home.png")
+                : auction.assetType === "Bungalow"
+                  ? require("assets/images/assetsTypes/bungalow.png")
+                  : auction.assetType === "Shop"
+                    ? require("assets/images/assetsTypes/shop.png")
+                    : auction.assetType === "Office"
+                      ? require("assets/images/assetsTypes/office.png")
+                      : require("assets/images/assetsTypes/land.png")
           }
           style={styles.image}
           resizeMode="contain"
@@ -86,7 +104,13 @@ export const AuctionCard = ({ data: auction }) => {
         {/* Share Button */}
         <TouchableOpacity
           style={styles.shareButton}
-          onPress={() => onShare({id:auction?.id, assetType:auction?.assetType,city:auction?.city})}
+          onPress={() =>
+            onShare({
+              id: auction?.id,
+              assetType: auction?.assetType,
+              city: auction?.city,
+            })
+          }
         >
           <FontAwesome name="share-alt" size={15} color="white" />
         </TouchableOpacity>
@@ -122,12 +146,13 @@ export const AuctionCard = ({ data: auction }) => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
+        onPress={() => {
+          incrementAuctionViewCount();
           router.push({
             pathname: `/auctionDetails`,
             params: { auctionId: auction.id },
-          })
-        }
+          });
+        }}
       >
         <Text style={styles.buttonText}>View</Text>
       </TouchableOpacity>
