@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import PopularCities from "components/PopularCities";
 import Footer from "components/Footer";
@@ -25,7 +25,7 @@ export default function TabOneScreen() {
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
   const { user, setUser } = useUser();
   const [lastSearch, setLastSearch] = useState([] as any);
-  const lastSearches = ["Flast in Nagpur", "House in Mumbai"];
+  const { auctionId } = useLocalSearchParams() as any;
   const router = useRouter();
 
   const [assetType, setAssetType] = useState("");
@@ -43,13 +43,13 @@ export default function TabOneScreen() {
       return;
     }
 
-    const newSearch = { assetTypeName, cityName };
+    const newSearch = { assetTypeName, assetType, cityName, city };
 
     try {
       const storedSearches = await AsyncStorage.getItem("lastSearches");
       let lastSearches = storedSearches ? JSON.parse(storedSearches) : [];
 
-      lastSearches = [newSearch, ...lastSearches.slice(0, 1)];
+      lastSearches = [newSearch, ...lastSearches.slice(0, 2)];
 
       setLastSearch(lastSearches);
 
@@ -63,6 +63,7 @@ export default function TabOneScreen() {
       params: {
         cityId: city,
         cityName: cityName,
+        localityName: "",
         assetTypeId: assetType,
         assetTypeName: assetTypeName,
         bankId: "",
@@ -132,6 +133,12 @@ export default function TabOneScreen() {
     fetchCities();
     fetchAssetsType();
     fetchPopularCities();
+    if (auctionId) {
+      router.push({
+        pathname: `/auctionDetails`,
+        params: { auctionId: auctionId },
+      })
+    }
   }, []);
 
   const getUser = async () => {
@@ -235,7 +242,7 @@ export default function TabOneScreen() {
                       Last Searches
                     </Text>
                     <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 4 }}
                     >
                       {lastSearch.map((search, index) => (
                         <Pressable
@@ -251,9 +258,23 @@ export default function TabOneScreen() {
                             borderWidth: 1,
                             borderColor: "#d1d1d1",
                           }}
+                          onPress={() =>
+                            router.push({
+                              pathname: `/auctions`,
+                              params: {
+                                cityId: search?.city,
+                                assetTypeName: search?.assetTypeName,
+                                cityName: search.cityName,
+                                localityName: "",
+                                assetTypeId: search?.assetType,
+                                bankId: "",
+                                minPrice: "",
+                                maxPrice: "",
+                              },
+                            })}
                         >
                           <Text style={{ fontSize: 14, color: "#333" }}>
-                            #{search?.assetTypeName} in {search?.cityName}
+                            #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
                           </Text>
                         </Pressable>
                       ))}
@@ -288,6 +309,7 @@ export default function TabOneScreen() {
                           cityId: item?.id,
                           assetTypeName: "",
                           cityName: item?.name,
+                          localityName: "",
                           assetTypeId: "",
                           bankId: "",
                           minPrice: "",

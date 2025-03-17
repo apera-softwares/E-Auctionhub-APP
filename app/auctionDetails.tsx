@@ -1,4 +1,4 @@
-import { View, ScrollView, Text, StyleSheet } from "react-native";
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
@@ -12,7 +12,7 @@ import PublicAuctionDetailsCard from "components/PublicAuctionDetailsCard";
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
-
+  const [expandedAddress, setExpandedAddress] = useState(false);
   console.log(user, "user data");
 
   const isPremiumUser = user.isSubscribed;
@@ -21,6 +21,7 @@ const AuctionDetails = () => {
   const [auctionLink, setAUctionLink] = useState([] as any);
 
   const getAuctionById = async () => {
+
     const token = await AsyncStorage.getItem("token");
 
     let headers: any = {};
@@ -51,7 +52,9 @@ const AuctionDetails = () => {
   const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
 
   useEffect(() => {
-    getAuctionById();
+    if (auctionId) {
+      getAuctionById();
+    }
   }, []);
 
   return (
@@ -111,12 +114,24 @@ const AuctionDetails = () => {
                 size={20}
                 style={styles.icon}
               />
-              <View style={styles.textContainer}>
+              {auctionDetails?.propertyAddress ? <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Property Address</Text>
                 <Text style={styles.fieldValue}>
-                  {auctionDetails?.propertyAddress || "N/A"}
+                  {expandedAddress || auctionDetails?.propertyAddress?.length <= 95 ? auctionDetails?.propertyAddress : `${auctionDetails?.propertyAddress.substring(0, 95)}...`}
                 </Text>
-              </View>
+                {auctionDetails?.propertyAddress?.length > 95 && (
+                  <TouchableOpacity onPress={() => setExpandedAddress(!expandedAddress)}>
+                    <Text style={styles.readMoreText}>
+                      {expandedAddress ? "Read Less" : "Read More"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View> : <View style={styles.textContainer}>
+                <Text style={styles.fieldTitle}>Property Address</Text>
+                <Text style={styles.fieldValue}>
+                  NA
+                </Text>
+              </View>}
             </View>
 
             <View style={styles.detailRow}>
@@ -152,8 +167,8 @@ const AuctionDetails = () => {
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Documents Link</Text>
                 {auctionLink.length &&
-                user.isSubscribed &&
-                auctionLink !== "Subscribe to view details" ? (
+                  user.isSubscribed &&
+                  auctionLink !== "Subscribe to view details" ? (
                   auctionLink?.map((el, index) => (
                     <Link
                       key={index}
@@ -208,7 +223,7 @@ const AuctionDetails = () => {
             )}
           </View>
         ) : (
-          <UnSubPremiumCard />
+          <UnSubPremiumCard auctionId={auctionId} />
         )}
       </View>
     </ScrollView>
@@ -270,6 +285,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "400",
     color: "#666",
+  },
+  readMoreText: {
+    color: "blue",
+    marginTop: 5,
   },
 });
 

@@ -20,6 +20,7 @@ export default function AuctionScreen() {
     maxPrice,
     assetTypeName,
     cityName,
+    localityName
   } = useLocalSearchParams() as any;
   const [loading, setLoading] = useState(false);
   const [auctions, setAuctions] = useState([]);
@@ -42,7 +43,7 @@ export default function AuctionScreen() {
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-      const URL = `${BACKEND_API}auction/search?${sort}&assetTypeId=${assetTypeId}&bankId=${bankId}&cityId=${cityId}&minResPrice=${minPrice}&maxResPrice=${maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
+      const URL = `${BACKEND_API}auction/search?${sort}&assetTypeId=${assetTypeId}&bankId=${bankId}&cityId=${cityId}&locality=${localityName}&minResPrice=${minPrice}&maxResPrice=${maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
       const response = await fetch(URL, {
         headers,
       });
@@ -68,7 +69,7 @@ export default function AuctionScreen() {
 
   useEffect(() => {
     fetchAuctions(1, true);
-  }, [cityId, assetTypeId, bankId, minPrice, maxPrice, sort]);
+  }, [cityId, assetTypeId, bankId, minPrice, maxPrice, sort, localityName]);
 
   const loadMore = () => {
     if (!loading && page < lastPage) {
@@ -98,10 +99,10 @@ export default function AuctionScreen() {
           {cityName && assetTypeName
             ? `Auctions ${assetTypeName} found in ${cityName}`
             : cityName
-            ? `Auctions found in ${cityName}`
-            : assetTypeName
-            ? `Auctions found in ${assetTypeName}`
-            : "Total Auction found"}
+              ? `Auctions found in ${cityName}`
+              : assetTypeName
+                ? `Auctions found in ${assetTypeName}`
+                : "Total Auction found"}
         </Text>
 
         <TouchableOpacity

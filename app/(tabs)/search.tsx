@@ -11,6 +11,7 @@ import Footer from "components/Footer";
 export default function search() {
   const [city, setCity] = useState("");
   const [cityName, setCityName] = useState("");
+  const [locality, setLocality] = useState("");
   const [bank, setBank] = useState("");
   const [assetType, setAssetType] = useState("");
   const [assetTypeName, setAssetTypeName] = useState("");
@@ -74,6 +75,7 @@ export default function search() {
 
   const clearFilters = () => {
     setCity("");
+    setLocality("")
     setBank("");
     setAssetType("");
     setAssetTypeName("");
@@ -94,6 +96,19 @@ export default function search() {
           <SizableText size="$5" text="center" color="black">
             Find auction listings with more filter options.
           </SizableText>
+
+          <Dropdown
+            style={styles.dropdown}
+            data={allAssetTypes}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Asset Type"
+            value={assetType}
+            onChange={(item) => {
+              setAssetType(item?.value);
+              setAssetTypeName(item?.label);
+            }}
+          />
 
           <Dropdown
             style={styles.dropdown}
@@ -119,19 +134,14 @@ export default function search() {
               setCityName(item?.label);
             }}
           />
-
-          <Dropdown
-            style={styles.dropdown}
-            data={allAssetTypes}
-            labelField="label"
-            valueField="value"
-            placeholder="Select Asset Type"
-            value={assetType}
-            onChange={(item) => {
-              setAssetType(item?.value);
-              setAssetTypeName(item?.label);
-            }}
+          <TextInput
+            style={[styles.input]}
+            placeholder="Locality"
+            keyboardType="default"
+            value={locality}
+            onChangeText={setLocality}
           />
+
 
           <View style={styles.priceContainer}>
             <TextInput
@@ -161,23 +171,24 @@ export default function search() {
             </Button>
             <Button
               onPress={() =>
-                city || assetType || bank || minPrice || maxPrice
+                city || assetType || bank || minPrice || maxPrice || locality
                   ? router.push({
-                      pathname: `/auctions`,
-                      params: {
-                        bankId: bank,
-                        cityId: city,
-                        cityName: cityName,
-                        assetTypeId: assetType,
-                        assetTypeName: assetTypeName,
-                        minPrice,
-                        maxPrice,
-                      },
-                    })
+                    pathname: `/auctions`,
+                    params: {
+                      bankId: bank,
+                      cityId: city,
+                      cityName: cityName,
+                      localityName: locality,
+                      assetTypeId: assetType,
+                      assetTypeName: assetTypeName,
+                      minPrice,
+                      maxPrice,
+                    },
+                  })
                   : Toast.show({
-                      type: "error",
-                      text1: "Please select atleat one filed",
-                    })
+                    type: "error",
+                    text1: "Please select atleat one filed",
+                  })
               }
               fontSize={16}
               fontWeight={700}
