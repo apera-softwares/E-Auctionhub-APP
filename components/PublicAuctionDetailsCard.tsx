@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   field: {
-    fontSize: 16,
+    fontSize: 15,
     marginLeft: 10,
     fontWeight: "bold",
     opacity: 0.8,

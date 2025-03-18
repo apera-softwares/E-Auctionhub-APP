@@ -15,6 +15,7 @@ import { BACKEND_API } from "constants/api";
 import { Ionicons } from "@expo/vector-icons";
 
 const ContactUs = () => {
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -97,7 +98,6 @@ const ContactUs = () => {
           <Text style={styles.subText}>
             Got a question? We're here to help!
           </Text>
-
           <TextInput
             style={styles.input}
             placeholder="Name"
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
-    elevation: 5, // Shadow for Android
+    elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
