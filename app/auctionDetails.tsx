@@ -1,4 +1,10 @@
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
@@ -14,7 +20,7 @@ const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
   const { user } = useUser();
   const [expandedAddress, setExpandedAddress] = useState(false);
-  const [freeTrail, setFreeTrail] = useState(false)
+  const [freeTrail, setFreeTrail] = useState(false);
   const isPremiumUser = user.isSubscribed;
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
@@ -38,7 +44,7 @@ const AuctionDetails = () => {
       console.log(data.data, "auction details");
 
       if (data.statusCode === 200) {
-        setFreeTrail(data?.data.freeTrail)
+        setFreeTrail(data?.data.freeTrail);
         setAuctionDetails(data?.data);
         console.log(data.data?.documentLink, "document link");
         setAUctionLink(data.data?.documentLink);
@@ -49,7 +55,6 @@ const AuctionDetails = () => {
       setLoading(false);
     }
   };
-
 
   const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
 
@@ -82,7 +87,7 @@ const AuctionDetails = () => {
       /> */}
       <View style={[styles.card, styles.premiumCard]}>
         <Text style={styles.premiumTitle}>Premium Details</Text>
-        {(isPremiumUser || freeTrail) ? (
+        {isPremiumUser || freeTrail ? (
           <View>
             <View style={styles.detailRow}>
               <FontAwesome5 name="file-alt" size={20} style={styles.icon} />
@@ -120,24 +125,34 @@ const AuctionDetails = () => {
                 size={20}
                 style={styles.icon}
               />
-              {auctionDetails?.propertyAddress ? <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Property Address</Text>
-                <Text style={styles.fieldValue}>
-                  {expandedAddress || auctionDetails?.propertyAddress?.length <= 95 ? auctionDetails?.propertyAddress : `${auctionDetails?.propertyAddress.substring(0, 95)}...`}
-                </Text>
-                {auctionDetails?.propertyAddress?.length > 95 && (
-                  <TouchableOpacity onPress={() => setExpandedAddress(!expandedAddress)}>
-                    <Text style={styles.readMoreText}>
-                      {expandedAddress ? "Read Less" : "Read More"}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View> : <View style={styles.textContainer}>
-                <Text style={styles.fieldTitle}>Property Address</Text>
-                <Text style={styles.fieldValue}>
-                  NA
-                </Text>
-              </View>}
+              {auctionDetails?.propertyAddress ? (
+                <View style={styles.textContainer}>
+                  <Text style={styles.fieldTitle}>Property Address</Text>
+                  <Text style={styles.fieldValue}>
+                    {expandedAddress ||
+                      auctionDetails?.propertyAddress?.length <= 95
+                      ? auctionDetails?.propertyAddress
+                      : `${auctionDetails?.propertyAddress.substring(
+                        0,
+                        95
+                      )}...`}
+                  </Text>
+                  {auctionDetails?.propertyAddress?.length > 95 && (
+                    <TouchableOpacity
+                      onPress={() => setExpandedAddress(!expandedAddress)}
+                    >
+                      <Text style={styles.readMoreText}>
+                        {expandedAddress ? "Read Less" : "Read More"}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.textContainer}>
+                  <Text style={styles.fieldTitle}>Property Address</Text>
+                  <Text style={styles.fieldValue}>NA</Text>
+                </View>
+              )}
             </View>
 
             <View style={styles.detailRow}>
@@ -230,7 +245,9 @@ const AuctionDetails = () => {
           </View>
         ) : (
           <>
-            <Text style={styles.freeTrailHeading}>Your free trial has expired! Upgrade to Premium for full access.</Text>
+            <Text style={styles.freeTrailHeading}>
+              Your free trial has expired! Upgrade to Premium for full access.
+            </Text>
             <UnSubPremiumCard auctionId={auctionId} />
           </>
         )}
@@ -306,7 +323,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 15,
     color: "#d4af37",
-  }
+  },
 });
 
 export default AuctionDetails;
