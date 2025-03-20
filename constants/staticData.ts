@@ -6,7 +6,7 @@ export const popularCitiesList = [
   {
     id: "clxy7z8qt00000clg4x71e8i8",
     name: "Mumbai",
-    image: require("../assets/images/PopularCities/surat.png"),
+    image: require("../assets/images/PopularCities/mumbai.jpg"),
   },
   {
     id: "cm5f7za3v03ku227ugvobchxs",

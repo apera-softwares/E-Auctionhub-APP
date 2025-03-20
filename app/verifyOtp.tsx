@@ -16,6 +16,7 @@ const VerifyOtp = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+
   const [otp, setOtp] = useState("");
 
   const handleOtpChange = (text: string) => {
@@ -56,11 +57,11 @@ const VerifyOtp = () => {
           });
         }
       } else if (data.statusCode === 400) {
-        Toast.show({ type: "success", text1: data.message });
+        Toast.show({ type: "error", text1: data.message });
       } else if (data.statusCode === 404) {
-        Toast.show({ type: "success", text1: data.message });
+        Toast.show({ type: "error", text1: data.message });
       } else {
-        Toast.show({ type: "success", text1: data.message });
+        Toast.show({ type: "error", text1: data.message });
       }
     } catch (error) {
       console.error("Error during OTP verification:", error);

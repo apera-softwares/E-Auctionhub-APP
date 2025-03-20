@@ -10,6 +10,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { AuctionCard } from "components/AuctionCard";
 import { APP_COLOR } from "constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "context/UserContextProvider";
 
 export default function AuctionScreen() {
   const {
@@ -31,7 +32,7 @@ export default function AuctionScreen() {
   const [totalAuction, setTotalAuction] = useState(0);
   const [sort, setSort] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const { user, setUser } = useUser()
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
     const token = await AsyncStorage.getItem("token");
     console.log(token, "token");
@@ -67,9 +68,12 @@ export default function AuctionScreen() {
     }
   };
 
+  
+
   useEffect(() => {
     fetchAuctions(1, true);
   }, [cityId, assetTypeId, bankId, minPrice, maxPrice, sort, localityName]);
+
 
   const loadMore = () => {
     if (!loading && page < lastPage) {
