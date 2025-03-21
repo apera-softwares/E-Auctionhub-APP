@@ -74,25 +74,30 @@ export const AuctionCard = ({ data: auction }) => {
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
-        <Image
-          source={
-            auction.assetType === "Flat"
-              ? require("assets/images/assetsTypes/apartment.png")
-              : auction.assetType === "House"
-                ? require("assets/images/assetsTypes/home.png")
-                : auction.assetType === "Bungalow"
-                  ? require("assets/images/assetsTypes/bungalow.png")
-                  : auction.assetType === "Shop"
-                    ? require("assets/images/assetsTypes/shop.png")
-                    : auction.assetType === "Office"
-                      ? require("assets/images/assetsTypes/office.png")
-                      : require("assets/images/assetsTypes/land.png")
-          }
+        {auction?.imageUrl.length > 0 ? <Image
+          source={{ uri: auction.imageUrl[0] }}
           style={styles.image}
-          resizeMode="contain"
-        />
+          resizeMode="cover"
+        /> :
+          <Image
+            source={
+              auction.assetType === "Flat"
+                ? require("assets/images/assetsTypes/apartment.png")
+                : auction.assetType === "House"
+                  ? require("assets/images/assetsTypes/home.png")
+                  : auction.assetType === "Bungalow"
+                    ? require("assets/images/assetsTypes/bungalow.png")
+                    : auction.assetType === "Shop"
+                      ? require("assets/images/assetsTypes/shop.png")
+                      : auction.assetType === "Office"
+                        ? require("assets/images/assetsTypes/office.png")
+                        : require("assets/images/assetsTypes/land.png")
+            }
+            style={styles.image}
+            resizeMode="contain"
+          />
+        }
 
-        {/* Favorite Button */}
         <TouchableOpacity style={styles.favButton} onPress={addTofav}>
           {fav ? (
             <FontAwesome name="heart" size={15} color="red" />
@@ -101,7 +106,6 @@ export const AuctionCard = ({ data: auction }) => {
           )}
         </TouchableOpacity>
 
-        {/* Share Button */}
         <TouchableOpacity
           style={styles.shareButton}
           onPress={() =>
@@ -172,6 +176,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     alignItems: "center",
+    borderWidth: 0.2,
+    borderColor: APP_COLOR.primary,
   },
   imageContainer: {
     width: "100%",
@@ -243,7 +249,9 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    backgroundColor: APP_COLOR.primary,
+    // backgroundColor: APP_COLOR.primary,
+    borderWidth: 1,
+    borderColor: APP_COLOR.primary,
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 5,
@@ -252,7 +260,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   buttonText: {
-    color: "#fff",
+    color: APP_COLOR.primary,
     fontWeight: "bold",
     fontSize: 14,
   },

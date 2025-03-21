@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { formateDate, onShare } from "constants/staticData";
 import { APP_COLOR } from "constants/Colors";
@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
+const { width } = Dimensions.get("window");
 
 interface PublicAuctionDetailsCardProps {
   assetType: string;
@@ -21,6 +22,7 @@ interface PublicAuctionDetailsCardProps {
   applicationDeadLine: string;
   auctionId: string;
   isFav: boolean;
+  images: any;
 }
 
 const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
@@ -36,10 +38,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
   applicationDeadLine,
   auctionId,
   isFav,
+  images
 }) => {
   const [fav, setFav] = useState<boolean>(isFav);
   const { user } = useUser();
   const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setFav(isFav);
@@ -72,23 +76,75 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
 
   return (
     <View style={styles.card}>
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
-          {fav ? (
-            <FontAwesome name="heart" size={22} color="red" />
-          ) : (
-            <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() =>
-            onShare({ id: auctionId, assetType: assetType, city: city })
-          }
-        >
-          <FontAwesome5 name="share-alt" size={22} color={APP_COLOR.primary} />
-        </TouchableOpacity>
-      </View>
+
+      {images?.length > 0 ? (
+        <View style={styles.imageContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            onScroll={(event) => {
+              const index = Math.round(
+                event.nativeEvent.contentOffset.x / width
+              );
+              setCurrentIndex(index);
+            }}
+            scrollEventThrottle={200}
+
+          >
+            {images?.map((img, index) => (
+              <TouchableOpacity key={index} onPress={() => router.push({
+                pathname: `/fullScreenImageView`,
+                params: { images: JSON.stringify(images) }, // Convert array to string
+              })}>
+                <Image source={{ uri: img }} style={styles.image} />
+              </TouchableOpacity>))}
+          </ScrollView>
+
+          {images?.length > 1 && <View style={styles.pagination}>
+            {images.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  currentIndex === index ? styles.activeDot : {},
+                ]}
+              />
+            ))}
+          </View>}
+
+          <View style={styles.overlayIcons}>
+            <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+              {fav ? (
+                <FontAwesome name="heart" size={22} color="red" />
+              ) : (
+                <FontAwesome5 name="heart" size={22} color="#fff" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => onShare({ id: auctionId, assetType, city })}
+            >
+              <FontAwesome5 name="share-alt" size={22} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+            {fav ? (
+              <FontAwesome name="heart" size={22} color="red" />
+            ) : (
+              <FontAwesome5 name="heart" size={22} color="black" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => onShare({ id: auctionId, assetType, city })}
+          >
+            <FontAwesome5 name="share-alt" size={22} color="black" />
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.topInfo}>
         <Text style={styles.assetType}>
@@ -124,9 +180,8 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
         <DetailField
           icon="clock"
           title="Deadline: "
-          text={`${
-            applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
-          }`}
+          text={`${applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
+            }`}
         />
       </View>
     </View>
@@ -157,13 +212,51 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
+  imageContainer: {
+    borderRadius: 15,
+    overflow: "hidden",
+  },
+  image: {
+    width: width - 40,
+    height: 200,
+    resizeMode: "cover",
+    borderRadius: 15,
+  },
+
+  pagination: {
+    position: "absolute",
+    bottom: 10,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#bbb",
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: "#fff",
+  },
+
+  overlayIcons: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    flexDirection: "row",
+    gap: 10,
+  },
+
   actionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
   iconButton: {
     padding: 10,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 50,
   },
 

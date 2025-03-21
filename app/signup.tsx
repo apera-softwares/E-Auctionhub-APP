@@ -1,16 +1,15 @@
 import { APP_COLOR } from "constants/Colors";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   Switch,
-  Alert,
   TouchableOpacity,
   Keyboard,
   ScrollView,
+  Platform,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
@@ -83,7 +82,7 @@ const SignupScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const payload = { ...formData, phone: `+91${formData.phone}` };
+      const payload = { ...formData, phone: `+91${formData.phone}`, platform: Platform.OS };
       const response = await fetch(`${BACKEND_API}user/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,73 +127,73 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.card}>
-      <Text style={styles.header}>Create Account</Text>
-      <Toast />
+      <View style={styles.card}>
+        <Text style={styles.header}>Create Account</Text>
+        <Toast />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          value={formData.name}
-          onChangeText={(text) => handleInputChange("name", text)}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your name"
+            value={formData.name}
+            onChangeText={(text) => handleInputChange("name", text)}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Phone</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your phone number"
-          keyboardType="number-pad"
-          value={formData.phone}
-          onChangeText={handlePhoneChange} // Handle phone change here
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phone</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your phone number"
+            keyboardType="number-pad"
+            value={formData.phone}
+            onChangeText={handlePhoneChange}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          secureTextEntry
-          value={formData.password}
-          onChangeText={(text) => handleInputChange("password", text)}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your password"
+            secureTextEntry
+            value={formData.password}
+            onChangeText={(text) => handleInputChange("password", text)}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Confirm Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm your password"
-          secureTextEntry
-          value={formData.confirmPassword}
-          onChangeText={(text) => handleInputChange("confirmPassword", text)}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm your password"
+            secureTextEntry
+            value={formData.confirmPassword}
+            onChangeText={(text) => handleInputChange("confirmPassword", text)}
+          />
+        </View>
 
-      <View style={styles.checkboxContainer}>
-        <Switch
-          value={formData.termsAccepted}
-          onValueChange={(value) => handleInputChange("termsAccepted", value)}
-        />
-        <Text style={styles.checkboxText}>
-          I accept the Privacy Policy and Terms & Conditions
-        </Text>
-      </View>
+        <View style={styles.checkboxContainer}>
+          <Switch
+            value={formData.termsAccepted}
+            onValueChange={(value) => handleInputChange("termsAccepted", value)}
+          />
+          <Text style={styles.checkboxText}>
+            I accept the Privacy Policy and Terms & Conditions
+          </Text>
+        </View>
 
-      <TouchableOpacity onPress={handleSubmit} style={styles.authButton}>
-        <Text style={styles.authButtonText}>Signup</Text>
-      </TouchableOpacity>
-
-      <View style={styles.loginContainer}>
-        <Text style={styles.loginText}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => router.push("/login")}>
-          <Text style={styles.loginLink}>Login</Text>
+        <TouchableOpacity onPress={handleSubmit} style={styles.authButton}>
+          <Text style={styles.authButtonText}>Signup</Text>
         </TouchableOpacity>
-      </View>
+
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => router.push("/login")}>
+            <Text style={styles.loginLink}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
-    elevation: 5, // Shadow for Android
+    elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

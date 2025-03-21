@@ -79,12 +79,9 @@ const AuctionDetails = () => {
         startDate={auctionDetails?.startDate}
         applicationDeadLine={auctionDetails?.applicationDeadLine}
         isFav={auctionDetails?.favourite}
+        images={auctionDetails?.imageUrl}
       />
-      {/* <TrialExpiredModal
-        isVisible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onGetPremium={() => alert('Redirecting to Premium!')}
-      /> */}
+    
       <View style={[styles.card, styles.premiumCard]}>
         <Text style={styles.premiumTitle}>Premium Details</Text>
         {isPremiumUser || freeTrail ? (

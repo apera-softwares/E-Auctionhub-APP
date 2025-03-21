@@ -281,7 +281,22 @@ function RootLayoutNav() {
             },
           }}
         />
+        <Stack.Screen
+          name="fullScreenImageView"
+          options={{
+            headerShown:false,
+            title: "Auction Images",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
       </Stack>
+
     </>
   );
 }
