@@ -24,4 +24,5 @@ for both
 _Submit to Store_
 -eas submit android
 -eas submit ios
--eas submit all
+-eas submit --platform all
+
