@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -14,7 +15,6 @@ import { useUser } from "../context/UserContextProvider";
 import UnSubPremiumCard from "components/UnSubPremiumCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PublicAuctionDetailsCard from "components/PublicAuctionDetailsCard";
-// import TrialExpiredModal from "components/Modals/FreeTrailExpiry";
 
 const AuctionDetails = () => {
   const { auctionId } = useLocalSearchParams() as any;
@@ -25,7 +25,6 @@ const AuctionDetails = () => {
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
-  const [modalVisible, setModalVisible] = useState(true);
 
   const getAuctionById = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -46,7 +45,6 @@ const AuctionDetails = () => {
       if (data.statusCode === 200) {
         setFreeTrail(data?.data.freeTrail);
         setAuctionDetails(data?.data);
-        console.log(data.data?.documentLink, "document link");
         setAUctionLink(data.data?.documentLink);
       }
     } catch (error) {
@@ -64,7 +62,10 @@ const AuctionDetails = () => {
     }
   }, []);
 
-  return (
+  return (loading ? <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color="#007bff" />
+    <Text style={styles.loadingText}>Loading please wait...</Text>
+  </View> :
     <ScrollView style={styles.container}>
       <PublicAuctionDetailsCard
         auctionId={auctionDetails?.id}
@@ -81,7 +82,7 @@ const AuctionDetails = () => {
         isFav={auctionDetails?.favourite}
         images={auctionDetails?.imageUrl}
       />
-    
+
       <View style={[styles.card, styles.premiumCard]}>
         <Text style={styles.premiumTitle}>Premium Details</Text>
         {isPremiumUser || freeTrail ? (
@@ -184,8 +185,8 @@ const AuctionDetails = () => {
               <FontAwesome5 name="file-pdf" size={20} style={styles.icon} />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Documents Link</Text>
-                {auctionLink.length &&
-                  user.isSubscribed &&
+                {auctionLink?.length &&
+                  user?.isSubscribed &&
                   auctionLink !== "Subscribe to view details" ? (
                   auctionLink?.map((el, index) => (
                     <Link
@@ -320,6 +321,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 15,
     color: "#d4af37",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "gray",
   },
 });
 

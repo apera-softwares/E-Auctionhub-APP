@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { formateDate, onShare } from "constants/staticData";
-import { APP_COLOR } from "constants/Colors";
 import { BACKEND_API } from "constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
@@ -76,7 +75,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
 
   return (
     <View style={styles.card}>
-
       {images?.length > 0 ? (
         <View style={styles.imageContainer}>
           <ScrollView
@@ -94,7 +92,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
             {images?.map((img, index) => (
               <TouchableOpacity key={index} onPress={() => router.push({
                 pathname: `/fullScreenImageView`,
-                params: { images: JSON.stringify(images) }, // Convert array to string
+                params: { images: JSON.stringify(images) },
               })}>
                 <Image source={{ uri: img }} style={styles.image} />
               </TouchableOpacity>))}
@@ -184,6 +182,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
             }`}
         />
       </View>
+
     </View>
   );
 };

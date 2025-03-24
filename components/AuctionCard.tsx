@@ -17,7 +17,7 @@ import { BACKEND_API } from "constants/api";
 import { useEffect, useState } from "react";
 import { useUser } from "context/UserContextProvider";
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = width / 2 - 18;
+const CARD_WIDTH = width / 2 - 10;
 
 export const AuctionCard = ({ data: auction }) => {
   const router = useRouter();
@@ -73,7 +73,7 @@ export const AuctionCard = ({ data: auction }) => {
 
   return (
     <View style={styles.card}>
-      <View style={styles.imageContainer}>
+      <View style={styles.imageContainer} >
         {auction?.imageUrl.length > 0 ? <Image
           source={{ uri: auction.imageUrl[0] }}
           style={styles.image}
@@ -122,30 +122,27 @@ export const AuctionCard = ({ data: auction }) => {
 
       <View style={styles.textContainer}>
         <Text style={styles.assetType}>{auction.assetType || "Others"}</Text>
+        <Text style={styles.price}>
+          <FontAwesome name="rupee" size={14} color="#28a745" />{" "}
+          {auction?.reservePrice?.toLocaleString()}
+        </Text>
         <Text style={styles.text}>
           <FontAwesome6 name="location-dot" size={14} color="#555" />{" "}
           {auction.city}
         </Text>
         <Text style={styles.text}>
           <FontAwesome name="bank" size={13} color="#555" />{" "}
-          {auction.bank.slice(0, 14)}
+          {auction.bank.slice(0, 18)}
           {"..."}
         </Text>
-        <Text style={styles.price}>
-          <FontAwesome name="rupee" size={14} color="#28a745" />{" "}
-          {auction?.reservePrice?.toLocaleString()}
-        </Text>
+
         <Text style={styles.date}>
           <Fontisto name="date" size={12} color="#333" />{" "}
           <Text style={{ fontWeight: "bold" }}>
-            {formateDate(auction.startDate)}
+            {formateDate(auction.startDate) || "NA"}
           </Text>
         </Text>
-        {auction.applicationDeadLine && (
-          <Text style={styles.deadline}>
-            ⏳ {formateDate(auction.applicationDeadLine)}
-          </Text>
-        )}
+       
       </View>
 
       <TouchableOpacity
@@ -168,16 +165,16 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 10,
+    padding: 9,
     margin: 5,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
     alignItems: "center",
-    borderWidth: 0.2,
-    borderColor: APP_COLOR.primary,
+    borderWidth: 1,
+    borderColor: "#D3D3D3",
   },
   imageContainer: {
     width: "100%",
@@ -235,7 +232,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#28a745",
-    marginVertical: 5,
+    marginVertical: 3,
   },
   date: {
     fontSize: 12,
@@ -249,11 +246,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    // backgroundColor: APP_COLOR.primary,
     borderWidth: 1,
     borderColor: APP_COLOR.primary,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingVertical: 6,
+    // paddingHorizontal: 10,
     borderRadius: 5,
     width: "100%",
     alignItems: "center",
