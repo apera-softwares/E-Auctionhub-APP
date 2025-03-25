@@ -53,7 +53,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
       return router.push("/login");
     }
     const token = await AsyncStorage.getItem("token");
-    console.log(token, "token");
     try {
       const response = await fetch(`${BACKEND_API}auction/favourite/add`, {
         method: "POST",
@@ -65,12 +64,17 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           auctionId: auctionId,
         }),
       });
-
       const data = await response.json();
       setFav(data.statusCode == 200 ? false : true);
     } catch (error) {
       console.log(error, "add to fav error");
     }
+  };
+
+  const handleScroll = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / width);
+    setCurrentIndex(index);
   };
 
   return (
@@ -79,15 +83,10 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
         <View style={styles.imageContainer}>
           <ScrollView
             horizontal
+            pagingEnabled
             showsHorizontalScrollIndicator={false}
-            onScroll={(event) => {
-              const index = Math.round(
-                event.nativeEvent.contentOffset.x / width
-              );
-              setCurrentIndex(index);
-            }}
-            scrollEventThrottle={200}
-
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
           >
             {images?.map((img, index) => (
               <TouchableOpacity key={index} onPress={() => router.push({
@@ -98,17 +97,11 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
               </TouchableOpacity>))}
           </ScrollView>
 
-          {images?.length > 1 && <View style={styles.pagination}>
-            {images.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  currentIndex === index ? styles.activeDot : {},
-                ]}
-              />
-            ))}
-          </View>}
+          <View style={styles.pagination}>
+            <Text style={styles.paginationText}>
+              {currentIndex + 1}/{images.length}
+            </Text>
+          </View>
 
           <View style={styles.overlayIcons}>
             <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
@@ -164,7 +157,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           text={`${areaSqFt || ""} sqft`}
         />
         <DetailField icon="coins" title="EMD: " text={`₹ ${emd}`} />
-        <DetailField icon="university" title="Bank: " text={`${bank}`} />
+        <DetailField
+          icon="rupee-sign"
+          title="Reserved Price: "
+          text={`${reservePrice || "NA"}`}
+        />
+        <DetailField icon="university" title="Bank: " text={`${bank || "NA"}`} />
         <DetailField
           icon="map-marker-alt"
           title="Location: "
@@ -173,7 +171,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
         <DetailField
           icon="calendar-alt"
           title="Start Date: "
-          text={`${formateDate(startDate)}`}
+          text={`${formateDate(startDate) || "NA"}`}
         />
         <DetailField
           icon="clock"
@@ -200,7 +198,7 @@ const DetailField = ({ icon, text, title, color = "#333" }) => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 15,
+    borderRadius: 10,
     margin: 10,
     paddingVertical: 15,
     paddingHorizontal: 20,
@@ -212,35 +210,30 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    borderRadius: 15,
+    borderRadius: 5,
     overflow: "hidden",
   },
   image: {
-    width: width - 40,
+    width: width - 80,
     height: 200,
     resizeMode: "cover",
-    borderRadius: 15,
+    borderRadius: 5,
   },
-
   pagination: {
     position: "absolute",
-    bottom: 10,
-    left: 0,
+    bottom: 0,
     right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
+    alignSelf: "center",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 5,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#bbb",
-    marginHorizontal: 4,
+  paginationText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
-  activeDot: {
-    backgroundColor: "#fff",
-  },
-
   overlayIcons: {
     position: "absolute",
     top: 10,
@@ -258,7 +251,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 50,
   },
-
   topInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -271,7 +263,6 @@ const styles = StyleSheet.create({
     color: "#222",
     lineHeight: 30,
   },
-
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
