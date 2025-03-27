@@ -72,7 +72,13 @@ export const AuctionCard = ({ data: auction }) => {
   };
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => {
+      incrementAuctionViewCount();
+      router.push({
+        pathname: `/auctionDetails`,
+        params: { auctionId: auction.id },
+      });
+    }}>
       <View style={styles.imageContainer} >
         {auction?.imageUrl.length > 0 ? <Image
           source={{ uri: auction.imageUrl[0] }}
@@ -142,7 +148,6 @@ export const AuctionCard = ({ data: auction }) => {
             {formateDate(auction.startDate) || "NA"}
           </Text>
         </Text>
-       
       </View>
 
       <TouchableOpacity
@@ -157,7 +162,7 @@ export const AuctionCard = ({ data: auction }) => {
       >
         <Text style={styles.buttonText}>View</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
