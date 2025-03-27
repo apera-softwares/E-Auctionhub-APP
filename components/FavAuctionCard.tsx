@@ -39,7 +39,7 @@ export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          auctionId: auctionData.auctionId,
+          auctionId: auctionData?.auctionId,
         }),
       });
 
@@ -54,23 +54,27 @@ export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
-        <Image
+        {auctionData?.auctionData?.imageUrl?.length > 0 ? <Image
+          source={{ uri: auctionData?.auctionData?.imageUrl[0] }}
+          style={styles.image}
+          resizeMode="cover"
+        /> : <Image
           source={
             auctionData.auctionData.assetType === "Flat"
               ? require("assets/images/assetsTypes/apartment.png")
               : auctionData.auctionData.assetType === "House"
-              ? require("assets/images/assetsTypes/home.png")
-              : auctionData.auctionData.assetType === "Bungalow"
-              ? require("assets/images/assetsTypes/bungalow.png")
-              : auctionData.auctionData.assetType === "Shop"
-              ? require("assets/images/assetsTypes/shop.png")
-              : auctionData.auctionData.assetType === "Office"
-              ? require("assets/images/assetsTypes/office.png")
-              : require("assets/images/assetsTypes/land.png")
+                ? require("assets/images/assetsTypes/home.png")
+                : auctionData.auctionData.assetType === "Bungalow"
+                  ? require("assets/images/assetsTypes/bungalow.png")
+                  : auctionData.auctionData.assetType === "Shop"
+                    ? require("assets/images/assetsTypes/shop.png")
+                    : auctionData.auctionData.assetType === "Office"
+                      ? require("assets/images/assetsTypes/office.png")
+                      : require("assets/images/assetsTypes/land.png")
           }
           style={styles.image}
           resizeMode="contain"
-        />
+        />}
 
         {/* Favorite Button */}
         <TouchableOpacity style={styles.favButton} onPress={addTofav}>
@@ -82,9 +86,9 @@ export const FavAuctionCard = ({ data: auctionData, fetchAuction }) => {
           style={styles.shareButton}
           onPress={() =>
             onShare({
-              id: auctionData.auctionId,
-              assetType: auctionData.assetType,
-              city: auctionData.city,
+              id: auctionData?.auctionId,
+              assetType: auctionData?.assetType,
+              city: auctionData?.city,
             })
           }
         >

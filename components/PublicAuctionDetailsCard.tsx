@@ -96,13 +96,11 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
                 <Image source={{ uri: img }} style={styles.image} />
               </TouchableOpacity>))}
           </ScrollView>
-
           <View style={styles.pagination}>
             <Text style={styles.paginationText}>
               {currentIndex + 1}/{images.length}
             </Text>
           </View>
-
           <View style={styles.overlayIcons}>
             <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
               {fav ? (
@@ -136,7 +134,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           </TouchableOpacity>
         </View>
       )}
-
       <View style={styles.topInfo}>
         <Text style={styles.assetType}>
           {assetType}{" "}
@@ -149,7 +146,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           <Text style={styles.reservePrice}>{reservePrice}</Text>
         </View>
       </View>
-
       <View style={styles.fieldContainer}>
         <DetailField
           icon="ruler-combined"
@@ -208,7 +204,6 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-
   imageContainer: {
     borderRadius: 5,
     overflow: "hidden",
@@ -241,7 +236,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
-
   actionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -277,7 +271,6 @@ const styles = StyleSheet.create({
     color: "white",
     marginLeft: 5,
   },
-
   fieldContainer: {
     marginTop: 15,
   },

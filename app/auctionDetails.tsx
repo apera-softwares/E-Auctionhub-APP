@@ -26,6 +26,25 @@ const AuctionDetails = () => {
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
 
+
+  const incrementAuctionViewCount = async () => {
+    const token = await AsyncStorage.getItem("token");
+    let headers: any = {};
+    try {
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      const URL = `${BACKEND_API}auction/view/${auctionId}`;
+      const response = await fetch(URL, {
+        method: "POST",
+        headers,
+      });
+      console.log(response, "increment count");
+    } catch (error) {
+      console.log("error while updating auction view count", error);
+    }
+  };
+
   const getAuctionById = async () => {
     const token = await AsyncStorage.getItem("token");
 
@@ -58,7 +77,9 @@ const AuctionDetails = () => {
 
   useEffect(() => {
     if (auctionId) {
+      incrementAuctionViewCount();
       getAuctionById();
+      
     }
   }, []);
 

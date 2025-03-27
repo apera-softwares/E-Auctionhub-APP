@@ -153,7 +153,6 @@ export const AuctionCard = ({ data: auction }) => {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          incrementAuctionViewCount();
           router.push({
             pathname: `/auctionDetails`,
             params: { auctionId: auction.id },
