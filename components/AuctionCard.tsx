@@ -136,9 +136,14 @@ export const AuctionCard = ({ data: auction }) => {
           <FontAwesome6 name="location-dot" size={14} color="#555" />{" "}
           {auction.city}
         </Text>
-        <Text style={styles.text}>
-          <FontAwesome name="bank" size={13} color="#555" />{" "}
-          {auction?.bank?.slice(0, 18) || "NA"}
+        <Text style={[styles.text,{display:"flex", justifyContent:"center", alignItems:"center"}]}>
+        <Image
+          source={{ uri: `https://media.aperasoftwares.com/uploads/auction/bank-${auction.bankId}.png`}}
+          style={{ borderWidth:0.3, borderColor:APP_COLOR.primary}}
+          height={15}
+          width={17}
+          resizeMode="contain"
+        /> {auction?.bank?.slice(0, 17) || "NA"}
           {"..."}
         </Text>
 
@@ -223,17 +228,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   assetType: {
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 4,
   },
   text: {
-    fontSize: 13,
+    fontSize: 15,
     color: "#555",
+    marginVertical: 2,
   },
   price: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#28a745",
     marginVertical: 3,
