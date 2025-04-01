@@ -14,9 +14,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useUser } from "context/UserContextProvider";
-import { Button } from "tamagui";
+import registerNNPushToken from 'native-notify';
+import * as Notifications from 'expo-notifications';
 
 const LoginScreen = () => {
+
+  registerNNPushToken(28872, 'h9ThWdDrjIPNGX2PpgWuka');
+
   const router = useRouter();
   const { user } = useUser();
   const { auctionId } = useLocalSearchParams() as any;
@@ -112,11 +116,15 @@ const LoginScreen = () => {
         Toast.show({ type: "success", text1: "Login Successful" });
         await AsyncStorage.setItem("token", data.token);
         await AsyncStorage.setItem("role", data.role);
+
+        const pushToken = await registerForPushNotificationsAsync();
+        if (pushToken) {
+          console.log("PushToken", pushToken);
+          // await sendPushTokenToBackend(pushToken, data.userId);
+        }
+
         if (auctionId) {
-          router.push({
-            pathname: `/`,
-            params: { auctionId: auctionId },
-          })
+          router.push({ pathname: `/`, params: { auctionId: auctionId } });
         } else {
           router.push("/");
         }
@@ -131,6 +139,28 @@ const LoginScreen = () => {
       });
     }
   };
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return null;
+    }
+
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("Push Token:", token);
+    return token;
+  }
+
+ 
 
   const handleSendOTP = async (e: any) => {
 
