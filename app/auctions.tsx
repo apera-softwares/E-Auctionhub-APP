@@ -177,7 +177,7 @@ export default function AuctionScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 1,
     flex: 1,
     backgroundColor: "#f8f9fa",
   },

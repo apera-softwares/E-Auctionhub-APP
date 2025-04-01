@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { formateDate, onShare } from "constants/staticData";
-import { APP_COLOR } from "constants/Colors";
 import { BACKEND_API } from "constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
+const { width } = Dimensions.get("window");
 
 interface PublicAuctionDetailsCardProps {
   assetType: string;
@@ -21,6 +21,7 @@ interface PublicAuctionDetailsCardProps {
   applicationDeadLine: string;
   auctionId: string;
   isFav: boolean;
+  images: any;
 }
 
 const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
@@ -36,10 +37,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
   applicationDeadLine,
   auctionId,
   isFav,
+  images
 }) => {
   const [fav, setFav] = useState<boolean>(isFav);
   const { user } = useUser();
   const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setFav(isFav);
@@ -50,7 +53,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
       return router.push("/login");
     }
     const token = await AsyncStorage.getItem("token");
-    console.log(token, "token");
     try {
       const response = await fetch(`${BACKEND_API}auction/favourite/add`, {
         method: "POST",
@@ -62,7 +64,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           auctionId: auctionId,
         }),
       });
-
       const data = await response.json();
       setFav(data.statusCode == 200 ? false : true);
     } catch (error) {
@@ -70,26 +71,69 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
     }
   };
 
+  const handleScroll = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / width);
+    setCurrentIndex(index);
+  };
+
   return (
     <View style={styles.card}>
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
-          {fav ? (
-            <FontAwesome name="heart" size={22} color="red" />
-          ) : (
-            <FontAwesome5 name="heart" size={22} color={APP_COLOR.primary} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() =>
-            onShare({ id: auctionId, assetType: assetType, city: city })
-          }
-        >
-          <FontAwesome5 name="share-alt" size={22} color={APP_COLOR.primary} />
-        </TouchableOpacity>
-      </View>
-
+      {images?.length > 0 ? (
+        <View style={styles.imageContainer}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+          >
+            {images?.map((img, index) => (
+              <TouchableOpacity key={index} onPress={() => router.push({
+                pathname: `/fullScreenImageView`,
+                params: { images: JSON.stringify(images) },
+              })}>
+                <Image source={{ uri: img }} style={styles.image} />
+              </TouchableOpacity>))}
+          </ScrollView>
+          <View style={styles.pagination}>
+            <Text style={styles.paginationText}>
+              {currentIndex + 1}/{images.length}
+            </Text>
+          </View>
+          <View style={styles.overlayIcons}>
+            <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+              {fav ? (
+                <FontAwesome name="heart" size={22} color="red" />
+              ) : (
+                <FontAwesome5 name="heart" size={22} color="#fff" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => onShare({ id: auctionId, assetType, city })}
+            >
+              <FontAwesome5 name="share-alt" size={22} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+            {fav ? (
+              <FontAwesome name="heart" size={22} color="red" />
+            ) : (
+              <FontAwesome5 name="heart" size={22} color="black" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => onShare({ id: auctionId, assetType, city })}
+          >
+            <FontAwesome5 name="share-alt" size={22} color="black" />
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.topInfo}>
         <Text style={styles.assetType}>
           {assetType}{" "}
@@ -102,7 +146,6 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           <Text style={styles.reservePrice}>{reservePrice}</Text>
         </View>
       </View>
-
       <View style={styles.fieldContainer}>
         <DetailField
           icon="ruler-combined"
@@ -110,7 +153,12 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           text={`${areaSqFt || ""} sqft`}
         />
         <DetailField icon="coins" title="EMD: " text={`₹ ${emd}`} />
-        <DetailField icon="university" title="Bank: " text={`${bank}`} />
+        <DetailField
+          icon="rupee-sign"
+          title="Reserved Price: "
+          text={`${reservePrice || "NA"}`}
+        />
+        <DetailField icon="university" title="Bank: " text={`${bank || "NA"}`} />
         <DetailField
           icon="map-marker-alt"
           title="Location: "
@@ -119,16 +167,16 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
         <DetailField
           icon="calendar-alt"
           title="Start Date: "
-          text={`${formateDate(startDate)}`}
+          text={`${formateDate(startDate) || "NA"}`}
         />
         <DetailField
           icon="clock"
           title="Deadline: "
-          text={`${
-            applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
-          }`}
+          text={`${applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
+            }`}
         />
       </View>
+
     </View>
   );
 };
@@ -146,7 +194,7 @@ const DetailField = ({ icon, text, title, color = "#333" }) => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 15,
+    borderRadius: 10,
     margin: 10,
     paddingVertical: 15,
     paddingHorizontal: 20,
@@ -156,17 +204,47 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-
+  imageContainer: {
+    borderRadius: 5,
+    overflow: "hidden",
+  },
+  image: {
+    width: width - 80,
+    height: 200,
+    resizeMode: "cover",
+    borderRadius: 5,
+  },
+  pagination: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    alignSelf: "center",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 5,
+  },
+  paginationText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  overlayIcons: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    flexDirection: "row",
+    gap: 10,
+  },
   actionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
   iconButton: {
     padding: 10,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 50,
   },
-
   topInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -179,7 +257,6 @@ const styles = StyleSheet.create({
     color: "#222",
     lineHeight: 30,
   },
-
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -194,7 +271,6 @@ const styles = StyleSheet.create({
     color: "white",
     marginLeft: 5,
   },
-
   fieldContainer: {
     marginTop: 15,
   },

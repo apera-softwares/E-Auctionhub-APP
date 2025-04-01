@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 const PopularCities = () => {
+
   const router = useRouter();
 
   return (

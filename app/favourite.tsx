@@ -30,7 +30,7 @@ const favourite = () => {
       });
       const data = await response.json();
 
-      console.log(data.data, "auction data");
+      console.log(data.data, "auction data fav");
 
       if (data?.statusCode === 200) {
         setAuctions((prev) => data?.data);
