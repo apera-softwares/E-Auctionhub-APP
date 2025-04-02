@@ -1,12 +1,13 @@
 import { APP_COLOR } from "constants/Colors";
 import { Button, H3, Label, SizableText, Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
-import { StyleSheet, ScrollView, TextInput } from "react-native";
+import { StyleSheet, ScrollView, TextInput, Pressable } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import Footer from "components/Footer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function search() {
   const [city, setCity] = useState("");
@@ -21,6 +22,7 @@ export default function search() {
   const [allBanks, setAllBanks] = useState([]);
   const [allAssetTypes, setAllAssetTypes] = useState([]);
   const router = useRouter();
+  const [lastSearch, setLastSearch] = useState([] as any);
 
   useEffect(() => {
     fetchCities();
@@ -73,6 +75,87 @@ export default function search() {
     }
   };
 
+
+  const handleSearch = async () => {
+    if (city || assetType || bank || minPrice || maxPrice || locality) {
+      if ((city && assetType) || (assetType && assetTypeName)) {
+        const newSearch = { assetTypeName, assetType, cityName, city };
+
+        try {
+          const storedSearches = await AsyncStorage.getItem("lastSearches");
+          let lastSearches = storedSearches ? JSON.parse(storedSearches) : [];
+
+          // Check only the latest search (lastSearches[0])
+          const isDuplicate = lastSearches.length > 0 &&
+            lastSearches[0].assetType === newSearch.assetType &&
+            lastSearches[0].city === newSearch.city;
+
+          // If the latest search is different, send it to the backend
+          if (!isDuplicate) {
+            await sendLastSearchToBackend(city, assetType);
+          }
+
+          // Remove duplicate entries before adding the new one
+          lastSearches = lastSearches.filter(
+            (search) => search.assetType !== assetType || search.city !== city
+          );
+
+          // Add the new search at the beginning and limit to the last 3 searches
+          lastSearches = [newSearch, ...lastSearches.slice(0, 2)];
+
+          setLastSearch(lastSearches);
+          await AsyncStorage.setItem("lastSearches", JSON.stringify(lastSearches));
+        } catch (error) {
+          console.error("Error saving last search:", error);
+        }
+      }
+
+      router.push({
+        pathname: `/auctions`,
+        params: {
+          bankId: bank,
+          cityId: city,
+          cityName: cityName,
+          localityName: locality,
+          assetTypeId: assetType,
+          assetTypeName: assetTypeName,
+          minPrice,
+          maxPrice,
+        },
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Please select at least one field",
+      });
+    }
+  };
+
+  // Function to send the last searched city and asset type ID to the backend
+  async function sendLastSearchToBackend(cityId, assetTypeId) {
+    console.log("Last search Api Call")
+
+    const token = await AsyncStorage.getItem("token");
+
+    try {
+      await fetch(`${BACKEND_API}user/search-filters`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          searchFilterCityId: cityId,
+          searchFilterAssetTypeId: assetTypeId,
+        }),
+      });
+      console.log("Last search sent to backend!");
+    } catch (error) {
+      console.error("Error sending last search:", error);
+    }
+  }
+
+
   const clearFilters = () => {
     setCity("");
     setLocality("")
@@ -84,15 +167,29 @@ export default function search() {
     setMaxPrice("");
   };
 
+
+  useEffect(() => {
+    const fetchLastSearches = async () => {
+      const storedSearches = await AsyncStorage.getItem("lastSearches");
+      if (storedSearches) {
+        setLastSearch(JSON.parse(storedSearches));
+      }
+    };
+    fetchLastSearches();
+  }, []);
+
+
+
+
+
+
   return (
     <ScrollView
       contentContainerStyle={{ height: "100%", backgroundColor: "#fff" }}
     >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
-          {/* <H3 style={styles.headerText}>
-            Advanced <Text style={{ color: APP_COLOR.primary }}>Search</Text>
-          </H3> */}
+
           <SizableText size="$5" text="center" color="black">
             Find auction listings with more filter options.
           </SizableText>
@@ -170,26 +267,7 @@ export default function search() {
               Clear
             </Button>
             <Button
-              onPress={() =>
-                city || assetType || bank || minPrice || maxPrice || locality
-                  ? router.push({
-                    pathname: `/auctions`,
-                    params: {
-                      bankId: bank,
-                      cityId: city,
-                      cityName: cityName,
-                      localityName: locality,
-                      assetTypeId: assetType,
-                      assetTypeName: assetTypeName,
-                      minPrice,
-                      maxPrice,
-                    },
-                  })
-                  : Toast.show({
-                    type: "error",
-                    text1: "Please select atleat one filed",
-                  })
-              }
+              onPress={handleSearch}
               fontSize={16}
               fontWeight={700}
               style={styles.searchButton}
@@ -197,6 +275,64 @@ export default function search() {
               Search
             </Button>
           </View>
+          {lastSearch.length > 0 && (
+            <View style={{ padding: 10 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  marginBottom: 8,
+                }}
+              >
+                Last Searches
+              </Text>
+              <View style={{ maxWidth: "100%", overflow: "hidden" }}>
+                <View style={{ flexDirection: "row" }}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ flexDirection: "row", gap: 4 }}
+                  >
+                    {lastSearch.map((search, index) => (
+                      <Pressable
+                        key={index}
+                        style={{
+                          backgroundColor: "#f0f0f0",
+                          paddingVertical: 6,
+                          paddingHorizontal: 12,
+                          borderRadius: 20,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                          borderWidth: 1,
+                          borderColor: "#d1d1d1",
+                        }}
+                        onPress={() =>
+                          router.push({
+                            pathname: `/auctions`,
+                            params: {
+                              cityId: search?.city,
+                              assetTypeName: search?.assetTypeName,
+                              cityName: search.cityName,
+                              localityName: "",
+                              assetTypeId: search?.assetType,
+                              bankId: "",
+                              minPrice: "",
+                              maxPrice: "",
+                            },
+                          })}
+                      >
+                        <Text style={{ fontSize: 14, color: "#333" }}>
+                          #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                </View>
+              </View>
+
+            </View>
+          )}
         </YStack>
       </View>
       <View>

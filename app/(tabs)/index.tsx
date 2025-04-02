@@ -32,7 +32,6 @@ export default function TabOneScreen() {
   const [assetTypeName, setAssetTypeName] = useState("");
   const [city, setCity] = useState("");
   const [cityName, setCityName] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
 
   const handleSearch = async () => {
     if (!city && !assetType) {
@@ -49,10 +48,25 @@ export default function TabOneScreen() {
       const storedSearches = await AsyncStorage.getItem("lastSearches");
       let lastSearches = storedSearches ? JSON.parse(storedSearches) : [];
 
+      // Correct way to check if newSearch is the same as lastSearches[0]
+      const isDuplicate =
+        lastSearches.length > 0 &&
+        lastSearches[0].assetType === newSearch.assetType &&
+        lastSearches[0].city === newSearch.city;
+
+      console.log(lastSearches, "lastSearches[0]");
+
+      if (!isDuplicate) {
+        await sendLastSearchToBackend(city, assetType);
+      }
+
+      lastSearches = lastSearches.filter(
+        (search) => search.assetType !== assetType || search.city !== city
+      );
+
       lastSearches = [newSearch, ...lastSearches.slice(0, 2)];
 
       setLastSearch(lastSearches);
-
       await AsyncStorage.setItem("lastSearches", JSON.stringify(lastSearches));
     } catch (error) {
       console.error("Error saving last search:", error);
@@ -72,6 +86,32 @@ export default function TabOneScreen() {
       },
     });
   };
+
+  async function sendLastSearchToBackend(cityId, assetTypeId) {
+
+    console.log("Last search Api Call")
+    const token = await AsyncStorage.getItem("token");
+
+    try {
+      await fetch(`${BACKEND_API}user/search-filters`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          searchFilterCityId: cityId,
+          searchFilterAssetTypeId: assetTypeId,
+        }),
+      });
+      console.log("Last search sent to backend!");
+    } catch (error) {
+      console.error("Error sending last search:", error);
+    }
+  }
+
+
+
 
   useEffect(() => {
     const fetchLastSearches = async () => {

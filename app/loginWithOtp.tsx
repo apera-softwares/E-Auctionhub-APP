@@ -11,6 +11,7 @@ import {
     Keyboard,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import * as Notifications from 'expo-notifications';
 
 const loginWithOtp = () => {
     const { phone } = useLocalSearchParams() as any;
@@ -47,6 +48,11 @@ const loginWithOtp = () => {
             if (data.statusCode === 200) {
                 await AsyncStorage.setItem("token", data.token);
                 await AsyncStorage.setItem("role", data.role);
+                const pushToken = await registerForPushNotificationsAsync();
+                if (pushToken) {
+                    console.log("PushToken", pushToken);
+                    await sendPushTokenToBackend(pushToken);
+                }
                 Toast.show({ type: "success", text1: "OTP Verified Succesfully" });
                 router.push({
                     pathname: `/`,
@@ -65,6 +71,46 @@ const loginWithOtp = () => {
             setLoading(false);
         }
     };
+
+    async function registerForPushNotificationsAsync() {
+        let token;
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return null;
+        }
+
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log("Push Token:", token);
+        return token;
+    }
+
+
+    async function sendPushTokenToBackend(pushToken) {
+        const token = await AsyncStorage.getItem("token");
+
+        try {
+            await fetch(`${BACKEND_API}user/push-notification`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ pushNotificationToken: pushToken }),
+            });
+            console.log("Push token sent to backend!");
+        } catch (error) {
+            console.error("Error sending push token:", error);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <Toast />
