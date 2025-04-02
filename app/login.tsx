@@ -120,7 +120,7 @@ const LoginScreen = () => {
         const pushToken = await registerForPushNotificationsAsync();
         if (pushToken) {
           console.log("PushToken", pushToken);
-          // await sendPushTokenToBackend(pushToken, data.userId);
+          await sendPushTokenToBackend(pushToken);
         }
 
         if (auctionId) {
@@ -160,7 +160,25 @@ const LoginScreen = () => {
     return token;
   }
 
- 
+
+  async function sendPushTokenToBackend(pushToken) {
+    const token = await AsyncStorage.getItem("token");
+
+    try {
+      await fetch(`${BACKEND_API}user/push-notification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ pushNotificationToken: pushToken }),
+      });
+      console.log("Push token sent to backend!");
+    } catch (error) {
+      console.error("Error sending push token:", error);
+    }
+  }
+
 
   const handleSendOTP = async (e: any) => {
 
