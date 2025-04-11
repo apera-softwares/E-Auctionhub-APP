@@ -1,33 +1,53 @@
 import "../tamagui-web.css";
 
 import { useEffect } from "react";
-import { Image, StatusBar, Text, useColorScheme } from "react-native";
+import { StatusBar, useColorScheme } from "react-native";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { router, SplashScreen, Stack, useRouter } from "expo-router";
-// import { Provider } from "./Provider";
-import { SizableText, useTheme } from "tamagui";
-import { APP_COLOR } from "constants/Colors";
-import BackButton from "components/GoBackButton";
-import Toast from "react-native-toast-message";
+import { SplashScreen, Stack } from "expo-router";
+import { useTheme } from "tamagui";
 import Provider from "./Provider";
 import AuthContextProvider, { useUser } from "../context/UserContextProvider";
+import * as Notifications from "expo-notifications";
+import * as TaskManager from "expo-task-manager";
+import { NotificationProvider } from "context/NotificationContext";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+// TaskManager.defineTask(
+//   BACKGROUND_NOTIFICATION_TASK,
+//   ({ data, error, executionInfo }) => {
+//     console.log("✅ Received a notification in the background!", {
+//       data,
+//       error,
+//       executionInfo,
+//     });
+//     Do something with the notification data
+//   }
+// );
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: "(tabs)",
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -35,11 +55,9 @@ export default function RootLayout() {
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
-  const router = useRouter();
 
   useEffect(() => {
     if (interLoaded || interError) {
-      // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
       SplashScreen.hideAsync();
     }
   }, [interLoaded, interError]);
@@ -50,9 +68,12 @@ export default function RootLayout() {
 
   return (
     <Providers>
-      <AuthContextProvider>
-        <RootLayoutNav />
-      </AuthContextProvider>
+      <NotificationProvider>
+        <AuthContextProvider>
+          <RootLayoutNav />
+        </AuthContextProvider>
+      </NotificationProvider>
+
     </Providers>
   );
 }
@@ -284,7 +305,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="fullScreenImageView"
           options={{
-            headerShown:false,
+            headerShown: false,
             title: "Auction Images",
             presentation: "card",
             animation: "slide_from_right",
