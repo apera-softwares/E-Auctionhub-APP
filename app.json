@@ -2,7 +2,7 @@
   "expo": {
     "name": "E AuctionsHub",
     "slug": "e-auctionshub",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
     "scheme": "myapp",
@@ -26,7 +26,9 @@
         "foregroundImage": "./assets/images/playstore.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.diliplovevanshi.exporouterexample"
+      "package": "com.diliplovevanshi.exporouterexample",
+      "googleServicesFile": "./google-services.json"
+
     },
     "web": {
       "bundler": "metro",
@@ -45,6 +47,13 @@
           "android": {
             "newArchEnabled": true
           }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/playstore.png",
+          "color": "#ffffff"
         }
       ]
     ],

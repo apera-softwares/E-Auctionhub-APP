@@ -48,7 +48,6 @@ export default function TabOneScreen() {
       const storedSearches = await AsyncStorage.getItem("lastSearches");
       let lastSearches = storedSearches ? JSON.parse(storedSearches) : [];
 
-      // Correct way to check if newSearch is the same as lastSearches[0]
       const isDuplicate =
         lastSearches.length > 0 &&
         lastSearches[0].assetType === newSearch.assetType &&
@@ -89,7 +88,6 @@ export default function TabOneScreen() {
 
   async function sendLastSearchToBackend(cityId, assetTypeId) {
 
-    console.log("Last search Api Call")
     const token = await AsyncStorage.getItem("token");
 
     try {
@@ -109,9 +107,6 @@ export default function TabOneScreen() {
       console.error("Error sending last search:", error);
     }
   }
-
-
-
 
   useEffect(() => {
     const fetchLastSearches = async () => {
@@ -226,12 +221,10 @@ export default function TabOneScreen() {
                   for Auctioned Assets
                 </Text>
               </H3>
-
               <SizableText size="$5" text="center" color="white">
                 Find your next great investment with our exclusive bank auction
                 listings.
               </SizableText>
-
               <View style={styles.container}>
                 <Dropdown
                   style={styles.dropdown}
@@ -248,7 +241,6 @@ export default function TabOneScreen() {
                     setCityName(item?.label);
                   }}
                 />
-
                 <Dropdown
                   style={styles.dropdown}
                   data={allAssetTypes}
@@ -261,7 +253,6 @@ export default function TabOneScreen() {
                     setAssetTypeName(item?.label);
                   }}
                 />
-
                 <Button
                   onPress={handleSearch}
                   fontSize={16}
@@ -331,9 +322,7 @@ export default function TabOneScreen() {
                 {/* <Toast /> */}
               </View>
             </View>
-
             <PopularCities />
-
             <View style={styles.popularSection}>
               <Text style={styles.sectionTitle}>
                 Top Auctions{" "}

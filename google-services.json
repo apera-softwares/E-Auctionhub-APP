@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78840837676",
+    "project_id": "e-auctionshub",
+    "storage_bucket": "e-auctionshub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78840837676:android:106d3c374014dfd1da4389",
+        "android_client_info": {
+          "package_name": "com.diliplovevanshi.exporouterexample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB333gqGq8WETzLsuWbMt7oraSFN1WgT-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
