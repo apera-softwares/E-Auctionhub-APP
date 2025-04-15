@@ -10,7 +10,14 @@ import {
   Keyboard,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from "react-native-confirmation-code-field";
 
+const CELL_COUNT = 4;
 const VerifyOtp = () => {
   const { phone, from } = useLocalSearchParams() as any;
   const [loading, setLoading] = useState(false);
@@ -18,6 +25,12 @@ const VerifyOtp = () => {
 
 
   const [otp, setOtp] = useState("");
+    const [value, setValue] = useState("");
+    const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+      value,
+      setValue,
+    });
 
   const handleOtpChange = (text: string) => {
     if (/^\d{0,4}$/.test(text)) {
@@ -77,7 +90,7 @@ const VerifyOtp = () => {
         <Text style={styles.title}>Enter OTP</Text>
         <Text style={styles.subtitle}>We've sent a code to your number </Text>
 
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           keyboardType="numeric"
           maxLength={4}
@@ -86,7 +99,28 @@ const VerifyOtp = () => {
           placeholder="----"
           placeholderTextColor="#aaa"
           textAlign="center"
-        />
+        /> */}
+        <View>
+          <CodeField
+            ref={ref}
+            {...props}
+            value={value}
+            onChangeText={setValue}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFiledRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({ index, symbol, isFocused }) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}
+              >
+                {symbol || (isFocused ? <Cursor /> : null)}
+              </Text>
+            )}
+          />
+        </View>
 
         <TouchableOpacity
           style={styles.button}
@@ -159,6 +193,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  codeFiledRoot: { marginTop: 16 },
+  cell: {
+    width: 48,
+    height: 48,
+    lineHeight: 48,
+    fontSize: 20,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    textAlign: "center",
+    marginHorizontal: 8,
+  },
+  focusCell: {
+    borderColor: "#2575fc",
   },
 });
 
