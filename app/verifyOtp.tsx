@@ -23,14 +23,13 @@ const VerifyOtp = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-
   const [otp, setOtp] = useState("");
-    const [value, setValue] = useState("");
-    const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-      value,
-      setValue,
-    });
+  const [value, setValue] = useState("");
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
   const handleOtpChange = (text: string) => {
     if (/^\d{0,4}$/.test(text)) {
@@ -40,11 +39,12 @@ const VerifyOtp = () => {
   };
 
   const handleVerifyOtp = async () => {
+    if (value.length !== 4) return;
     setLoading(true);
     try {
       const payload = {
         phone: phone,
-        otp: otp,
+        otp: value,
       };
 
       const response = await fetch(`${BACKEND_API}user/verify-phone`, {
