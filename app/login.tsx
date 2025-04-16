@@ -217,14 +217,19 @@ const LoginScreen = () => {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Phone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your phone number"
-            keyboardType="number-pad"
-            value={formData.phone}
-            onChangeText={handlePhoneChange}
-          />
+          <View style={styles.phoneInputWrapper}>
+            <Text style={styles.phonePrefix}>+91</Text>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Enter your phone number"
+              keyboardType="number-pad"
+              value={formData.phone}
+              onChangeText={handlePhoneChange}
+              maxLength={10}
+            />
+          </View>
         </View>
+
 
         {loginType === "password" && (
           <View style={styles.inputContainer}>
@@ -358,6 +363,25 @@ const styles = StyleSheet.create({
   activeToggle: { borderWidth: 2, borderColor: APP_COLOR.primary },
   toggleText: { fontSize: 14, fontWeight: "bold", },
   activeText: {},
+  phoneInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f2f4f5",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 50,
+  },
+  phonePrefix: {
+    fontSize: 16,
+    marginRight: 3,
+    color: "#333",
+    fontWeight: "600",
+  },
+  phoneInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
+  },
 });
 
 export default LoginScreen;

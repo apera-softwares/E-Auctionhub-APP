@@ -143,15 +143,18 @@ const SignupScreen = ({ navigation }) => {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Phone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your phone number"
-            keyboardType="number-pad"
-            value={formData.phone}
-            onChangeText={handlePhoneChange}
-          />
+          <View style={styles.phoneInputWrapper}>
+            <Text style={styles.phonePrefix}>+91</Text>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Enter your phone number"
+              keyboardType="number-pad"
+              value={formData.phone}
+              onChangeText={handlePhoneChange}
+              maxLength={10}
+            />
+          </View>
         </View>
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -286,6 +289,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 5,
   },
+  phoneInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f2f4f5",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 50,
+  },
+  phonePrefix: {
+    fontSize: 16,
+    marginRight: 6,
+    color: "#333",
+    fontWeight: "600",
+  },
+  phoneInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
+  },
+
 });
 
 export default SignupScreen;
