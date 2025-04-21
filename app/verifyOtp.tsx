@@ -1,6 +1,6 @@
 import { BACKEND_API } from "constants/api";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,11 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import {
+  getHash,
+  startOtpListener,
+  useOtpVerify,
+} from "react-native-otp-verify";
 
 const CELL_COUNT = 4;
 const VerifyOtp = () => {
@@ -30,6 +35,23 @@ const VerifyOtp = () => {
     value,
     setValue,
   });
+
+  useEffect(() => {
+    getHash()
+      .then((hash) => {
+
+        console.log("hash",hash);
+      })
+      .catch(console.log);
+
+    startOtpListener((message) => {
+      // extract the otp using regex e.g. the below regex extracts 4 digit otp from message
+      // const otp = /(\d{4})/g.exec(message)[1];
+      // setOtp(otp);
+      console.log("message",message);
+    });
+    return () =>{};
+  }, []);
 
   const handleOtpChange = (text: string) => {
     if (/^\d{0,4}$/.test(text)) {
