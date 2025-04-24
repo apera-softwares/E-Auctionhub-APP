@@ -45,7 +45,7 @@
     "burnt": "^0.12.2",
     "denodeify": "^1.2.1",
     "dotenv": "^16.4.7",
-    "expo": "~52.0.46",
+    "expo": "^52.0.46",
     "expo-build-properties": "~0.13.2",
     "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.20",
