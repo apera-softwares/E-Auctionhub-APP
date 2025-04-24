@@ -26,7 +26,6 @@ const AuctionDetails = () => {
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
 
-
   const incrementAuctionViewCount = async () => {
     const token = await AsyncStorage.getItem("token");
     let headers: any = {};
@@ -62,9 +61,22 @@ const AuctionDetails = () => {
       console.log(data.data, "auction details");
 
       if (data.statusCode === 200) {
-        setFreeTrail(data?.data.freeTrail);
-        setAuctionDetails(data?.data);
-        setAUctionLink(data.data?.documentLink);
+        const auction = data?.data;
+        if (!auction?.latitude || !auction?.longitude) {
+          const fallbackCoords = await getLatLngFromCity(auction.city);
+          if (fallbackCoords) {
+            auction.latitude = fallbackCoords.lat;
+            auction.longitude = fallbackCoords.lng;
+          }
+        }
+
+        setFreeTrail(auction?.freeTrail);
+        setAuctionDetails(auction);
+        setAUctionLink(auction?.documentLink);
+
+        // setFreeTrail(data?.data.freeTrail);
+        // setAuctionDetails(data?.data);
+        // setAUctionLink(data.data?.documentLink);
       }
     } catch (error) {
       console.log("error while fetching searched by id  auctions", error);
@@ -72,14 +84,41 @@ const AuctionDetails = () => {
       setLoading(false);
     }
   };
+  const getLatLngFromCity = async (cityName: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(
+          cityName?.toLowerCase()
+        )}&format=json&limit=1`,
+        {
+          headers: {
+            "User-Agent": "eauctionshubapp/1.0.0",
+            Accept: "application/json",
+          },
+        }
+      );
 
-  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
+      const data = await response.json();
+
+      if (data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching coordinates from Nominatim:", error);
+    }
+
+    return null;
+  };
+
+  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=13&amp;output=embed`;
 
   useEffect(() => {
     if (auctionId) {
       incrementAuctionViewCount();
       getAuctionById();
-      
     }
   }, []);
 
@@ -251,6 +290,8 @@ const AuctionDetails = () => {
                   shadowColor: "black",
                   shadowOffset: { width: -1, height: 1 },
                   shadowRadius: 18,
+                  borderRadius: 12,
+                  overflow: "hidden",
                 }}
               >
                 <WebView
