@@ -1,6 +1,6 @@
 import { BACKEND_API } from "constants/api";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Keyboard,
+  Platform,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import {
@@ -19,6 +20,7 @@ import {
 import {
   getHash,
   startOtpListener,
+  removeListener,
   useOtpVerify,
 } from "react-native-otp-verify";
 
@@ -37,28 +39,46 @@ const VerifyOtp = () => {
   });
 
   useEffect(() => {
-    getHash()
-      .then((hash) => {
+    if (Platform.OS === "android") {
+      getHash()
+        .then((hash) => {
+          console.log("hash", hash);
+        })
+        .catch((error) => {
+          console.error("Error occurred while getting hash:", error);
+        });
 
-        console.log("hash",hash);
-      })
-      .catch(console.log);
+      startOtpListener((message) => {
+        // extract the otp using regex e.g. the below regex extracts 4 digit otp from message
+        if (!message.includes("Timeout Error")) {
+          const match = /(\d{4})/.exec(message);
+          if (match && match[1]) {
+            const otp = match[1];
+            setValue(otp);
+          }
+          console.log("message", message);
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Unable to detect otp. Please  enter manually",
+          });
+        }
+      });
+    }
 
-    startOtpListener((message) => {
-      // extract the otp using regex e.g. the below regex extracts 4 digit otp from message
-      // const otp = /(\d{4})/g.exec(message)[1];
-      // setOtp(otp);
-      console.log("message",message);
-    });
-    return () =>{};
+    return () => {
+      if (Platform.OS === "android") {
+        removeListener();
+      }
+    };
   }, []);
 
-  const handleOtpChange = (text: string) => {
-    if (/^\d{0,4}$/.test(text)) {
-      setOtp(text);
-      if (text.length === 4) Keyboard.dismiss();
-    }
-  };
+  // const handleOtpChange = (text: string) => {
+  //   if (/^\d{0,4}$/.test(text)) {
+  //     setOtp(text);
+  //     if (text.length === 4) Keyboard.dismiss();
+  //   }
+  // };
 
   const handleVerifyOtp = async () => {
     if (value.length !== 4) return;

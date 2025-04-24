@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_API } from "constants/api";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Keyboard,
+  Platform,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
@@ -18,6 +19,12 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import {
+  getHash,
+  startOtpListener,
+  removeListener,
+  useOtpVerify,
+} from "react-native-otp-verify";
 
 const CELL_COUNT = 4;
 
@@ -33,6 +40,41 @@ const loginWithOtp = () => {
     value,
     setValue,
   });
+
+    useEffect(() => {
+      if (Platform.OS === "android") {
+        getHash()
+          .then((hash) => {
+            console.log("hash", hash);
+          })
+          .catch((error) => {
+            console.error("Error occurred while getting hash:", error);
+          });
+
+        startOtpListener((message) => {
+          // extract the otp using regex e.g. the below regex extracts 4 digit otp from message
+          if (!message.includes("Timeout Error")) {
+            const match = /(\d{4})/.exec(message);
+            if (match && match[1]) {
+              const otp = match[1];
+              setValue(otp);
+            }
+            console.log("message", message);
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "Unable to detect otp. Please  enter manually",
+            });
+          }
+        });
+      }
+
+      return () => {
+        if (Platform.OS === "android") {
+          removeListener();
+        }
+      };
+    }, []);
 
   const handleOtpChange = (text: string) => {
     if (/^\d{0,4}$/.test(text)) {

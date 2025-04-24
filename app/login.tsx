@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Keyboard,
   ScrollView,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -15,6 +16,7 @@ import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useUser } from "context/UserContextProvider";
 import { useNotification } from "context/NotificationContext";
+import { getHash } from "react-native-otp-verify";
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -29,6 +31,8 @@ const LoginScreen = () => {
     password: "",
   });
 
+  const [hash, setHash] = useState("");
+
   useEffect(() => {
     const getData = async () => {
       const token = await AsyncStorage.getItem("token");
@@ -38,6 +42,20 @@ const LoginScreen = () => {
     };
 
     getData();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      getHash()
+        .then((hash) => {
+          setHash(hash[0]);
+        })
+        .catch((error) => {
+          console.error("Error occurred while getting hash:", error);
+        });
+    }
+
+    return () => {};
   }, []);
 
   const handleInputChange = (name, value) => {
@@ -158,22 +176,20 @@ const LoginScreen = () => {
     }
   }
 
-
   const handleSendOTP = async (e: any) => {
-
     try {
-      const response = await fetch(
-        `${BACKEND_API}user/send-otp-phone`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            phone: `+91${formData.phone}`,
-          }),
-        }
-      );
+      const payload = {
+        phone: `+91${formData.phone}`,
+        platform: Platform.OS === "android" ? "android" : null,
+        hashCode: Platform.OS === "android" ? hash : null,
+      };
+      const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
       const data = await response.json();
       if (data?.statusCode === 200) {
         Toast.show({ type: "success", text1: data?.message });
