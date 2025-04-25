@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,32 @@ import {
   StyleSheet,
   ActivityIndicator,
   Keyboard,
+  Platform,
 } from "react-native";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
+import { getHash } from "react-native-otp-verify";
 
 const EnterMobToRestPass = (from) => {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      getHash()
+        .then((hash) => {
+          setHash(hash[0]);
+        })
+        .catch((error) => {
+          console.error("Error occurred while getting hash:", error);
+        });
+    }
+
+    return () => {};
+  }, []);
 
   const handlePhoneChange = (text: string) => {
     // Allow only numeric input and limit to 10 digits
@@ -39,14 +56,17 @@ const EnterMobToRestPass = (from) => {
 
     try {
       setLoading(true);
+      const payload = {
+        phone: `+91${phone}`,
+        platform: Platform.OS === "android" ? "android" : null,
+        hashCode: Platform.OS === "android" ? hash : null,
+      };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          phone: `+91${phone}`,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
