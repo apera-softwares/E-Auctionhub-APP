@@ -15,6 +15,9 @@ _Run a build_
 for android
 -eas build --platform android
 
+run this command to check if the there is any issue in project
+-npx expo-doctor
+
 for ios
 -eas build --platform ios
 
