@@ -20,6 +20,6 @@ export default {
 
 export const APP_COLOR = {
   // primary: "#38B6FF",
-  // primary: "#736ef2",
+  // primary: "#31497E",
   primary: "#007bff",
 };

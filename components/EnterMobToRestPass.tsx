@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Keyboard,
+  Platform,
 } from "react-native";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
@@ -39,14 +40,16 @@ const EnterMobToRestPass = (from) => {
 
     try {
       setLoading(true);
+      const payload = {
+        phone: `+91${phone}`,
+        platform: Platform.OS === "android" ? "android" : null,
+      };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          phone: `+91${phone}`,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();

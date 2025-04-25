@@ -1,5 +1,5 @@
 import { APP_COLOR } from "constants/Colors";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -105,10 +105,14 @@ const SignupScreen = ({ navigation }) => {
 
   const handleSendOtp = async (phone) => {
     try {
+      const payload = {
+        phone: `${phone}`,
+        platform: Platform.OS === "android" ? "android" : null,
+      };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       if (data.statusCode === 200) {
@@ -143,15 +147,18 @@ const SignupScreen = ({ navigation }) => {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Phone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your phone number"
-            keyboardType="number-pad"
-            value={formData.phone}
-            onChangeText={handlePhoneChange}
-          />
+          <View style={styles.phoneInputWrapper}>
+            <Text style={styles.phonePrefix}>+91</Text>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Enter your phone number"
+              keyboardType="number-pad"
+              value={formData.phone}
+              onChangeText={handlePhoneChange}
+              maxLength={10}
+            />
+          </View>
         </View>
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -286,6 +293,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 5,
   },
+  phoneInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f2f4f5",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 50,
+  },
+  phonePrefix: {
+    fontSize: 16,
+    marginRight: 6,
+    color: "#333",
+    fontWeight: "600",
+  },
+  phoneInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
+  },
+
 });
 
 export default SignupScreen;

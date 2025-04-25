@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useUser } from "context/UserContextProvider";
 import EnterMobToRestPass from "components/EnterMobToRestPass";
@@ -18,17 +19,21 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+
   const handleSendOTP = async () => {
     try {
       setLoading(true);
+
+      const payload = {
+        phone: user.phone,
+        platform: Platform.OS === "android" ? "android" : null,
+      };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          phone: user.phone,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       if (data?.statusCode === 200) {
