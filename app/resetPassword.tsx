@@ -12,28 +12,13 @@ import EnterMobToRestPass from "components/EnterMobToRestPass";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { getHash } from "react-native-otp-verify";
 
 const ResetPassword = () => {
   const { from } = useLocalSearchParams() as any;
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
-  const [hash, setHash] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      getHash()
-        .then((hash) => {
-          setHash(hash[0]);
-        })
-        .catch((error) => {
-          console.error("Error occurred while getting hash:", error);
-        });
-    }
-
-    return () => {};
-  }, []);
 
   const handleSendOTP = async () => {
     try {
@@ -42,7 +27,6 @@ const ResetPassword = () => {
       const payload = {
         phone: user.phone,
         platform: Platform.OS === "android" ? "android" : null,
-        hashCode: Platform.OS === "android" ? hash : null,
       };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",

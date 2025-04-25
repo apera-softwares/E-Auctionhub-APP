@@ -16,7 +16,6 @@ import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import { useUser } from "context/UserContextProvider";
 import { useNotification } from "context/NotificationContext";
-import { getHash } from "react-native-otp-verify";
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -31,7 +30,6 @@ const LoginScreen = () => {
     password: "",
   });
 
-  const [hash, setHash] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -44,19 +42,6 @@ const LoginScreen = () => {
     getData();
   }, []);
 
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      getHash()
-        .then((hash) => {
-          setHash(hash[0]);
-        })
-        .catch((error) => {
-          console.error("Error occurred while getting hash:", error);
-        });
-    }
-
-    return () => {};
-  }, []);
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -181,7 +166,6 @@ const LoginScreen = () => {
       const payload = {
         phone: `+91${formData.phone}`,
         platform: Platform.OS === "android" ? "android" : null,
-        hashCode: Platform.OS === "android" ? hash : null,
       };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",

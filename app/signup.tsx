@@ -14,7 +14,6 @@ import {
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
-import { getHash } from "react-native-otp-verify";
 
 const SignupScreen = ({ navigation }) => {
   const router = useRouter();
@@ -27,21 +26,6 @@ const SignupScreen = ({ navigation }) => {
     confirmPassword: "",
     termsAccepted: false,
   });
-  const [hash, setHash] = useState("");
-
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      getHash()
-        .then((hash) => {
-          setHash(hash[0]);
-        })
-        .catch((error) => {
-          console.error("Error occurred while getting hash:", error);
-        });
-    }
-
-    return () => {};
-  }, []);
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -124,7 +108,6 @@ const SignupScreen = ({ navigation }) => {
       const payload = {
         phone: `${phone}`,
         platform: Platform.OS === "android" ? "android" : null,
-        hashCode: Platform.OS === "android" ? hash : null,
       };
       const response = await fetch(`${BACKEND_API}user/send-otp-phone`, {
         method: "POST",

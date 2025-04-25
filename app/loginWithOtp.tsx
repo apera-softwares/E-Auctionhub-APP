@@ -20,7 +20,6 @@ import {
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
 import {
-  getHash,
   startOtpListener,
   removeListener,
   useOtpVerify,
@@ -43,13 +42,6 @@ const loginWithOtp = () => {
 
     useEffect(() => {
       if (Platform.OS === "android") {
-        getHash()
-          .then((hash) => {
-            console.log("hash", hash);
-          })
-          .catch((error) => {
-            console.error("Error occurred while getting hash:", error);
-          });
 
         startOtpListener((message) => {
           // extract the otp using regex e.g. the below regex extracts 4 digit otp from message
