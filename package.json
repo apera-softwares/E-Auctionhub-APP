@@ -29,7 +29,8 @@
           "metro",
           "react-native-element-dropdown",
           "tamagui",
-          "react-native-razorpay"
+          "react-native-razorpay",
+          "react-native-otp-verify"
         ],
         "listUnknownPackages": false
       }
