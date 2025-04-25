@@ -25,6 +25,7 @@ const AuctionDetails = () => {
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
+  const[isFallbackCoordinate,setIsFallbackCoordinate] = useState(false);
 
   const incrementAuctionViewCount = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -67,6 +68,7 @@ const AuctionDetails = () => {
           if (fallbackCoords) {
             auction.latitude = fallbackCoords.lat;
             auction.longitude = fallbackCoords.lng;
+            setIsFallbackCoordinate(true);
           }
         }
 
@@ -113,7 +115,7 @@ const AuctionDetails = () => {
     return null;
   };
 
-  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=13&amp;output=embed`;
+  const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${auctionDetails?.latitude},${auctionDetails?.longitude}&hl=es&z=14&amp;output=embed`;
 
   useEffect(() => {
     if (auctionId) {
@@ -278,9 +280,16 @@ const AuctionDetails = () => {
               />
               <View style={styles.textContainer}>
                 <Text style={styles.fieldTitle}>Map</Text>
-                <Text style={styles.fieldValue}>
-                  {!auctionDetails?.latitude && "NA"}
-                </Text>
+
+                {!auctionDetails?.latitude && (
+                  <Text style={styles.fieldValue}>NA</Text>
+                )}
+
+                {isFallbackCoordinate && (
+                  <Text style={styles.fieldValue}>
+                    Note : Exact location not provided by bank
+                  </Text>
+                )}
               </View>
             </View>
             {auctionDetails?.latitude && (
