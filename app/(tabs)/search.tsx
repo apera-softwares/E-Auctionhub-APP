@@ -167,7 +167,6 @@ export default function search() {
     setMaxPrice("");
   };
 
-
   useEffect(() => {
     const fetchLastSearches = async () => {
       const storedSearches = await AsyncStorage.getItem("lastSearches");
@@ -178,14 +177,9 @@ export default function search() {
     fetchLastSearches();
   }, []);
 
-
-
-
-
-
   return (
     <ScrollView
-      contentContainerStyle={{flexGrow:1, backgroundColor: "#fff" }}
+      contentContainerStyle={{ flexGrow: 1, backgroundColor: "#fff" }}
     >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">

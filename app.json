@@ -28,7 +28,6 @@
       },
       "package": "com.diliplovevanshi.exporouterexample",
       "googleServicesFile": "./google-services.json"
-
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +37,14 @@
     "plugins": [
       "expo-router",
       "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#232323",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -59,6 +66,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "build": {
+      "preview": {
+        "distribution": "internal"
+      }
     },
     "extra": {
       "RAZORPAY_KEY": "rzp_live_BpATSjSGBOFGK9",
