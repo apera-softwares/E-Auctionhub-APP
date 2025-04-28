@@ -73,7 +73,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
 
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / width);
+    const index = Math.round(contentOffsetX / (width-80));
     setCurrentIndex(index);
   };
 
@@ -86,7 +86,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
-            scrollEventThrottle={16}
+            scrollEventThrottle={50}
           >
             {images?.map((img, index) => (
               <TouchableOpacity key={index} onPress={() => router.push({
