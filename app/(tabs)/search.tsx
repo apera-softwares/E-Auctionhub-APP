@@ -185,7 +185,7 @@ export default function search() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ height: "100%", backgroundColor: "#fff" }}
+      contentContainerStyle={{flexGrow:1, backgroundColor: "#fff" }}
     >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
