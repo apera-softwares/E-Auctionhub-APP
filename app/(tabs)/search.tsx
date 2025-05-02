@@ -225,6 +225,7 @@ export default function search() {
               setCityName(item?.label);
             }}
           />
+
           <TextInput
             style={[styles.input]}
             placeholder="Locality"
@@ -232,7 +233,6 @@ export default function search() {
             value={locality}
             onChangeText={setLocality}
           />
-
 
           <View style={styles.priceContainer}>
             <TextInput
@@ -242,6 +242,7 @@ export default function search() {
               value={minPrice}
               onChangeText={setMinPrice}
             />
+            
             <TextInput
               style={[styles.input, styles.priceInput]}
               placeholder="Max Price"

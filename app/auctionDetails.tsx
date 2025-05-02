@@ -25,7 +25,7 @@ const AuctionDetails = () => {
   const [auctionDetails, setAuctionDetails] = useState({} as any);
   const [loading, setLoading] = useState(true);
   const [auctionLink, setAUctionLink] = useState([] as any);
-  const[isFallbackCoordinate,setIsFallbackCoordinate] = useState(false);
+  const [isFallbackCoordinate, setIsFallbackCoordinate] = useState(false);
 
   const incrementAuctionViewCount = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -46,6 +46,7 @@ const AuctionDetails = () => {
   };
 
   const getAuctionById = async () => {
+
     const token = await AsyncStorage.getItem("token");
 
     let headers: any = {};
@@ -86,6 +87,7 @@ const AuctionDetails = () => {
       setLoading(false);
     }
   };
+
   const getLatLngFromCity = async (cityName: string) => {
     try {
       const response = await fetch(
