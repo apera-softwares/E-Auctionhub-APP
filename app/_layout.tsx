@@ -321,7 +321,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="loginWithOtp"
           options={{
-            title: "Verify Otpd",
+            title: "Verify Otp",
             presentation: "card",
             animation: "slide_from_right",
             gestureEnabled: true,
