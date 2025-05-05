@@ -8,7 +8,9 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { Stack } from "expo-router";
+import * as SplashScreen from 'expo-splash-screen';
+
 import { useTheme } from "tamagui";
 import Provider from "./Provider";
 import AuthContextProvider, { useUser } from "../context/UserContextProvider";
@@ -316,6 +318,20 @@ function RootLayoutNav() {
             },
           }}
         />
+        <Stack.Screen
+          name="loginWithOtp"
+          options={{
+            title: "Verify Otp",
+            presentation: "card",
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+            contentStyle: {
+              backgroundColor: theme.background.val,
+            },
+          }}
+        />
+
       </Stack>
 
     </>

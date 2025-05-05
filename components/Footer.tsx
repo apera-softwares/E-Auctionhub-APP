@@ -11,18 +11,7 @@ export default function Footer() {
   return (
     <View style={styles.footerContainer}>
       <View style={styles.sectionBox}>
-        <Text style={styles.copyright}>
-          © 2025 E-AuctionsHub. All rights reserved.
-        </Text>
-        {/* <Text style={styles.copyright}>
-          🚀 Website{" "}
-          <Text
-            style={styles.developerText}
-            onPress={() => Linking.openURL("https://www.eauctionshub.com/")}
-          >
-            E AuctionsHub
-          </Text>
-        </Text> */}
+        {/* Social Icons on the left */}
         <View style={styles.socialIconsContainer}>
           <TouchableOpacity
             onPress={() =>
@@ -30,25 +19,30 @@ export default function Footer() {
             }
             style={styles.icon}
           >
-            <FontAwesome name="facebook" size={13} color="#fff" />
+            <FontAwesome name="facebook" size={14} color="#4267B2" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.icon}
             onPress={() =>
               Linking.openURL("https://www.instagram.com/eauctionshub/")
             }
+            style={styles.icon}
           >
-            <FontAwesome name="instagram" size={13} color="#fff" />
+            <FontAwesome name="instagram" size={14} color="#E1306C" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.icon}
             onPress={() =>
               Linking.openURL("https://www.linkedin.com/company/eauctionshub/")
             }
+            style={styles.icon}
           >
-            <FontAwesome name="linkedin" size={13} color="#fff" />
+            <FontAwesome name="linkedin" size={14} color="#0077B5" />
           </TouchableOpacity>
         </View>
+
+        {/* Copyright text on the right */}
+        <Text style={styles.copyright}>
+          © 2025 E-AuctionsHub. All rights reserved.
+        </Text>
       </View>
     </View>
   );
@@ -57,45 +51,39 @@ export default function Footer() {
 const styles = StyleSheet.create({
   footerContainer: {
     backgroundColor: "#111",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    alignItems: "center",
-    opacity: 0.9,
+    paddingVertical: 6, // Reduced height
+    paddingHorizontal: 10,
     width: "100%",
   },
   sectionBox: {
-    backgroundColor: "#222",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginVertical: 5,
-    borderRadius: 10,
-    width: "95%",
-    alignItems: "center",
+    flexDirection: "row", // Arrange left and right
+    justifyContent: "space-between", // Space between icons and text
+    alignItems: "center", // Center vertically
+    backgroundColor: "#1a1a1a",
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
   },
   socialIconsContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    gap: 15,
-    marginTop: 10,
+    gap: 12,
   },
   copyright: {
-    color: "#bbb",
-    fontSize: 12,
+    color: "#aaa",
+    fontSize: 11,
     fontWeight: "500",
   },
-  developerText: {
-    color: "#1E90FF",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginTop: 4,
-  },
   icon: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    padding: 4,
-    borderRadius: 5,
-    width: 23,
-    height: 23,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    width: 24,
+    height: 24,
     justifyContent: "center",
     alignItems: "center",
   },

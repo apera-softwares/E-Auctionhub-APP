@@ -2,13 +2,13 @@
   "expo": {
     "name": "E AuctionsHub",
     "slug": "e-auctionshub",
-    "version": "1.0.9",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
@@ -28,7 +28,6 @@
       },
       "package": "com.diliplovevanshi.exporouterexample",
       "googleServicesFile": "./google-services.json"
-
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +37,14 @@
     "plugins": [
       "expo-router",
       "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "backgroundColor": "#ffffff",
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -59,6 +66,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "build": {
+      "preview": {
+        "distribution": "internal"
+      }
     },
     "extra": {
       "RAZORPAY_KEY": "rzp_live_BpATSjSGBOFGK9",

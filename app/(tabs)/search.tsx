@@ -167,7 +167,6 @@ export default function search() {
     setMaxPrice("");
   };
 
-
   useEffect(() => {
     const fetchLastSearches = async () => {
       const storedSearches = await AsyncStorage.getItem("lastSearches");
@@ -178,14 +177,9 @@ export default function search() {
     fetchLastSearches();
   }, []);
 
-
-
-
-
-
   return (
     <ScrollView
-      contentContainerStyle={{ height: "100%", backgroundColor: "#fff" }}
+      contentContainerStyle={{ flexGrow: 1, backgroundColor: "#fff" }}
     >
       <View style={styles.container}>
         <YStack flex={1} items="center" gap="$3">
@@ -231,6 +225,7 @@ export default function search() {
               setCityName(item?.label);
             }}
           />
+
           <TextInput
             style={[styles.input]}
             placeholder="Locality"
@@ -238,7 +233,6 @@ export default function search() {
             value={locality}
             onChangeText={setLocality}
           />
-
 
           <View style={styles.priceContainer}>
             <TextInput
@@ -248,6 +242,7 @@ export default function search() {
               value={minPrice}
               onChangeText={setMinPrice}
             />
+            
             <TextInput
               style={[styles.input, styles.priceInput]}
               placeholder="Max Price"
