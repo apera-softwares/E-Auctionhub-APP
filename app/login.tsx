@@ -128,6 +128,12 @@ const LoginScreen = () => {
         } else {
           router.push("/");
         }
+      } else if (data?.statusCode === 403) {
+        Toast.show({
+          type: "error",
+          text1: `${data.message}, wait we will redirect you to verification`,
+        });
+        handleSendOTP();
       } else {
         Toast.show({ type: "error", text1: data.message });
       }
@@ -161,7 +167,7 @@ const LoginScreen = () => {
     }
   }
 
-  const handleSendOTP = async (e: any) => {
+  const handleSendOTP = async () => {
     try {
       const payload = {
         phone: `+91${formData.phone}`,
@@ -177,10 +183,19 @@ const LoginScreen = () => {
       const data = await response.json();
       if (data?.statusCode === 200) {
         Toast.show({ type: "success", text1: data?.message });
-        router.push({
-          pathname: `/loginWithOtp`,
-          params: { phone: formData.phone },
-        })
+
+        loginType === "password"
+          ? router.push({
+              pathname: `/verifyOtp`,
+              params: {
+                phone: `+91${formData.phone}`,
+                from: "unverifiedLogin",
+              },
+            })
+          : router.push({
+              pathname: `/loginWithOtp`,
+              params: { phone: formData.phone },
+            });
       } else {
         Toast.show({ type: "error", text1: data?.message });
 
