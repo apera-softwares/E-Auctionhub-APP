@@ -2,7 +2,7 @@
   "expo": {
     "name": "E AuctionsHub",
     "slug": "e-auctionshub",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
     "scheme": "myapp",
@@ -52,7 +52,8 @@
             "newArchEnabled": true
           },
           "android": {
-            "newArchEnabled": true
+            "newArchEnabled": true,
+            "targetSdkVersion": 35
           }
         }
       ],

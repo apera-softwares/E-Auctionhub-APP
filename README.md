@@ -38,9 +38,6 @@ for both
 - eas submit --platform all
 
 
-
-
-
 <!-- For Testing Build in Real Device -->
 - eas build -p android --profile preview
 - eas build -p ios --profile preview
