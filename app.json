@@ -2,7 +2,7 @@
   "expo": {
     "name": "E AuctionsHub",
     "slug": "e-auctionshub",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
     "scheme": "myapp",
@@ -67,11 +67,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "build": {
-      "preview": {
-        "distribution": "internal"
-      }
     },
     "extra": {
       "RAZORPAY_KEY": "rzp_live_BpATSjSGBOFGK9",
