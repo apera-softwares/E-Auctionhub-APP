@@ -1,5 +1,4 @@
 import "../tamagui-web.css";
-
 import { useEffect } from "react";
 import { StatusBar, useColorScheme } from "react-native";
 import {
@@ -75,7 +74,6 @@ export default function RootLayout() {
           <RootLayoutNav />
         </AuthContextProvider>
       </NotificationProvider>
-
     </Providers>
   );
 }
