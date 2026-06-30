@@ -6,7 +6,7 @@ import { BACKEND_API } from "constants/api";
 import LoaderSkelton from "components/LoaderSkelton";
 import RenderFooter from "components/NoAuctionFoundCard";
 import { sortList } from "constants/staticData";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { AuctionCard } from "components/AuctionCard";
 import { APP_COLOR } from "constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -32,7 +32,9 @@ export default function AuctionScreen() {
   const [totalAuction, setTotalAuction] = useState(0);
   const [sort, setSort] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-  const { user, setUser } = useUser()
+  const { user, setUser } = useUser();
+  const [numColumns, setNumColumns] = useState(2);
+
   const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
     const token = await AsyncStorage.getItem("token");
     console.log(token, "token");
@@ -68,12 +70,9 @@ export default function AuctionScreen() {
     }
   };
 
-  
-
   useEffect(() => {
     fetchAuctions(1, true);
   }, [cityId, assetTypeId, bankId, minPrice, maxPrice, sort, localityName]);
-
 
   const loadMore = () => {
     if (!loading && page < lastPage) {
@@ -95,27 +94,81 @@ export default function AuctionScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.totalAuctions}>
-          <Text style={{ color: APP_COLOR.primary, fontSize: 18 }}>
-            {totalAuction}
-          </Text>{" "}
-          {cityName && assetTypeName
-            ? `Auctions ${assetTypeName} found in ${cityName}`
-            : cityName
-              ? `Auctions found in ${cityName}`
-              : assetTypeName
-                ? `Auctions found in ${assetTypeName}`
-                : "Total Auction found"}
-        </Text>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTitleRow}>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.headerTitle}>
+              <Text style={styles.highlightCount}>{totalAuction}</Text>{" "}
+              {cityName && assetTypeName
+                ? `${assetTypeName} in ${cityName}`
+                : cityName
+                  ? `Properties in ${cityName}`
+                  : assetTypeName
+                    ? `${assetTypeName} Properties`
+                    : "Properties Found"}
+            </Text>
+            <Text style={styles.headerSubtitle}>Verified bank auction listings</Text>
+          </View>
+        </View>
 
-        <TouchableOpacity
-          style={styles.dropdown}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text>Sort By:</Text>
-          <AntDesign name="down" size={16} color="black" />
-        </TouchableOpacity>
+        <View style={styles.actionsRow}>
+          <TouchableOpacity
+            style={styles.sortButton}
+            onPress={() => setModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="swap-vertical-outline" size={16} color={APP_COLOR.primary} />
+            <Text style={styles.sortButtonText}>Sort By</Text>
+            <AntDesign name="down" size={12} color="#64748b" style={{ marginLeft: 2 }} />
+          </TouchableOpacity>
+
+          <View style={styles.switcherContainer}>
+            <TouchableOpacity
+              style={[
+                styles.switcherButton,
+                numColumns === 1 && styles.switcherButtonActive,
+              ]}
+              onPress={() => setNumColumns(1)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="list-outline"
+                size={16}
+                color={numColumns === 1 ? APP_COLOR.primary : "#64748b"}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.switcherButton,
+                numColumns === 2 && styles.switcherButtonActive,
+              ]}
+              onPress={() => setNumColumns(2)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="grid-outline"
+                size={16}
+                color={numColumns === 2 ? APP_COLOR.primary : "#64748b"}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.switcherButton,
+                numColumns === 3 && styles.switcherButtonActive,
+              ]}
+              onPress={() => setNumColumns(3)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="apps-outline"
+                size={16}
+                color={numColumns === 3 ? APP_COLOR.primary : "#64748b"}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
 
       <Modal
@@ -156,14 +209,22 @@ export default function AuctionScreen() {
           </View>
         </View>
       </Modal>
+
       <FlatList
+        key={numColumns}
         data={auctions}
         keyExtractor={(item, index) => `${index}`}
-        renderItem={({ item, index }) => (
-          <AuctionCard key={index} data={item} />
+        renderItem={({ item }) => (
+          <AuctionCard data={item} numColumns={numColumns} />
         )}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
+        numColumns={numColumns}
+        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+        contentContainerStyle={[
+          styles.flatListContent,
+          {
+            paddingHorizontal: numColumns === 1 ? 0 : numColumns === 2 ? 8 : 9,
+          },
+        ]}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         refreshing={refreshing}
@@ -177,73 +238,146 @@ export default function AuctionScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 1,
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
-
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
+  flatListContent: {
     paddingVertical: 8,
+  },
+  headerContainer: {
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: "#f1f5f9",
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
-  totalAuctions: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    width: "75%",
+  headerTitleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
-  dropdown: {
+  titleTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#0f172a",
+    lineHeight: 20,
+  },
+  highlightCount: {
+    color: APP_COLOR.primary,
+    fontWeight: "800",
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: "#64748b",
+    marginTop: 2,
+  },
+  actionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12,
+    gap: 12,
+  },
+  sortButton: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1.5,
+    borderColor: "#e2e8f0",
+    borderRadius: 10,
     backgroundColor: "#fff",
-    width: 90,
-    justifyContent: "space-between",
+    gap: 6,
+    flex: 1,
+    justifyContent: "center",
+  },
+  sortButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#475569",
+  },
+  switcherContainer: {
+    flexDirection: "row",
+    backgroundColor: "#f1f5f9",
+    borderRadius: 10,
+    padding: 3,
+    gap: 2,
+  },
+  switcherButton: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 32,
+    height: 32,
+  },
+  switcherButtonActive: {
+    backgroundColor: "#fff",
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(15, 23, 42, 0.4)",
   },
   modalContent: {
     backgroundColor: "#fff",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    padding: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 20,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontWeight: "700",
+    color: "#0f172a",
+    marginBottom: 16,
   },
   modalItem: {
-    padding: 15,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#f1f5f9",
   },
   itemText: {
-    fontSize: 16,
+    fontSize: 14,
+    color: "#334155",
+    fontWeight: "500",
   },
   closeButton: {
-    padding: 15,
+    padding: 14,
     alignItems: "center",
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    marginTop: 10,
+    backgroundColor: APP_COLOR.primary,
+    borderRadius: 12,
+    marginTop: 16,
+    shadowColor: APP_COLOR.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   closeButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "700",
+    fontSize: 14,
   },
 });
