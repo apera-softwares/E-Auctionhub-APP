@@ -84,20 +84,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          headerTitle: "Advance Search",
+          headerShown: false,
           title: "Search",
-          headerStyle: {
-            backgroundColor: "#ffffff",
-            borderBottomWidth: 1,
-            borderBottomColor: "#f1f5f9",
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          headerTintColor: "#1e293b",
-          headerTitleStyle: {
-            fontWeight: "700",
-            fontSize: 18,
-          },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "search" : "search-outline"}

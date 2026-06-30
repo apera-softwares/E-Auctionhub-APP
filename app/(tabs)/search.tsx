@@ -1,13 +1,16 @@
 import { APP_COLOR } from "constants/Colors";
-import { Button, H3, Label, SizableText, Text, View, YStack } from "tamagui";
+import { Text, View, YStack } from "tamagui";
 import { Dropdown } from "react-native-element-dropdown";
-import { StyleSheet, ScrollView, TextInput, Pressable } from "react-native";
-import { useEffect, useState } from "react";
+import { StyleSheet, ScrollView, TextInput, Pressable, TouchableOpacity, Animated } from "react-native";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "expo-router";
 import { BACKEND_API } from "constants/api";
 import Toast from "react-native-toast-message";
 import Footer from "components/Footer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function search() {
   const [city, setCity] = useState("");
@@ -23,6 +26,15 @@ export default function search() {
   const [allAssetTypes, setAllAssetTypes] = useState([]);
   const router = useRouter();
   const [lastSearch, setLastSearch] = useState([] as any);
+  const insets = useSafeAreaInsets();
+  const headerHeight = 64 + insets.top;
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [0, -headerHeight],
+    extrapolate: "clamp",
+  });
 
   useEffect(() => {
     fetchCities();
@@ -178,242 +190,546 @@ export default function search() {
   }, []);
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1, backgroundColor: "#fff" }}
+    <LinearGradient
+      colors={[APP_COLOR.primary, "#182848"]}
+      style={styles.gradientBackground}
     >
-      <View style={styles.container}>
-        <YStack flex={1} items="center" gap="$3">
+      <Animated.View
+        style={[
+          styles.customHeader,
+          {
+            height: headerHeight,
+            paddingTop: insets.top,
+            transform: [{ translateY: headerTranslateY }],
+          },
+        ]}
+      >
+        <Text style={styles.customHeaderTitle}>Advanced Search</Text>
+      </Animated.View>
 
-          <SizableText size="$5" text="center" color="black">
-            Find auction listings with more filter options.
-          </SizableText>
-
-          <Dropdown
-            style={styles.dropdown}
-            data={allAssetTypes}
-            labelField="label"
-            valueField="value"
-            placeholder="Select Asset Type"
-            value={assetType}
-            onChange={(item) => {
-              setAssetType(item?.value);
-              setAssetTypeName(item?.label);
-            }}
-          />
-
-          <Dropdown
-            style={styles.dropdown}
-            data={allBanks}
-            labelField="label"
-            valueField="value"
-            placeholder="Select Bank"
-            value={bank}
-            onChange={(item) => setBank(item?.value)}
-          />
-          <Toast />
-          <Dropdown
-            style={styles.dropdown}
-            data={allCities}
-            labelField="label"
-            valueField="value"
-            placeholder="Select City"
-            search
-            searchPlaceholder="Search City..."
-            value={city}
-            onChange={(item) => {
-              setCity(item?.value);
-              setCityName(item?.label);
-            }}
-          />
-
-          <TextInput
-            style={[styles.input]}
-            placeholder="Locality"
-            keyboardType="default"
-            value={locality}
-            onChangeText={setLocality}
-          />
-
-          <View style={styles.priceContainer}>
-            <TextInput
-              style={[styles.input, styles.priceInput]}
-              placeholder="Min Price"
-              keyboardType="numeric"
-              value={minPrice}
-              onChangeText={setMinPrice}
-            />
-            
-            <TextInput
-              style={[styles.input, styles.priceInput]}
-              placeholder="Max Price"
-              keyboardType="numeric"
-              value={maxPrice}
-              onChangeText={setMaxPrice}
-            />
-          </View>
-
-          <View style={styles.buttonContainer}>
-            <Button
-              onPress={clearFilters}
-              style={styles.clearButton}
-              fontSize={16}
-              fontWeight={700}
-            >
-              Clear
-            </Button>
-            <Button
-              onPress={handleSearch}
-              fontSize={16}
-              fontWeight={700}
-              style={styles.searchButton}
-            >
-              Search
-            </Button>
-          </View>
-          {lastSearch.length > 0 && (
-            <View style={{ padding: 10 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  marginBottom: 8,
-                }}
-              >
-                Last Searches
-              </Text>
-              <View style={{ maxWidth: "100%", overflow: "hidden" }}>
-                <View style={{ flexDirection: "row" }}>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ flexDirection: "row", gap: 4 }}
-                  >
-                    {lastSearch.map((search, index) => (
-                      <Pressable
-                        key={index}
-                        style={{
-                          backgroundColor: "#f0f0f0",
-                          paddingVertical: 6,
-                          paddingHorizontal: 12,
-                          borderRadius: 20,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 6,
-                          borderWidth: 1,
-                          borderColor: "#d1d1d1",
-                        }}
-                        onPress={() =>
-                          router.push({
-                            pathname: `/auctions`,
-                            params: {
-                              cityId: search?.city,
-                              assetTypeName: search?.assetTypeName,
-                              cityName: search.cityName,
-                              localityName: "",
-                              assetTypeId: search?.assetType,
-                              bankId: "",
-                              minPrice: "",
-                              maxPrice: "",
-                            },
-                          })}
-                      >
-                        <Text style={{ fontSize: 14, color: "#333" }}>
-                          #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </ScrollView>
-                </View>
+      <Animated.ScrollView
+        contentContainerStyle={[styles.scrollContainer, { paddingTop: headerHeight }]}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+      >
+        <YStack flex={1} items="center" gap="$2">
+          <View px="$4" style={styles.overlay}>
+            <View style={styles.topContainer}>
+              <View style={styles.badgeContainer}>
+                <Ionicons name="search" size={12} color="#FFD700" />
+                <Text style={styles.badgeText}>ADVANCED FILTERS</Text>
               </View>
+              <Text style={styles.headerText}>
+                Find the Perfect{"\n"}
+                <Text style={styles.headerTextAccent}>Auction Properties</Text>
+              </Text>
+              <View style={styles.headerDivider} />
+              <Text style={styles.subtext}>
+                Refine listings by bank, city, locality, and price range to match your investment goals.
+              </Text>
 
+              <View style={styles.container}>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                  iconStyle={styles.dropdownIcon}
+                  containerStyle={styles.dropdownContainer}
+                  itemTextStyle={styles.dropdownItemText}
+                  itemContainerStyle={styles.dropdownItemContainer}
+                  activeColor="rgba(0, 123, 255, 0.08)"
+                  inputSearchStyle={styles.dropdownInputSearch}
+                  data={allAssetTypes}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select Asset Type"
+                  value={assetType}
+                  onChange={(item) => {
+                    setAssetType(item?.value);
+                    setAssetTypeName(item?.label);
+                  }}
+                  renderLeftIcon={() => (
+                    <Ionicons
+                      name="business-outline"
+                      size={20}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+                />
+
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                  iconStyle={styles.dropdownIcon}
+                  containerStyle={styles.dropdownContainer}
+                  itemTextStyle={styles.dropdownItemText}
+                  itemContainerStyle={styles.dropdownItemContainer}
+                  activeColor="rgba(0, 123, 255, 0.08)"
+                  inputSearchStyle={styles.dropdownInputSearch}
+                  data={allBanks}
+                  maxHeight={300}
+                  search
+                  searchPlaceholder="Search Bank..."
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select Bank"
+                  value={bank}
+                  onChange={(item) => setBank(item?.value)}
+                  renderLeftIcon={() => (
+                    <Ionicons
+                      name="card-outline"
+                      size={20}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+                />
+
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                  iconStyle={styles.dropdownIcon}
+                  containerStyle={styles.dropdownContainer}
+                  itemTextStyle={styles.dropdownItemText}
+                  itemContainerStyle={styles.dropdownItemContainer}
+                  activeColor="rgba(0, 123, 255, 0.08)"
+                  inputSearchStyle={styles.dropdownInputSearch}
+                  data={allCities}
+                  maxHeight={300}
+                  search
+                  searchPlaceholder="Search City..."
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select City"
+                  value={city}
+                  onChange={(item) => {
+                    setCity(item?.value);
+                    setCityName(item?.label);
+                  }}
+                  renderLeftIcon={() => (
+                    <Ionicons
+                      name="location-outline"
+                      size={20}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+                />
+
+                <View style={styles.inputContainer}>
+                  <Ionicons
+                    name="map-outline"
+                    size={20}
+                    color={APP_COLOR.primary}
+                    style={{ marginRight: 8 }}
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Locality"
+                    placeholderTextColor="#94a3b8"
+                    keyboardType="default"
+                    value={locality}
+                    onChangeText={setLocality}
+                  />
+                </View>
+
+                <View style={styles.priceContainer}>
+                  <View style={[styles.inputContainer, { flex: 1 }]}>
+                    <Ionicons
+                      name="pricetag-outline"
+                      size={18}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 6 }}
+                    />
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Min Price"
+                      placeholderTextColor="#94a3b8"
+                      keyboardType="numeric"
+                      value={minPrice}
+                      onChangeText={setMinPrice}
+                    />
+                  </View>
+
+                  <View style={[styles.inputContainer, { flex: 1 }]}>
+                    <Ionicons
+                      name="pricetag-outline"
+                      size={18}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 6 }}
+                    />
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Max Price"
+                      placeholderTextColor="#94a3b8"
+                      keyboardType="numeric"
+                      value={maxPrice}
+                      onChangeText={setMaxPrice}
+                    />
+                  </View>
+                </View>
+
+                <Toast />
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={clearFilters}
+                    style={[styles.actionButtonContainer, styles.clearButtonContainer]}
+                  >
+                    <View style={styles.clearButton}>
+                      <Ionicons name="refresh-outline" size={18} color="#64748b" />
+                      <Text style={styles.clearButtonText}>Clear</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={handleSearch}
+                    style={[styles.actionButtonContainer, styles.searchButtonContainer]}
+                  >
+                    <LinearGradient
+                      colors={[APP_COLOR.primary, "#0056b3"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.searchButton}
+                    >
+                      <Text style={styles.searchButtonText}>Search</Text>
+                      <Ionicons name="search-outline" size={18} color="#fff" />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+
+                {lastSearch.length > 0 && (
+                  <View style={styles.lastSearchSection}>
+                    <View style={styles.lastSearchHeader}>
+                      <Ionicons name="time-outline" size={14} color="#64748b" />
+                      <Text style={styles.lastSearchTitle}>Recent Searches</Text>
+                    </View>
+                    <View style={{ maxWidth: "100%", overflow: "hidden" }}>
+                      <View style={{ flexDirection: "row" }}>
+                        <ScrollView
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          contentContainerStyle={{ flexDirection: "row", gap: 6 }}
+                        >
+                          {lastSearch.map((search, index) => (
+                            <Pressable
+                              key={index}
+                              style={styles.lastSearchPill}
+                              onPress={() =>
+                                router.push({
+                                  pathname: `/auctions`,
+                                  params: {
+                                    cityId: search?.city,
+                                    assetTypeName: search?.assetTypeName,
+                                    cityName: search.cityName,
+                                    localityName: "",
+                                    assetTypeId: search?.assetType,
+                                    bankId: "",
+                                    minPrice: "",
+                                    maxPrice: "",
+                                  },
+                                })}
+                            >
+                              <Ionicons name="search-outline" size={12} color="#64748b" />
+                              <Text style={styles.lastSearchText}>
+                                #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
+                              </Text>
+                            </Pressable>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              </View>
             </View>
-          )}
+          </View>
         </YStack>
-      </View>
-      <View>
         <Footer />
-      </View>
-    </ScrollView>
+      </Animated.ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradientBackground: {
+    flex: 1,
+  },
+  scrollContainer: {
     flexGrow: 1,
-    padding: 20,
-    backgroundColor: "white",
-    paddingTop: 40,
   },
-  headerText: {
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "black",
-  },
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 15,
+    paddingBottom: 40,
     width: "100%",
   },
-  input: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
+  topContainer: {
     width: "100%",
+    maxWidth: 340,
+    alignItems: "center",
   },
-  button: {
-    backgroundColor: APP_COLOR.primary,
-    color: "white",
-    paddingVertical: 12,
-    borderRadius: 8,
-    textAlign: "center",
-    width: "100%",
-  },
-  buttonContainer: {
+  badgeContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
-    gap: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    marginBottom: 16,
+    gap: 6,
   },
-
-  searchButton: {
-    flex: 1,
-    backgroundColor: APP_COLOR.primary,
-    color: "white",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
+  badgeText: {
+    color: "#ffffff",
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
+  headerText: {
+    fontSize: 26,
+    fontWeight: "800",
     textAlign: "center",
+    color: "#ffffff",
+    lineHeight: 34,
   },
-
-  clearButton: {
-    flex: 1,
-    // backgroundColor: "#fff",
-    borderRadius: 8,
-    borderWidth: 2,
+  headerTextAccent: {
+    color: "#FFD700",
+    fontWeight: "900",
+    textShadowColor: "rgba(255, 215, 0, 0.25)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+  },
+  headerDivider: {
+    width: 48,
+    height: 3,
+    backgroundColor: "#FFD700",
+    borderRadius: 2,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  subtext: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#f1f5f9",
+    marginTop: 8,
+    lineHeight: 20,
+    paddingHorizontal: 10,
+  },
+  container: {
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    borderRadius: 24,
+    marginTop: 25,
+    width: "100%",
+    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  dropdown: {
+    height: 54,
+    borderColor: "rgba(0, 123, 255, 0.12)",
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    backgroundColor: "#f8fafc",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  dropdownPlaceholder: {
+    color: "#94a3b8",
+    fontSize: 14,
+  },
+  dropdownSelectedText: {
+    color: "#1e293b",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dropdownIcon: {
+    width: 20,
+    height: 20,
+    tintColor: "#64748b",
+  },
+  dropdownContainer: {
+    borderRadius: 16,
+    marginTop: 4,
+    paddingVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 5,
+    borderColor: "#f1f5f9",
+    borderWidth: 1,
+    backgroundColor: "#ffffff",
+  },
+  dropdownItemText: {
+    color: "#334155",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dropdownItemContainer: {
+    borderRadius: 10,
+    marginHorizontal: 8,
+    marginVertical: 2,
+    paddingVertical: 4,
+  },
+  dropdownInputSearch: {
+    height: 40,
+    borderRadius: 10,
+    borderColor: "#cbd5e1",
+    fontSize: 14,
+  },
+  inputContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    borderColor: "gray",
-    color: "gray",
+    height: 54,
+    borderColor: "rgba(0, 123, 255, 0.12)",
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    backgroundColor: "#f8fafc",
+    width: "100%",
   },
-
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+  textInput: {
+    flex: 1,
+    height: "100%",
+    color: "#1e293b",
+    fontSize: 14,
+    fontWeight: "500",
   },
-
   priceContainer: {
     flexDirection: "row",
     gap: 10,
     justifyContent: "space-between",
     width: "100%",
   },
-  priceInput: {
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    gap: 10,
+    marginTop: 4,
+  },
+  actionButtonContainer: {
     flex: 1,
+    borderRadius: 12,
+    overflow: "hidden",
+    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
+  searchButtonContainer: {
+    shadowColor: APP_COLOR.primary,
+  },
+  clearButtonContainer: {
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchButton: {
+    height: 52,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+  },
+  searchButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  clearButton: {
+    height: 52,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#ffffff",
+    borderWidth: 1.5,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+  },
+  clearButtonText: {
+    color: "#64748b",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  lastSearchSection: {
+    marginTop: 10,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f5f9",
+  },
+  lastSearchHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 10,
+  },
+  lastSearchTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748b",
+  },
+  lastSearchPill: {
+    backgroundColor: "#f1f5f9",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  lastSearchText: {
+    fontSize: 12,
+    color: "#475569",
+    fontWeight: "500",
+  },
+  customHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#182848",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.08)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  customHeaderTitle: {
+    color: "#ffffff",
+    fontWeight: "800",
+    fontSize: 18,
+    letterSpacing: 0.5,
   },
 });
