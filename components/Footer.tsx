@@ -41,7 +41,7 @@ export default function Footer() {
 
         {/* Copyright text on the right */}
         <Text style={styles.copyright}>
-          © 2025 E-AuctionsHub. All rights reserved.
+          © 2026 E-AuctionsHub. All rights reserved.
         </Text>
       </View>
     </View>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   footerContainer: {
     backgroundColor: "#111",
     paddingTop: 8,
-    paddingBottom: 120, // Situate footer text and icons above the tab bar
+    paddingBottom: 106, // Situate footer text and icons above the tab bar
     paddingHorizontal: 10,
     width: "100%",
   },

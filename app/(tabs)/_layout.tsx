@@ -1,36 +1,37 @@
 import { Tabs, useRouter } from "expo-router";
 import { SizableText } from "tamagui";
 import { APP_COLOR } from "constants/Colors";
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { useUser } from "context/UserContextProvider";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const { user } = useUser();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: APP_COLOR.primary, // Premium primary blue active icon
-        tabBarInactiveTintColor: "#64748b", // Soft slate gray inactive icon
+        tabBarActiveTintColor: APP_COLOR.primary,
+        tabBarInactiveTintColor: "#64748b",
         tabBarStyle: {
-          backgroundColor: "#ffffff", // Pure white background
-          borderTopWidth: 0,
+          backgroundColor: "#ffffff",
+          borderTopWidth: 1,
+          borderTopColor: "rgba(0, 0, 0, 0.06)",
           position: "absolute",
-          bottom: 36, // Positioned higher up to clear phone menu tabs cleanly
-          left: 16,
-          right: 16,
-          height: 64,
-          borderRadius: 24,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-          elevation: 6,
-          borderWidth: 1,
-          borderColor: "rgba(0, 0, 0, 0.05)",
-          paddingBottom: 8,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 56 + insets.bottom,
+          borderRadius: 0,
+          shadowColor: "#0f172a",
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.06,
+          shadowRadius: 12,
+          elevation: 8,
+          paddingBottom: insets.bottom,
           paddingTop: 8,
         },
         tabBarLabelStyle: {

@@ -75,12 +75,13 @@ export default function search() {
       const response = await fetch(`${BACKEND_API}auction/asset-types`);
       if (response.ok) {
         const data = await response.json();
-        setAllAssetTypes(
-          data.assetTypes.map((asset) => ({
+        setAllAssetTypes([
+          { label: "All Types", value: "" },
+          ...data.assetTypes.map((asset) => ({
             label: asset?.name,
             value: asset?.id,
-          }))
-        );
+          })),
+        ]);
       }
     } catch (error) {
       console.error("Error fetching asset types:", error);
@@ -251,6 +252,7 @@ export default function search() {
                   onChange={(item) => {
                     setAssetType(item?.value);
                     setAssetTypeName(item?.label);
+                    Toast.hide();
                   }}
                   renderLeftIcon={() => (
                     <Ionicons
@@ -280,7 +282,7 @@ export default function search() {
                   valueField="value"
                   placeholder="Select Bank"
                   value={bank}
-                  onChange={(item) => setBank(item?.value)}
+                  onChange={(item) => { setBank(item?.value); Toast.hide(); }}
                   renderLeftIcon={() => (
                     <Ionicons
                       name="card-outline"
@@ -312,6 +314,7 @@ export default function search() {
                   onChange={(item) => {
                     setCity(item?.value);
                     setCityName(item?.label);
+                    Toast.hide();
                   }}
                   renderLeftIcon={() => (
                     <Ionicons

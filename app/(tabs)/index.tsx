@@ -152,12 +152,13 @@ export default function TabOneScreen() {
       const response = await fetch(`${BACKEND_API}auction/asset-types`);
       if (response.ok) {
         const data = await response.json();
-        setAllAssetTypes(
-          data.assetTypes.map((asset) => ({
+        setAllAssetTypes([
+          { label: "All Types", value: "" },
+          ...data.assetTypes.map((asset) => ({
             label: asset?.name,
             value: asset?.id,
-          }))
-        );
+          })),
+        ]);
       }
     } catch (error) {
       console.error("Error fetching asset types:", error);
