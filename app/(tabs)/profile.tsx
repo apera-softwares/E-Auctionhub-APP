@@ -338,12 +338,19 @@ const ProfileScreen = () => {
               </View>
             ) : (
               <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.logoutButton}
+                activeOpacity={0.85}
+                style={styles.logoutButtonContainer}
                 onPress={handleLogout}
               >
-                <AntDesign name="logout" size={16} color="#EF4444" />
-                <Text style={styles.logoutButtonText}>Log Out Account</Text>
+                <LinearGradient
+                  colors={["#EF4444", "#DC2626"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.logoutButton}
+                >
+                  <AntDesign name="logout" size={16} color="#ffffff" />
+                  <Text style={styles.logoutButtonText}>Log Out Account</Text>
+                </LinearGradient>
               </TouchableOpacity>
             )}
           </View>
@@ -701,22 +708,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
   },
+  logoutButtonContainer: {
+    width: "100%",
+    borderRadius: 16,
+    overflow: "hidden",
+    shadowColor: "#EF4444",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    marginTop: 10,
+    marginBottom: 20,
+  },
   logoutButton: {
     width: "100%",
-    backgroundColor: "rgba(239, 68, 68, 0.08)",
-    borderWidth: 1.5,
-    borderColor: "rgba(239, 68, 68, 0.25)",
     paddingVertical: 14,
-    borderRadius: 16,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 8,
-    marginTop: 10,
-    marginBottom: 20,
   },
   logoutButtonText: {
-    color: "#EF4444",
+    color: "#ffffff",
     fontSize: 14,
     fontWeight: "700",
   },
