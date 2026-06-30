@@ -21,7 +21,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function TabOneScreen() {
   const [allCities, setAllCities] = useState([] as any);
-  const [topCities, setTopCities] = useState([] as any);
   const [allAssetTypes, setAllAssetTypes] = useState([] as any);
   const { user, setUser } = useUser();
   const [lastSearch, setLastSearch] = useState([] as any);
@@ -132,19 +131,20 @@ export default function TabOneScreen() {
     }
   };
 
-  const fetchPopularCities = async () => {
-    try {
-      const response = await fetch(`${BACKEND_API}auction/top-cities`);
-      if (response.ok) {
-        const data = await response.json();
-        setTopCities(data);
-      } else {
-        console.log("error white fetching cities ", response);
-      }
-    } catch (error) {
-      console.error("Error fetching  cities :", error);
-    }
-  };
+  // const fetchPopularCities = async () => {
+  //   console.log("called")
+  //   try {
+  //     const response = await fetch(`${BACKEND_API}auction/top-cities`);
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setTopCities(data);
+  //     } else {
+  //       console.log("error white fetching cities ", response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching  cities :", error);
+  //   }
+  // };
 
   const fetchAssetsType = async () => {
     try {
@@ -167,7 +167,7 @@ export default function TabOneScreen() {
     getUser();
     fetchCities();
     fetchAssetsType();
-    fetchPopularCities();
+    // fetchPopularCities();
     if (auctionId) {
       router.push({
         pathname: `/auctionDetails`,
@@ -323,7 +323,7 @@ export default function TabOneScreen() {
               </View>
             </View>
             <PopularCities />
-            <View style={styles.popularSection}>
+            {/* <View style={styles.popularSection}>
               <Text style={styles.sectionTitle}>
                 Top Auctions{" "}
                 <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
@@ -362,7 +362,7 @@ export default function TabOneScreen() {
                   </TouchableOpacity>
                 )}
               />
-            </View>
+            </View> */}
           </View>
         </YStack>
         <Footer />
