@@ -82,7 +82,13 @@ export default function AuctionScreen() {
   const [allBanks, setAllBanks] = useState([]);
   const [allAssetTypes, setAllAssetTypes] = useState([]);
 
-  const activeCount = [fCity, fBank, fAssetType, fLocality, fMinPrice, fMaxPrice].filter(Boolean).length;
+  const activeCount = [
+    fAssetTypeName,
+    fCityName,
+    fBank,
+    fLocality,
+    (fMinPrice || fMaxPrice) ? "price" : ""
+  ].filter(val => val && val !== "undefined" && val !== "null" && String(val).trim() !== "").length;
 
   useEffect(() => {
     fetchCities(); fetchBanks(); fetchAssetsType();
@@ -107,19 +113,72 @@ export default function AuctionScreen() {
     } catch (e) { }
   };
 
+  const removeSingleFilter = (key: string) => {
+    let newCity = fCity;
+    let newCityName = fCityName;
+    let newBank = fBank;
+    let newAssetType = fAssetType;
+    let newAssetTypeName = fAssetTypeName;
+    let newLocality = fLocality;
+    let newMinPrice = fMinPrice;
+    let newMaxPrice = fMaxPrice;
+
+    if (key === "assetType") {
+      newAssetType = "";
+      newAssetTypeName = "";
+      setFAssetType("");
+      setFAssetTypeName("");
+    } else if (key === "city") {
+      newCity = "";
+      newCityName = "";
+      setFCity("");
+      setFCityName("");
+    } else if (key === "bank") {
+      newBank = "";
+      setFBank("");
+    } else if (key === "locality") {
+      newLocality = "";
+      setFLocality("");
+    } else if (key === "price") {
+      newMinPrice = "";
+      newMaxPrice = "";
+      setFMinPrice("");
+      setFMaxPrice("");
+    }
+
+    setPage(1);
+    fetchAuctions(1, true, {
+      city: newCity,
+      bank: newBank,
+      assetType: newAssetType,
+      locality: newLocality,
+      minPrice: newMinPrice,
+      maxPrice: newMaxPrice
+    });
+  };
+
   const clearFilters = () => {
     setFCity(""); setFCityName(""); setFBank("");
     setFAssetType(""); setFAssetTypeName("");
     setFLocality(""); setFMinPrice(""); setFMaxPrice("");
+    setPage(1);
+    fetchAuctions(1, true, {
+      city: "",
+      bank: "",
+      assetType: "",
+      locality: "",
+      minPrice: "",
+      maxPrice: ""
+    });
   };
 
   const applyFilters = () => {
     closeFilter();
     setPage(1);
-    fetchAuctionsWithFilters(1, true);
+    fetchAuctions(1, true);
   };
 
-  const fetchAuctions = async (pageNumber = 1, isRefreshing = false) => {
+  const fetchAuctions = async (pageNumber = 1, isRefreshing = false, overrideFilters?: any) => {
     const token = await AsyncStorage.getItem("token");
     console.log(token, "token");
     if (loading) return;
@@ -130,7 +189,15 @@ export default function AuctionScreen() {
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-      const URL = `${BACKEND_API}auction/search?${sort}&assetTypeId=${fAssetType || assetTypeId}&bankId=${fBank || bankId}&cityId=${fCity || cityId}&locality=${fLocality || localityName}&minResPrice=${fMinPrice || minPrice}&maxResPrice=${fMaxPrice || maxPrice}&page=${pageNumber}&limit=${LIMIT}`;
+
+      const city = overrideFilters ? overrideFilters.city : fCity;
+      const bank = overrideFilters ? overrideFilters.bank : fBank;
+      const assetType = overrideFilters ? overrideFilters.assetType : fAssetType;
+      const locality = overrideFilters ? overrideFilters.locality : fLocality;
+      const minPriceVal = overrideFilters ? overrideFilters.minPrice : fMinPrice;
+      const maxPriceVal = overrideFilters ? overrideFilters.maxPrice : fMaxPrice;
+
+      const URL = `${BACKEND_API}auction/search?${sort}&assetTypeId=${assetType}&bankId=${bank}&cityId=${city}&locality=${locality}&minResPrice=${minPriceVal}&maxResPrice=${maxPriceVal}&page=${pageNumber}&limit=${LIMIT}`;
       const response = await fetch(URL, {
         headers,
       });
@@ -155,8 +222,24 @@ export default function AuctionScreen() {
   };
 
   useEffect(() => {
-    fetchAuctions(1, true);
-  }, [cityId, assetTypeId, bankId, minPrice, maxPrice, sort, localityName]);
+    setFCity(cityId ?? "");
+    setFCityName(cityName ?? "");
+    setFBank(bankId ?? "");
+    setFAssetType(assetTypeId ?? "");
+    setFAssetTypeName(assetTypeName ?? "");
+    setFLocality(localityName ?? "");
+    setFMinPrice(minPrice ?? "");
+    setFMaxPrice(maxPrice ?? "");
+
+    fetchAuctions(1, true, {
+      city: cityId ?? "",
+      bank: bankId ?? "",
+      assetType: assetTypeId ?? "",
+      locality: localityName ?? "",
+      minPrice: minPrice ?? "",
+      maxPrice: maxPrice ?? "",
+    });
+  }, [cityId, cityName, assetTypeId, assetTypeName, bankId, minPrice, maxPrice, localityName, sort]);
 
   const loadMore = () => {
     if (!loading && page < lastPage) {
@@ -197,6 +280,8 @@ export default function AuctionScreen() {
           </View>
         </View>
 
+
+  {/* Active filter chips */}
         <View style={styles.actionsRow}>
           <TouchableOpacity
             style={styles.sortButton}
@@ -267,6 +352,54 @@ export default function AuctionScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+          {activeCount > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.chipBar}
+          contentContainerStyle={styles.chipBarContent}
+        >
+          {fAssetTypeName ? (
+            <TouchableOpacity style={styles.chip} onPress={() => removeSingleFilter("assetType")}>
+              <Ionicons name="business-outline" size={11} color="#1d4ed8" />
+              <Text style={styles.chipTxt} numberOfLines={1}>{fAssetTypeName}</Text>
+              <Ionicons name="close" size={11} color="#1d4ed8" />
+            </TouchableOpacity>
+          ) : null}
+          {fCityName ? (
+            <TouchableOpacity style={styles.chip} onPress={() => removeSingleFilter("city")}>
+              <Ionicons name="location-outline" size={11} color="#1d4ed8" />
+              <Text style={styles.chipTxt} numberOfLines={1}>{fCityName}</Text>
+              <Ionicons name="close" size={11} color="#1d4ed8" />
+            </TouchableOpacity>
+          ) : null}
+          {fBank ? (
+            <TouchableOpacity style={styles.chip} onPress={() => removeSingleFilter("bank")}>
+              <Ionicons name="card-outline" size={11} color="#1d4ed8" />
+              <Text style={styles.chipTxt} numberOfLines={1}>Bank</Text>
+              <Ionicons name="close" size={11} color="#1d4ed8" />
+            </TouchableOpacity>
+          ) : null}
+          {fLocality ? (
+            <TouchableOpacity style={styles.chip} onPress={() => removeSingleFilter("locality")}>
+              <Ionicons name="map-outline" size={11} color="#1d4ed8" />
+              <Text style={styles.chipTxt} numberOfLines={1}>{fLocality}</Text>
+              <Ionicons name="close" size={11} color="#1d4ed8" />
+            </TouchableOpacity>
+          ) : null}
+          {(fMinPrice || fMaxPrice) ? (
+            <TouchableOpacity style={styles.chip} onPress={() => removeSingleFilter("price")}>
+              <Ionicons name="pricetag-outline" size={11} color="#1d4ed8" />
+              <Text style={styles.chipTxt} numberOfLines={1}>₹{fMinPrice || "0"}–{fMaxPrice || "∞"}</Text>
+              <Ionicons name="close" size={11} color="#1d4ed8" />
+            </TouchableOpacity>
+          ) : null}
+          <TouchableOpacity style={styles.clearChip} onPress={clearFilters}>
+            <Text style={styles.clearChipTxt}>Clear All</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
 
         {/* ── Sidebar Filter Drawer Modal ──────────────────── */}
         <Modal visible={filterOpen} transparent animationType="none" onRequestClose={closeFilter}>
@@ -372,56 +505,11 @@ export default function AuctionScreen() {
             </Animated.View>
           </View>
         </Modal>
+
       </View>
 
-      {/* Active filter chips */}
-      {activeCount > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.chipBar}
-          contentContainerStyle={styles.chipBarContent}
-        >
-          {fAssetTypeName ? (
-            <TouchableOpacity style={styles.chip} onPress={() => { setFAssetType(""); setFAssetTypeName(""); }}>
-              <Ionicons name="business-outline" size={11} color="#1d4ed8" />
-              <Text style={styles.chipTxt} numberOfLines={1}>{fAssetTypeName}</Text>
-              <Ionicons name="close" size={11} color="#1d4ed8" />
-            </TouchableOpacity>
-          ) : null}
-          {fCityName ? (
-            <TouchableOpacity style={styles.chip} onPress={() => { setFCity(""); setFCityName(""); }}>
-              <Ionicons name="location-outline" size={11} color="#1d4ed8" />
-              <Text style={styles.chipTxt} numberOfLines={1}>{fCityName}</Text>
-              <Ionicons name="close" size={11} color="#1d4ed8" />
-            </TouchableOpacity>
-          ) : null}
-          {fBank ? (
-            <TouchableOpacity style={styles.chip} onPress={() => setFBank("")}>
-              <Ionicons name="card-outline" size={11} color="#1d4ed8" />
-              <Text style={styles.chipTxt} numberOfLines={1}>Bank</Text>
-              <Ionicons name="close" size={11} color="#1d4ed8" />
-            </TouchableOpacity>
-          ) : null}
-          {fLocality ? (
-            <TouchableOpacity style={styles.chip} onPress={() => setFLocality("")}>
-              <Ionicons name="map-outline" size={11} color="#1d4ed8" />
-              <Text style={styles.chipTxt} numberOfLines={1}>{fLocality}</Text>
-              <Ionicons name="close" size={11} color="#1d4ed8" />
-            </TouchableOpacity>
-          ) : null}
-          {(fMinPrice || fMaxPrice) ? (
-            <TouchableOpacity style={styles.chip} onPress={() => { setFMinPrice(""); setFMaxPrice(""); }}>
-              <Ionicons name="pricetag-outline" size={11} color="#1d4ed8" />
-              <Text style={styles.chipTxt} numberOfLines={1}>₹{fMinPrice || "0"}–{fMaxPrice || "∞"}</Text>
-              <Ionicons name="close" size={11} color="#1d4ed8" />
-            </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity style={styles.clearChip} onPress={clearFilters}>
-            <Text style={styles.clearChipTxt}>Clear All</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      )}
+    
+    
 
       <Modal
         visible={isModalVisible}
