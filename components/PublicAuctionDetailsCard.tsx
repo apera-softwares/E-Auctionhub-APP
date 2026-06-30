@@ -6,6 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useUser } from "context/UserContextProvider";
 import { useRouter } from "expo-router";
+import { APP_COLOR } from "constants/Colors";
+
 const { width } = Dimensions.get("window");
 
 interface PublicAuctionDetailsCardProps {
@@ -73,7 +75,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
 
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / (width-80));
+    const index = Math.round(contentOffsetX / (width - 40));
     setCurrentIndex(index);
   };
 
@@ -89,7 +91,7 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
             scrollEventThrottle={50}
           >
             {images?.map((img, index) => (
-              <TouchableOpacity key={index} onPress={() => router.push({
+              <TouchableOpacity key={index} activeOpacity={0.9} onPress={() => router.push({
                 pathname: `/fullScreenImageView`,
                 params: { images: JSON.stringify(images) },
               })}>
@@ -98,193 +100,265 @@ const PublicAuctionDetailsCard: React.FC<PublicAuctionDetailsCardProps> = ({
           </ScrollView>
           <View style={styles.pagination}>
             <Text style={styles.paginationText}>
-              {currentIndex + 1}/{images.length}
+              {currentIndex + 1} / {images.length}
             </Text>
           </View>
           <View style={styles.overlayIcons}>
-            <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+            <TouchableOpacity style={styles.iconButton} onPress={addTofav} activeOpacity={0.8}>
               {fav ? (
-                <FontAwesome name="heart" size={22} color="red" />
+                <FontAwesome name="heart" size={18} color="#ef4444" />
               ) : (
-                <FontAwesome5 name="heart" size={22} color="#fff" />
+                <FontAwesome5 name="heart" size={18} color="#fff" />
               )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconButton}
               onPress={() => onShare({ id: auctionId, assetType, city })}
+              activeOpacity={0.8}
             >
-              <FontAwesome5 name="share-alt" size={22} color="#fff" />
+              <FontAwesome5 name="share-alt" size={16} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
       ) : (
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.iconButton} onPress={addTofav}>
+          <TouchableOpacity style={styles.iconButtonOutline} onPress={addTofav} activeOpacity={0.8}>
             {fav ? (
-              <FontAwesome name="heart" size={22} color="red" />
+              <FontAwesome name="heart" size={18} color="#ef4444" />
             ) : (
-              <FontAwesome5 name="heart" size={22} color="black" />
+              <FontAwesome5 name="heart" size={18} color="#64748b" />
             )}
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.iconButton}
+            style={styles.iconButtonOutline}
             onPress={() => onShare({ id: auctionId, assetType, city })}
+            activeOpacity={0.8}
           >
-            <FontAwesome5 name="share-alt" size={22} color="black" />
+            <FontAwesome5 name="share-alt" size={16} color="#64748b" />
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.topInfo}>
-        <Text style={styles.assetType}>
-          {assetType}{" "}
-          <Text style={{ fontWeight: "500", fontSize: 14, color: "#444" }}>
-            {city}
-          </Text>
-        </Text>
+
+      <View style={styles.headerInfo}>
+        <View style={styles.titleSection}>
+          <Text style={styles.assetType}>{assetType || "Auction Asset"}</Text>
+          <View style={styles.locationBadge}>
+            <FontAwesome5 name="map-marker-alt" size={10} color="#64748b" />
+            <Text style={styles.locationBadgeText}>{city}</Text>
+          </View>
+        </View>
         <View style={styles.priceContainer}>
-          <FontAwesome5 name="rupee-sign" size={16} color="white" />
-          <Text style={styles.reservePrice}>{reservePrice}</Text>
+          <Text style={styles.priceLabel}>RESERVE PRICE</Text>
+          <Text style={styles.reservePrice}>₹ {reservePrice || "NA"}</Text>
         </View>
       </View>
-      <View style={styles.fieldContainer}>
+
+      <View style={styles.divider} />
+
+      <View style={styles.gridContainer}>
         <DetailField
           icon="ruler-combined"
-          title="Area: "
-          text={`${areaSqFt || ""} sqft`}
+          title="Area"
+          text={`${areaSqFt || "N/A"} sqft`}
         />
-        <DetailField icon="coins" title="EMD: " text={`₹ ${emd}`} />
-        <DetailField
-          icon="rupee-sign"
-          title="Reserved Price: "
-          text={`${reservePrice || "NA"}`}
+        <DetailField 
+          icon="coins" 
+          title="EMD Amount" 
+          text={`₹ ${emd || "N/A"}`} 
         />
-        <DetailField icon="university" title="Bank: " text={`${bank || "NA"}`} />
+        <DetailField 
+          icon="university" 
+          title="Auction Bank" 
+          text={`${bank || "N/A"}`} 
+        />
         <DetailField
-          icon="map-marker-alt"
-          title="Location: "
+          icon="map-pin"
+          title="Detailed Location"
           text={`${locality || ""}${locality ? "," : ""} ${city}, ${state}`}
         />
         <DetailField
           icon="calendar-alt"
-          title="Start Date: "
-          text={`${formateDate(startDate) || "NA"}`}
+          title="Auction Start Date"
+          text={`${formateDate(startDate) || "N/A"}`}
         />
         <DetailField
           icon="clock"
-          title="Deadline: "
-          text={`${applicationDeadLine ? formateDate(applicationDeadLine) : "NA"
-            }`}
+          title="Application Deadline"
+          text={`${applicationDeadLine ? formateDate(applicationDeadLine) : "N/A"}`}
         />
       </View>
-
     </View>
   );
 };
 
-const DetailField = ({ icon, text, title, color = "#333" }) => (
+const DetailField = ({ icon, text, title }) => (
   <View style={styles.detailRow}>
-    <FontAwesome5 name={icon} size={18} color={"#41644A"} />
-    <Text style={[styles.field, { color }]}>
-      {title}
-      <Text style={{ fontWeight: "semibold" }}>{text}</Text>
-    </Text>
+    <View style={styles.iconBox}>
+      <FontAwesome5 name={icon} size={15} color={APP_COLOR.primary} />
+    </View>
+    <View style={styles.fieldTextContainer}>
+      <Text style={styles.fieldTitle}>{title}</Text>
+      <Text style={styles.fieldValue} numberOfLines={2}>{text}</Text>
+    </View>
   </View>
 );
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    margin: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    marginHorizontal: 12,
+    marginVertical: 8,
+    padding: 16,
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
   imageContainer: {
-    borderRadius: 5,
+    borderRadius: 16,
     overflow: "hidden",
+    backgroundColor: "#f8fafc",
+    position: "relative",
+    marginBottom: 16,
   },
   image: {
-    width: width - 80,
-    height: 200,
+    width: width - 56, // Adjusted for card padding (16*2=32) and horizontal margins (12*2=24)
+    height: 220,
     resizeMode: "cover",
-    borderRadius: 5,
   },
   pagination: {
     position: "absolute",
-    bottom: 0,
-    right: 0,
-    alignSelf: "center",
-    backgroundColor: "rgba(0,0,0,0.6)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 5,
+    bottom: 12,
+    right: 12,
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
   },
   paginationText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
   overlayIcons: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 12,
+    right: 12,
     flexDirection: "row",
-    gap: 10,
+    gap: 8,
   },
   actionsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginBottom: 12,
   },
   iconButton: {
-    padding: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 50,
+    width: 36,
+    height: 36,
+    backgroundColor: "rgba(15, 23, 42, 0.5)",
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backdropFilter: "blur(4px)",
   },
-  topInfo: {
+  iconButtonOutline: {
+    width: 36,
+    height: 36,
+    backgroundColor: "#f1f5f9",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 15,
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  titleSection: {
+    flex: 1,
+    gap: 6,
   },
   assetType: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#222",
-    lineHeight: 30,
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#1e293b",
+    lineHeight: 28,
   },
-  priceContainer: {
+  locationBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#28a745",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    backgroundColor: "#f1f5f9",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+    gap: 6,
+  },
+  locationBadgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#475569",
+  },
+  priceContainer: {
+    alignItems: "flex-end",
+  },
+  priceLabel: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#64748b",
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
   reservePrice: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-    marginLeft: 5,
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#10b981",
   },
-  fieldContainer: {
-    marginTop: 15,
+  divider: {
+    height: 1,
+    backgroundColor: "#f1f5f9",
+    marginVertical: 16,
+  },
+  gridContainer: {
+    gap: 14,
   },
   detailRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 5,
+    gap: 12,
   },
-  field: {
-    fontSize: 15,
-    marginLeft: 10,
-    fontWeight: "bold",
-    opacity: 0.8,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "rgba(0, 123, 255, 0.08)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fieldTextContainer: {
+    flex: 1,
+    gap: 2,
+  },
+  fieldTitle: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#64748b",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  fieldValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1e293b",
   },
 });
-
 export default PublicAuctionDetailsCard;
