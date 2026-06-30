@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { LinearGradient } from "expo-linear-gradient";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function TabOneScreen() {
   const [allCities, setAllCities] = useState([] as any);
@@ -205,29 +206,41 @@ export default function TabOneScreen() {
       console.log("error while getting user", error);
     }
   };
+  // colors={[APP_COLOR.primary, "#182848"]}
+
 
   return (
     <LinearGradient
-      colors={["#4b6cb7", "#182848"]}
+      colors={[APP_COLOR.primary, "#182848"]}
       style={styles.gradientBackground}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <YStack flex={1} items="center" gap="$2">
           <View px="$4" style={styles.overlay}>
             <View style={styles.topContainer}>
-              <H3 style={styles.headerText}>
-                Your Trusted Place{" "}
-                <Text style={{ color: APP_COLOR.primary }}>
-                  for Auctioned Assets
-                </Text>
-              </H3>
-              <SizableText size="$5" text="center" color="white">
-                Find your next great investment with our exclusive bank auction
-                listings.
-              </SizableText>
+              <View style={styles.badgeContainer}>
+                <Ionicons name="shield-checkmark" size={12} color="#4ade80" />
+                <Text style={styles.badgeText}>SECURE & VERIFIED BANK AUCTIONS</Text>
+              </View>
+              <Text style={styles.headerText}>
+                Your Trusted Portal{"\n"}
+                <Text style={styles.headerTextAccent}>for Auctioned Assets</Text>
+              </Text>
+              <View style={styles.headerDivider} />
+              <Text style={styles.subtext}>
+                Find your next great investment with our exclusive bank auction listings.
+              </Text>
               <View style={styles.container}>
-                <Dropdown
+                 <Dropdown
                   style={styles.dropdown}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                  iconStyle={styles.dropdownIcon}
+                  containerStyle={styles.dropdownContainer}
+                  itemTextStyle={styles.dropdownItemText}
+                  itemContainerStyle={styles.dropdownItemContainer}
+                  activeColor="rgba(0, 123, 255, 0.08)"
+                  inputSearchStyle={styles.dropdownInputSearch}
                   data={allCities}
                   maxHeight={300}
                   search
@@ -240,9 +253,25 @@ export default function TabOneScreen() {
                     setCity(item?.value);
                     setCityName(item?.label);
                   }}
+                  renderLeftIcon={() => (
+                    <Ionicons
+                      name="location-outline"
+                      size={20}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
                 />
-                <Dropdown
+                 <Dropdown
                   style={styles.dropdown}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                  iconStyle={styles.dropdownIcon}
+                  containerStyle={styles.dropdownContainer}
+                  itemTextStyle={styles.dropdownItemText}
+                  itemContainerStyle={styles.dropdownItemContainer}
+                  activeColor="rgba(0, 123, 255, 0.08)"
+                  inputSearchStyle={styles.dropdownInputSearch}
                   data={allAssetTypes}
                   labelField="label"
                   valueField="value"
@@ -252,47 +281,48 @@ export default function TabOneScreen() {
                     setAssetType(item?.value);
                     setAssetTypeName(item?.label);
                   }}
+                  renderLeftIcon={() => (
+                    <Ionicons
+                      name="business-outline"
+                      size={20}
+                      color={APP_COLOR.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
                 />
-                <Button
+                <TouchableOpacity
+                  activeOpacity={0.85}
                   onPress={handleSearch}
-                  fontSize={16}
-                  fontWeight={700}
-                  style={styles.button}
+                  style={styles.searchButtonContainer}
                 >
-                  Search Auction
-                </Button>
+                  <LinearGradient
+                    colors={[APP_COLOR.primary, "#0056b3"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.searchButton}
+                  >
+                    <Text style={styles.searchButtonText}>Search Auctions</Text>
+                    <Ionicons name="search" size={18} color="#fff" />
+                  </LinearGradient>
+                </TouchableOpacity>
+
                 {lastSearch.length > 0 && (
-                  <View style={{ padding: 10 }}>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "bold",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Last Searches
-                    </Text>
+                  <View style={styles.lastSearchSection}>
+                    <View style={styles.lastSearchHeader}>
+                      <Ionicons name="time-outline" size={14} color="#64748b" />
+                      <Text style={styles.lastSearchTitle}>Recent Searches</Text>
+                    </View>
                     <View style={{ maxWidth: "100%", overflow: "hidden" }}>
                       <View style={{ flexDirection: "row" }}>
                         <ScrollView
                           horizontal
                           showsHorizontalScrollIndicator={false}
-                          contentContainerStyle={{ flexDirection: "row", gap: 4 }}
+                          contentContainerStyle={{ flexDirection: "row", gap: 6 }}
                         >
                           {lastSearch.map((search, index) => (
                             <Pressable
                               key={index}
-                              style={{
-                                backgroundColor: "#f0f0f0",
-                                paddingVertical: 6,
-                                paddingHorizontal: 12,
-                                borderRadius: 20,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 6,
-                                borderWidth: 1,
-                                borderColor: "#d1d1d1",
-                              }}
+                              style={styles.lastSearchPill}
                               onPress={() =>
                                 router.push({
                                   pathname: `/auctions`,
@@ -308,7 +338,8 @@ export default function TabOneScreen() {
                                   },
                                 })}
                             >
-                              <Text style={{ fontSize: 14, color: "#333" }}>
+                              <Ionicons name="search-outline" size={12} color="#64748b" />
+                              <Text style={styles.lastSearchText}>
                                 #{search?.assetTypeName} {search?.assetTypeName && search.cityName && "in"} {search?.cityName}
                               </Text>
                             </Pressable>
@@ -316,53 +347,11 @@ export default function TabOneScreen() {
                         </ScrollView>
                       </View>
                     </View>
-
                   </View>
                 )}
-                {/* <Toast /> */}
               </View>
             </View>
             <PopularCities />
-            {/* <View style={styles.popularSection}>
-              <Text style={styles.sectionTitle}>
-                Top Auctions{" "}
-                <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
-                  Cities
-                </Text>
-              </Text>
-              <FlatList
-                data={topCities}
-                scrollEnabled={false}
-                keyExtractor={(item) => item?.id}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={styles.cityRow}
-                    onPress={() =>
-                      router.push({
-                        pathname: `/auctions`,
-                        params: {
-                          cityId: item?.id,
-                          assetTypeName: "",
-                          cityName: item?.name,
-                          localityName: "",
-                          assetTypeId: "",
-                          bankId: "",
-                          minPrice: "",
-                          maxPrice: "",
-                        },
-                      })
-                    }
-                  >
-                    <Text style={styles.cityName}>
-                      <AntDesign name="doubleright" size={24} color="#FFD700" />{" "}
-                      {item.name} -{" "}
-                      <Text style={styles.auctionCount}>{item?.count}</Text>
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View> */}
           </View>
         </YStack>
         <Footer />
@@ -386,94 +375,187 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 90,
+    paddingTop: 80,
+    paddingBottom: 40,
+    width: "100%",
   },
-  topContainer: {},
+  topContainer: {
+    width: "100%",
+    maxWidth: 340,
+    alignItems: "center",
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    marginBottom: 16,
+    gap: 6,
+  },
+  badgeText: {
+    color: "#ffffff",
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
   headerText: {
-    fontWeight: "bold",
+    fontSize: 26,
+    fontWeight: "800",
     textAlign: "center",
-    color: "white",
+    color: "#ffffff",
+    lineHeight: 34,
+  },
+  headerTextAccent: {
+    color: "#FFD700",
+    fontWeight: "900",
+    textShadowColor: "rgba(255, 215, 0, 0.25)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+  },
+  headerDivider: {
+    width: 48,
+    height: 3,
+    backgroundColor: "#FFD700",
+    borderRadius: 2,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  subtext: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#f1f5f9",
+    marginTop: 8,
+    lineHeight: 20,
+    paddingHorizontal: 10,
   },
   container: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 15,
-    // width: 310,
-    borderRadius: 10,
-    marginTop: 30,
-    gap: 15,
-    opacity: 0.9,
+    paddingVertical: 24,
+    borderRadius: 24,
+    marginTop: 25,
+    width: "100%",
+    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
   },
   dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    height: 54,
+    borderColor: "rgba(0, 123, 255, 0.12)",
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    backgroundColor: "#f8fafc",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  button: {
-    backgroundColor: APP_COLOR.primary,
-    color: "white",
+  dropdownPlaceholder: {
+    color: "#94a3b8",
+    fontSize: 14,
   },
-  popularSection: {
-    width: 260,
+  dropdownSelectedText: {
+    color: "#1e293b",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dropdownIcon: {
+    width: 20,
+    height: 20,
+    tintColor: "#64748b",
+  },
+  dropdownContainer: {
+    borderRadius: 16,
+    marginTop: 4,
+    paddingVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 5,
+    borderColor: "#f1f5f9",
+    borderWidth: 1,
+    backgroundColor: "#ffffff",
+  },
+  dropdownItemText: {
+    color: "#334155",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dropdownItemContainer: {
     borderRadius: 10,
-    padding: 15,
+    marginHorizontal: 8,
+    marginVertical: 2,
+    paddingVertical: 4,
+  },
+  dropdownInputSearch: {
+    height: 40,
+    borderRadius: 10,
+    borderColor: "#cbd5e1",
+    fontSize: 14,
+  },
+  searchButtonContainer: {
+    borderRadius: 12,
+    overflow: "hidden",
+    marginTop: 4,
+    elevation: 3,
+    shadowColor: APP_COLOR.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+  searchButton: {
+    height: 52,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+  },
+  searchButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  lastSearchSection: {
     marginTop: 10,
-    opacity: 0.9,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f5f9",
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 5,
-    color: "white",
-    borderBottomColor: "gold",
-    borderBottomWidth: 2,
-    marginHorizontal: 20,
-  },
-  cityRow: {
+  lastSearchHeader: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 0.2,
-    borderBottomColor: "rgba(255, 215, 0, 0.4)",
+    gap: 6,
+    marginBottom: 10,
   },
-
-  cityName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+  lastSearchTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748b",
   },
-
-  auctionCount: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFD700",
-  },
-
-  carouselContainer: {
-    alignItems: "center",
-    height: 200,
-  },
-
-  scrollContent: {
+  lastSearchPill: {
+    backgroundColor: "#f1f5f9",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
     flexDirection: "row",
-    paddingHorizontal: 6,
-  },
-  cityCircle: {
     alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 6,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
-  cityImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: "white",
+  lastSearchText: {
+    fontSize: 12,
+    color: "#475569",
+    fontWeight: "500",
   },
 });
