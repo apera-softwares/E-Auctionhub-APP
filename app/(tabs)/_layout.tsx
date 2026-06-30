@@ -1,29 +1,42 @@
 import { Tabs, useRouter } from "expo-router";
-import { SizableText, useTheme } from "tamagui";
-import { CircleUser, Home, Search } from "@tamagui/lucide-icons";
+import { SizableText } from "tamagui";
 import { APP_COLOR } from "constants/Colors";
-import { Image, Text } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useUser } from "context/UserContextProvider";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const { user } = useUser();
   const router = useRouter();
 
-  const theme = useTheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.red10.val,
+        tabBarActiveTintColor: APP_COLOR.primary, // Premium primary blue active icon
+        tabBarInactiveTintColor: "#64748b", // Soft slate gray inactive icon
         tabBarStyle: {
-          backgroundColor: theme.background.val,
-          borderTopColor: theme.borderColor.val,
+          backgroundColor: "#ffffff", // Pure white background
+          borderTopWidth: 0,
+          position: "absolute",
+          bottom: 36, // Positioned higher up to clear phone menu tabs cleanly
+          left: 16,
+          right: 16,
+          height: 64,
+          borderRadius: 24,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          elevation: 6,
+          borderWidth: 1,
+          borderColor: "rgba(0, 0, 0, 0.05)",
+          paddingBottom: 8,
+          paddingTop: 8,
         },
-        headerStyle: {
-          backgroundColor: theme.background.val,
-          borderBottomColor: theme.borderColor.val,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: "600",
         },
-        headerTintColor: theme.color.val,
       }}
     >
       <Tabs.Screen
@@ -32,15 +45,24 @@ export default function TabLayout() {
           headerTitle: "",
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color }) => <Home color={color as any} size={20} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={20}
+              color={color}
+            />
+          ),
           headerRight: () => (
             <SizableText
               style={{
                 backgroundColor: APP_COLOR.primary,
-                padding: 5,
-                borderRadius: 5,
+                paddingVertical: 6,
+                paddingHorizontal: 12,
+                borderRadius: 8,
                 color: "white",
-                marginRight: 5,
+                marginRight: 12,
+                fontSize: 12,
+                fontWeight: "600",
               }}
               onPress={() =>
                 user?.isLogin ? router.push("/") : router.push("/login")
@@ -53,7 +75,7 @@ export default function TabLayout() {
           ),
           headerLeft: () => (
             <Image
-              style={{ height: 40, width: 50, marginLeft: 5 }}
+              style={{ height: 40, width: 50, marginLeft: 12 }}
               source={require("../../assets/images/logo/logo.png")}
             />
           ),
@@ -63,9 +85,26 @@ export default function TabLayout() {
         name="search"
         options={{
           headerTitle: "Advance Search",
-          title: "Advance Search",
-          // headerShown:false,
-          tabBarIcon: ({ color }) => <Search color={color as any} size={20} />,
+          title: "Search",
+          headerStyle: {
+            backgroundColor: "#ffffff",
+            borderBottomWidth: 1,
+            borderBottomColor: "#f1f5f9",
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          headerTintColor: "#1e293b",
+          headerTitleStyle: {
+            fontWeight: "700",
+            fontSize: 18,
+          },
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "search" : "search-outline"}
+              size={20}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -73,26 +112,36 @@ export default function TabLayout() {
         options={{
           headerTitle: "",
           title: "Account",
-          // headerShown: false,
+          headerStyle: {
+            backgroundColor: "#ffffff",
+            borderBottomWidth: 1,
+            borderBottomColor: "#f1f5f9",
+            elevation: 0,
+            shadowOpacity: 0,
+          },
           headerLeft: () => (
-            <>
+            <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 12 }}>
               <Image
-                style={{ height: 40, width: 40, marginLeft: 8 }}
+                style={{ height: 32, width: 32, marginRight: 8 }}
                 source={require("../../assets/images/logo/logo.png")}
               />
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: "bold",
-                  color: APP_COLOR.primary,
+                  color: "#1e293b",
                 }}
               >
                 E-AuctionsHub
               </Text>
-            </>
+            </View>
           ),
-          tabBarIcon: ({ color }) => (
-            <CircleUser color={color as any} size={20} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={20}
+              color={color}
+            />
           ),
         }}
       />

@@ -51,7 +51,8 @@ export default function Footer() {
 const styles = StyleSheet.create({
   footerContainer: {
     backgroundColor: "#111",
-    paddingVertical: 6, // Reduced height
+    paddingTop: 8,
+    paddingBottom: 120, // Situate footer text and icons above the tab bar
     paddingHorizontal: 10,
     width: "100%",
   },

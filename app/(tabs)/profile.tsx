@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     padding: 20,
+    paddingBottom: 110,
     // backgroundColor: "#f5f5f5",
   },
   usernameContainer: {
