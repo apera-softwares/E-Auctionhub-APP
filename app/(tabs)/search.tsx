@@ -27,7 +27,7 @@ export default function search() {
   const router = useRouter();
   const [lastSearch, setLastSearch] = useState([] as any);
   const insets = useSafeAreaInsets();
-  const headerHeight = 64 + insets.top;
+  const headerHeight = 24 + insets.top;
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const headerTranslateY = scrollY.interpolate({
@@ -194,7 +194,7 @@ export default function search() {
       colors={[APP_COLOR.primary, "#182848"]}
       style={styles.gradientBackground}
     >
-      <Animated.View
+      {/* <Animated.View
         style={[
           styles.customHeader,
           {
@@ -205,7 +205,7 @@ export default function search() {
         ]}
       >
         <Text style={styles.customHeaderTitle}>Advanced Search</Text>
-      </Animated.View>
+      </Animated.View> */}
 
       <Animated.ScrollView
         contentContainerStyle={[styles.scrollContainer, { paddingTop: headerHeight }]}

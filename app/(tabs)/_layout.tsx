@@ -98,32 +98,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          headerTitle: "",
+          headerShown: false,
           title: "Account",
-          headerStyle: {
-            backgroundColor: "#ffffff",
-            borderBottomWidth: 1,
-            borderBottomColor: "#f1f5f9",
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          headerLeft: () => (
-            <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 12 }}>
-              <Image
-                style={{ height: 32, width: 32, marginRight: 8 }}
-                source={require("../../assets/images/logo/logo.png")}
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  color: "#1e293b",
-                }}
-              >
-                E-AuctionsHub
-              </Text>
-            </View>
-          ),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
