@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   Platform,
+  Linking,
 } from "react-native";
 import { APP_COLOR } from "constants/Colors";
 import { AntDesign, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
@@ -54,6 +55,14 @@ const ProfileScreen = () => {
       router.push("/login");
     } catch (e) {
       console.log(e, "error");
+    }
+  };
+
+  const handleUpgradePremium = () => {
+    if (Platform.OS !== "ios") {
+      router.push("/premium");
+    } else {
+      Linking.openURL("https://eauctionshub.com/premium");
     }
   };
 
@@ -126,7 +135,7 @@ const ProfileScreen = () => {
                 <TouchableOpacity
                   style={styles.upgradeBanner}
                   activeOpacity={0.9}
-                  onPress={() => router.push("/premium")}
+                  onPress={handleUpgradePremium}
                 >
                   <LinearGradient
                     colors={["#EAB308", "#CA8A04"]}

@@ -276,7 +276,7 @@ export default function AuctionScreen() {
                     ? `${assetTypeName} Properties`
                     : "Properties Found"}
             </Text>
-            <Text style={styles.headerSubtitle}>Verified bank auction listings</Text>
+          
           </View>
         </View>
 

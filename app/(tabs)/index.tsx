@@ -232,7 +232,7 @@ export default function TabOneScreen() {
                 Find your next great investment with our exclusive bank auction listings.
               </Text>
               <View style={styles.container}>
-                 <Dropdown
+                <Dropdown
                   style={styles.dropdown}
                   placeholderStyle={styles.dropdownPlaceholder}
                   selectedTextStyle={styles.dropdownSelectedText}
@@ -263,34 +263,7 @@ export default function TabOneScreen() {
                     />
                   )}
                 />
-                 <Dropdown
-                  style={styles.dropdown}
-                  placeholderStyle={styles.dropdownPlaceholder}
-                  selectedTextStyle={styles.dropdownSelectedText}
-                  iconStyle={styles.dropdownIcon}
-                  containerStyle={styles.dropdownContainer}
-                  itemTextStyle={styles.dropdownItemText}
-                  itemContainerStyle={styles.dropdownItemContainer}
-                  activeColor="rgba(0, 123, 255, 0.08)"
-                  inputSearchStyle={styles.dropdownInputSearch}
-                  data={allAssetTypes}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Select Asset Type"
-                  value={assetType}
-                  onChange={(item) => {
-                    setAssetType(item?.value);
-                    setAssetTypeName(item?.label);
-                  }}
-                  renderLeftIcon={() => (
-                    <Ionicons
-                      name="business-outline"
-                      size={20}
-                      color={APP_COLOR.primary}
-                      style={{ marginRight: 8 }}
-                    />
-                  )}
-                />
+
                 <TouchableOpacity
                   activeOpacity={0.85}
                   onPress={handleSearch}
