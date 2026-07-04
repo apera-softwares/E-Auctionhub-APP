@@ -9,29 +9,34 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const PopularCities = () => {
-
   const router = useRouter();
 
   return (
-    <View style={styles.carouselContainer}>
-      <Text style={styles.PopularCityTitle}>
-        Popular{" "}
-        <Text style={{ color: APP_COLOR.primary, fontWeight: "bold" }}>
-          Cities
-        </Text>
-      </Text>
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.subtitle}>EXPLORE DESTINATIONS</Text>
+          <Text style={styles.title}>
+            Popular <Text style={styles.titleAccent}>Cities</Text>
+          </Text>
+        </View>
+        <Ionicons name="map-outline" size={22} color="rgba(255, 255, 255, 0.6)" />
+      </View>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        pagingEnabled
         contentContainerStyle={styles.scrollContent}
       >
         {popularCitiesList.map((city: any, index: number) => (
           <TouchableOpacity
             key={index}
-            style={styles.cityCircle}
+            activeOpacity={0.85}
+            style={styles.cityCard}
             onPress={() =>
               router.push({
                 pathname: `/auctions`,
@@ -49,7 +54,21 @@ const PopularCities = () => {
             }
           >
             <Image source={city?.image} style={styles.cityImage} />
-            <Text style={styles.cityName}>{city?.name}</Text>
+            <LinearGradient
+              colors={["transparent", "rgba(0, 0, 0, 0.4)", "rgba(0, 0, 0, 0.85)"]}
+              style={styles.gradientOverlay}
+            >
+              <View style={styles.cardInfo}>
+                <View style={styles.locationContainer}>
+                  <Ionicons name="location-sharp" size={12} color="#FFD700" />
+                  <Text style={styles.cityName}>{city?.name}</Text>
+                </View>
+                <View style={styles.exploreBadge}>
+                  <Text style={styles.exploreText}>View Auctions</Text>
+                  <Ionicons name="arrow-forward" size={10} color="#fff" />
+                </View>
+              </View>
+            </LinearGradient>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -58,44 +77,92 @@ const PopularCities = () => {
 };
 
 const styles = StyleSheet.create({
-  carouselContainer: {
-    marginTop: 15,
-    alignItems: "center",
-    height: 170,
-    opacity: 0.9,
+  container: {
+    marginTop: 25,
+    width: "100%",
   },
-  PopularCityTitle: {
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  titleContainer: {
+    alignItems: "flex-start",
+  },
+  subtitle: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#FFD700",
+    letterSpacing: 1.5,
+    marginBottom: 2,
+  },
+  title: {
     fontSize: 20,
     fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 20,
-    color: "#fff",
-    borderBottomColor: "gold",
-    borderBottomWidth: 2,
-    paddingHorizontal: 10,
+    color: "#ffffff",
+    
+  },
+  titleAccent: {
+    color: "#FFD700",
+    fontWeight: "800",
   },
   scrollContent: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 10,
     flexDirection: "row",
-    paddingHorizontal: 6,
+    gap: 12,
   },
-  cityCircle: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 6,
+  cityCard: {
+    width: 120,
+    height: 160,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#1e293b",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   cityImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 50,
-    borderWidth: 2.5,
-    borderColor: APP_COLOR.primary,
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    resizeMode: "cover",
+  },
+  gradientOverlay: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+  },
+  cardInfo: {
+    padding: 10,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 4,
   },
   cityName: {
-    marginTop: 5,
-    color: "white",
-    fontWeight: "bold",
+    color: "#ffffff",
+    fontWeight: "700",
     fontSize: 14,
+  },
+  exploreBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  exploreText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 9,
+    fontWeight: "500",
   },
 });
 
 export default PopularCities;
+
